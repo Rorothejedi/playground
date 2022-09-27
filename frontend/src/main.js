@@ -4,6 +4,7 @@ import {
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+import naive from 'naive-ui'
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 
@@ -20,4 +21,5 @@ window.Echo = new Echo({
 createApp(App)
     .use(store)
     .use(router)
+    .use(naive)
     .mount("#app");

@@ -1,20 +1,75 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view />
+  <n-config-provider :theme="darkTheme">
+    <div id="nav">
+      <n-menu mode="horizontal" :options="menuOptions" />
+    </div>
+    <router-view />
+  </n-config-provider>
 </template>
 
 <script>
+import { darkTheme } from "naive-ui";
+import { h, ref } from "vue";
+import { RouterLink } from "vue-router";
+
+const menuOptions = [
+  {
+    label: () =>
+      h(
+        RouterLink,
+        {
+          to: {
+            name: "Morpion",
+          },
+        },
+        { default: () => "Morpion" }
+      ),
+    key: "morpion",
+  },
+  {
+    label: () =>
+      h(
+        RouterLink,
+        {
+          to: {
+            name: "Skyjo",
+          },
+        },
+        { default: () => "Skyjo" }
+      ),
+    key: "skyjo",
+  },
+  {
+    label: () =>
+      h(
+        RouterLink,
+        {
+          to: {
+            name: "President",
+          },
+        },
+        { default: () => "President" }
+      ),
+    key: "president",
+  },
+];
+
 export default {
   name: "App",
 
-  mounted() {
-    window.Echo.channel("channel").listen("Hello", (e) => {
-      console.log(e);
-    });
+  data() {
+    return {
+      darkTheme,
+      menuOptions,
+      activeKey: ref(null),
+    };
   },
+
+  // mounted() {
+  //   window.Echo.channel("channel").listen("Hello", (e) => {
+  //     console.log(e);
+  //   });
+  // },
 };
 </script>
 
@@ -23,20 +78,8 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+  background-color: rgb(24, 24, 28);
+  min-height: 100vh;
 }
 </style>
