@@ -14,6 +14,7 @@
 import { darkTheme } from "naive-ui";
 import { h, ref } from "vue";
 import { RouterLink } from "vue-router";
+import SocketioService from "./services/socketio.service.js";
 import Alerts from "@/components/utils/Alerts.vue";
 
 const menuOptions = [
@@ -72,13 +73,11 @@ export default {
     };
   },
 
-  mounted() {
-    window.Echo.channel("channel").listen("Hello", (e) => {
-      console.log(e);
-    });
-    // window.Echo.channel("test").listen("Hello", (e) => {
-    //   console.log(e);
-    // });
+  created() {
+    SocketioService.setupSocketConnection();
+  },
+  beforeUnmount() {
+    SocketioService.disconnect();
   },
 };
 </script>

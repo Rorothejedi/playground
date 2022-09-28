@@ -2,16 +2,16 @@ import {
   createStore
 } from 'vuex'
 import createPersistedState from "vuex-persistedstate"
-import user from './user.js'
+import player from './player'
 
 export default createStore({
   plugins: [
     createPersistedState({
-      paths: ['user']
+      paths: ['player']
     })
   ],
 
   modules: {
-    user,
+    player,
   }
 })

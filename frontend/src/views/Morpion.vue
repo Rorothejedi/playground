@@ -3,12 +3,12 @@
     <n-h1>Morpion</n-h1>
 
     <div v-if="!isReady">
-      <div class="username-card">
+      <n-collapse-transition class="username-card" :show="displayUsernameCard">
         <n-card>
           <n-form-item label="Nom d'utilisateur">
             <n-input-group>
               <n-input
-                v-model:value="local_username"
+                v-model:value="tempUsername"
                 type="text"
                 placeholder="ex: Toto"
                 :disabled="lockUsernameInput"
@@ -16,23 +16,30 @@
               <n-button
                 :type="lockUsernameInput ? 'primary' : ''"
                 @click="chooseUsername()"
-                :disabled="local_username === ''"
+                :disabled="tempUsername === ''"
               >
                 {{ !lockUsernameInput ? "Choisir" : "Modifier" }}
               </n-button>
             </n-input-group>
           </n-form-item>
         </n-card>
-      </div>
+      </n-collapse-transition>
 
       <div class="room-card">
         <n-card>
           <n-space vertical>
-            <n-button @click="isReady = true" :disabled="!lockUsernameInput">
+            <n-button
+              @click="createMorpionRoom()"
+              :disabled="!lockUsernameInput || waitingPlayers"
+            >
               Créer un salon
             </n-button>
 
-            <n-data-table :columns="columns" :data="data" :loading="false">
+            <n-data-table
+              :columns="columns"
+              :data="data"
+              :loading="waitingPlayers"
+            >
               <template v-slot:empty>Aucun salon dispo</template>
             </n-data-table>
           </n-space>
@@ -48,6 +55,9 @@
     <div v-else>
       <grid />
     </div>
+    <n-button @click="isReady = !isReady">
+      {{ !isReady ? "Ready" : "Not ready" }}
+    </n-button>
   </div>
 </template>
 
@@ -113,35 +123,46 @@ export default {
   data() {
     return {
       isReady: false,
-      local_username: "",
+      tempUsername: "",
       lockUsernameInput: false,
+      displayUsernameCard: true,
+      waitingPlayers: false,
       data: ref([]),
       columns: createColumns(),
     };
   },
 
   computed: {
-    ...mapState("user", ["username"]),
+    ...mapState("player", ["username", "host", "turn", "socketId"]),
   },
 
   mounted() {
-    this.local_username = this.username;
+    if (this.username === "") return;
+
+    this.tempUsername = this.username;
     this.chooseUsername();
   },
 
   methods: {
-    ...mapActions("user", ["changeUsername"]),
+    ...mapActions("player", ["changeUsername", "createRoom"]),
 
     chooseUsername() {
       this.lockUsernameInput = !this.lockUsernameInput;
 
-      this.changeUsername(this.local_username);
+      this.changeUsername(this.tempUsername);
 
       if (!this.lockUsernameInput) return;
 
       window.$message.success(
-        `Hello ${this.local_username}, tu peux maintenant créer ou rejoindre un salon`
+        `Yo ${this.username}, tu peux maintenant créer ou rejoindre un salon !`
       );
+    },
+
+    createMorpionRoom() {
+      this.createRoom();
+
+      this.displayUsernameCard = false;
+      this.waitingPlayers = true;
     },
   },
 };
