@@ -6,31 +6,44 @@
       <div class="username-card">
         <n-card>
           <n-form-item label="Nom d'utilisateur">
-            <n-input
-              v-model:value="username"
-              type="text"
-              placeholder="ex: Toto"
-            />
+            <n-input-group>
+              <n-input
+                v-model:value="local_username"
+                type="text"
+                placeholder="ex: Toto"
+                :disabled="lockUsernameInput"
+              />
+              <n-button
+                :type="lockUsernameInput ? 'primary' : ''"
+                @click="chooseUsername()"
+                :disabled="local_username === ''"
+              >
+                {{ !lockUsernameInput ? "Choisir" : "Modifier" }}
+              </n-button>
+            </n-input-group>
           </n-form-item>
-
-          <n-button @click="isReady = true">Créer un salon privé</n-button>
         </n-card>
       </div>
 
       <div class="room-card">
         <n-card>
-          <n-h3>Salons</n-h3>
-          <n-data-table :columns="columns" :data="data" :loading="false">
-            <template v-slot:empty>Aucun salon dispo</template>
-          </n-data-table>
+          <n-space vertical>
+            <n-button @click="isReady = true" :disabled="!lockUsernameInput">
+              Créer un salon
+            </n-button>
+
+            <n-data-table :columns="columns" :data="data" :loading="false">
+              <template v-slot:empty>Aucun salon dispo</template>
+            </n-data-table>
+          </n-space>
         </n-card>
       </div>
 
-      <div class="info-alert">
+      <!-- <div class="info-alert">
         <n-alert type="success">
           Partage ce lien pour inviter quelqu'un à jouer avec toi
         </n-alert>
-      </div>
+      </div> -->
     </div>
     <div v-else>
       <grid />
@@ -41,7 +54,8 @@
 <script>
 import { h, ref } from "vue";
 import { NTag, NButton } from "naive-ui";
-import grid from "@/components/morpion/grid.vue";
+import { mapState, mapActions } from "vuex";
+import Grid from "@/components/morpion/Grid.vue";
 
 const createColumns = () => {
   return [
@@ -94,15 +108,41 @@ const createColumns = () => {
 
 export default {
   name: "Morpion",
-  components: { grid },
+  components: { Grid },
 
   data() {
     return {
       isReady: false,
-      username: "",
+      local_username: "",
+      lockUsernameInput: false,
       data: ref([]),
       columns: createColumns(),
     };
+  },
+
+  computed: {
+    ...mapState("user", ["username"]),
+  },
+
+  mounted() {
+    this.local_username = this.username;
+    this.chooseUsername();
+  },
+
+  methods: {
+    ...mapActions("user", ["changeUsername"]),
+
+    chooseUsername() {
+      this.lockUsernameInput = !this.lockUsernameInput;
+
+      this.changeUsername(this.local_username);
+
+      if (!this.lockUsernameInput) return;
+
+      window.$message.success(
+        `Hello ${this.local_username}, tu peux maintenant créer ou rejoindre un salon`
+      );
+    },
   },
 };
 </script>
@@ -125,6 +165,6 @@ export default {
   max-width: 500px;
 }
 .n-alert {
-  min-width: 500px;
+  width: 500px;
 }
 </style>

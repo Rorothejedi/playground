@@ -1,9 +1,12 @@
 <template>
   <n-config-provider :theme="darkTheme">
-    <div id="nav">
-      <n-menu mode="horizontal" :options="menuOptions" />
-    </div>
-    <router-view />
+    <n-message-provider>
+      <alerts />
+      <div id="nav">
+        <n-menu mode="horizontal" :options="menuOptions" />
+      </div>
+      <router-view />
+    </n-message-provider>
   </n-config-provider>
 </template>
 
@@ -11,6 +14,7 @@
 import { darkTheme } from "naive-ui";
 import { h, ref } from "vue";
 import { RouterLink } from "vue-router";
+import Alerts from "@/components/utils/Alerts.vue";
 
 const menuOptions = [
   {
@@ -56,6 +60,9 @@ const menuOptions = [
 
 export default {
   name: "App",
+  components: {
+    Alerts,
+  },
 
   data() {
     return {
@@ -65,11 +72,14 @@ export default {
     };
   },
 
-  // mounted() {
-  //   window.Echo.channel("channel").listen("Hello", (e) => {
-  //     console.log(e);
-  //   });
-  // },
+  mounted() {
+    window.Echo.channel("channel").listen("Hello", (e) => {
+      console.log(e);
+    });
+    // window.Echo.channel("test").listen("Hello", (e) => {
+    //   console.log(e);
+    // });
+  },
 };
 </script>
 
