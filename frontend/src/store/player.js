@@ -14,6 +14,7 @@ export default {
         host: false,
         roomId: null,
         socketId: '',
+        game: '',
 
         // morpion
         playedCell: '',
@@ -29,9 +30,11 @@ export default {
         SET_HOST(state, payload) {
             state.host = payload
         },
-
         SET_SOCKET_ID(state, payload) {
             state.socketId = payload
+        },
+        SET_GAME(state, payload) {
+            state.game = payload
         },
 
         SET_TURN(state, payload) {
@@ -44,12 +47,14 @@ export default {
             store.commit('SET_USERNAME', value)
         },
 
+        changeGame(store, value) {
+            store.commit('SET_GAME', value)
+        },
+
         createRoom(store) {
             store.commit('SET_HOST', true)
             store.commit('SET_TURN', true)
             store.commit('SET_SOCKET_ID', socketioService.socket.id)
-
-            console.log(store.state)
 
             socketioService.socket.emit("playerData", store.state);
         },

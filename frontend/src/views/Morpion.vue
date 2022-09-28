@@ -37,7 +37,7 @@
 
             <n-data-table
               :columns="columns"
-              :data="data"
+              :data="dataColumn"
               :loading="waitingPlayers"
             >
               <template v-slot:empty>Aucun salon dispo</template>
@@ -62,24 +62,16 @@
 </template>
 
 <script>
-import { h, ref } from "vue";
-import { NTag, NButton } from "naive-ui";
+import { h } from "vue";
+import { NButton, NTag } from "naive-ui";
 import { mapState, mapActions } from "vuex";
 import Grid from "@/components/morpion/Grid.vue";
 
 const createColumns = () => {
   return [
     {
-      title: "Créateur",
-      key: "creator",
-    },
-    {
-      title: "ID",
-      key: "id",
-    },
-    {
-      title: "Type de jeu",
-      key: "game",
+      title: "Jeu",
+      key: "tags",
       render(row) {
         const tags = row.tags.map((tagKey) => {
           return h(
@@ -100,8 +92,13 @@ const createColumns = () => {
       },
     },
     {
+      title: "Créateur",
+      key: "creator",
+    },
+    {
       title: "",
       key: "action",
+      align: "center",
       render() {
         return h(
           NButton,
@@ -109,7 +106,7 @@ const createColumns = () => {
             size: "small",
             onClick: () => alert("lauch game"),
           },
-          { default: () => "Send Email" }
+          { default: () => "Rejoindre" }
         );
       },
     },
@@ -127,16 +124,34 @@ export default {
       lockUsernameInput: false,
       displayUsernameCard: true,
       waitingPlayers: false,
-      data: ref([]),
       columns: createColumns(),
     };
   },
 
   computed: {
-    ...mapState("player", ["username", "host", "turn", "socketId"]),
+    ...mapState("player", ["username"]),
+    ...mapState("room", ["rooms"]),
+
+    dataColumn() {
+      console.log("dataColumn");
+
+      let columns = [];
+
+      this.rooms.forEach((element) => {
+        let column = {};
+        column.creator = element.players[0].username;
+        column.tags = [element.players[0].game];
+        columns.push(column);
+      });
+
+      return columns;
+    },
   },
 
   mounted() {
+    this.emitRooms();
+    this.listenRooms();
+
     if (this.username === "") return;
 
     this.tempUsername = this.username;
@@ -144,7 +159,8 @@ export default {
   },
 
   methods: {
-    ...mapActions("player", ["changeUsername", "createRoom"]),
+    ...mapActions("player", ["changeUsername", "changeGame", "createRoom"]),
+    ...mapActions("room", ["emitRooms", "listenRooms"]),
 
     chooseUsername() {
       this.lockUsernameInput = !this.lockUsernameInput;
@@ -159,7 +175,9 @@ export default {
     },
 
     createMorpionRoom() {
+      this.changeGame("Morpion");
       this.createRoom();
+      this.listenRooms();
 
       this.displayUsernameCard = false;
       this.waitingPlayers = true;
