@@ -4,7 +4,12 @@ import {
 } from "vue-router";
 
 const routes = [{
-  path: "/morpion",
+  path: "/",
+  name: "Rooms",
+  component: () =>
+    import("../views/Rooms.vue"),
+}, {
+  path: "/morpion/:room?",
   name: "Morpion",
   component: () =>
     import("../views/Morpion.vue"),

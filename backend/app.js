@@ -24,45 +24,36 @@ io.on('connection', (socket) => {
 
         if (!player.roomId) {
             room = createRoom(player)
-            console.log(`[create room] - ${room.id} - ${player.username}`)
+        } else {
+            room = rooms.find(r => r.id === player.roomId)
 
-            socket.broadcast.emit('getRoomsList', rooms)
+            if (room === undefined) return
+
+            room.players.push(player)
         }
-        // else {
-        //     room = rooms.find(r => r.id === player.roomId)
-
-        //     if (room === undefined) return
-
-        //     room.players.push(player)
-        // }
 
         socket.join(room.id)
-        io.to(socket.id).emit('join room', room.id)
+        io.to(socket.id).emit('joinRoom', room.id)
 
         if (room.players.length === 2) {
-            io.to(room.id).emit('start game', room.players)
+            io.to(room.id).emit('startGame', room.players)
         }
+    })
 
+    socket.on('destroyRoom', () => {
+        destroyRoom(socket, rooms)
     })
 
     socket.on('roomsData', () => {
-        io.emit('getRoomsList', rooms)
+        io.emit('allRooms', rooms)
     })
 
     socket.on('disconnect', () => {
-        console.log(`[disconnect] ${socket.id}`)
-        let room = null
+        destroyRoom(socket)
 
-        rooms.forEach(r => {
-            r.players.forEach(p => {
-                if (p.socketId === socket.id && p.host) {
-                    room = r
-                    rooms = rooms.filter(r => r !== room)
-                    socket.broadcast.emit('getRoomsList', rooms)
-                }
-            })
-        })
-    });
+        console.log('rooms : ', rooms)
+        console.log(`[disconnect] ${socket.id}`)
+    })
 })
 
 function createRoom(player) {
@@ -75,7 +66,28 @@ function createRoom(player) {
     room.players.push(player)
     rooms.push(room)
 
+    console.log(`[create room] - ${room.id} - ${player.username}`)
+
+    io.emit('allRooms', rooms)
+
     return room
+}
+
+function destroyRoom(socket) {
+    let room = null
+
+    rooms.forEach(r => {
+        r.players.forEach(p => {
+            if (p.socketId === socket.id && p.host) {
+                room = r
+                rooms = rooms.filter(r => r !== room)
+
+                console.log(`[destroy room] - ${room.id} - ${p.username}`)
+            }
+        })
+    })
+
+    socket.broadcast.emit('allRooms', rooms)
 }
 
 function createRoomId() {

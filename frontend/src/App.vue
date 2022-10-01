@@ -1,6 +1,6 @@
 <template>
   <n-config-provider :theme="darkTheme">
-    <n-message-provider>
+    <n-message-provider :placement="placement">
       <alerts />
       <div id="nav">
         <n-menu mode="horizontal" :options="menuOptions" />
@@ -69,7 +69,7 @@ export default {
     return {
       darkTheme,
       menuOptions,
-      activeKey: ref(null),
+      placement: ref("top-right"),
     };
   },
 

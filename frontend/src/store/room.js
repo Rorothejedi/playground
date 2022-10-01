@@ -10,12 +10,20 @@ export default {
     },
 
     state: {
-        rooms: []
+        rooms: [],
+
+        // test
+        players: [],
     },
 
     mutations: {
         SET_ROOMS(state, payload) {
             state.rooms = payload
+        },
+
+        // test
+        SET_PLAYERS(state, payload) {
+            state.players = payload
         },
     },
 
@@ -25,9 +33,20 @@ export default {
         },
 
         listenRooms(store) {
-            socketioService.socket.on("getRoomsList", (rooms) => {
+            socketioService.socket.on("allRooms", (rooms) => {
                 store.commit('SET_ROOMS', rooms)
             });
-        }
+        },
+
+        leaveRoom(store) {
+            socketioService.socket.emit("destroyRoom", store.state);
+        },
+
+        // test
+        listenStartGame(store) {
+            socketioService.socket.on('startGame', (players) => {
+                store.commit('SET_PLAYERS', players)
+            })
+        },
     }
 }

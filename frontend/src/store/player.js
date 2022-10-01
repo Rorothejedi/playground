@@ -51,7 +51,7 @@ export default {
             store.commit('SET_GAME', value)
         },
 
-        createRoom(store) {
+        emitPlayerData(store) {
             store.commit('SET_HOST', true)
             store.commit('SET_TURN', true)
             store.commit('SET_SOCKET_ID', socketioService.socket.id)
