@@ -39,6 +39,7 @@ io.on('connection', (socket) => {
 
         if (room.players.length === 2) {
             io.to(room.id).emit('startGame', room.players)
+            io.emit('allRooms', rooms)
             console.log(`[start game] ${room.id}`)
         }
     })

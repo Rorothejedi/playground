@@ -46,9 +46,9 @@
       <div class="room-card">
         <n-card title="Liste des salons disponibles">
           <n-space vertical :size="12">
-            <div v-if="rooms.length !== 0">
+            <div v-if="availableRooms.length !== 0">
               <n-list bordered>
-                <n-list-item v-for="(room, key) in rooms" :key="key">
+                <n-list-item v-for="(room, key) in availableRooms" :key="key">
                   <template #prefix>
                     <n-tag :bordered="false" type="success">
                       {{ room.players[0].game }}
@@ -111,6 +111,11 @@ export default {
   computed: {
     ...mapState("player", ["username", "game"]),
     ...mapState("room", ["rooms"]),
+
+    availableRooms() {
+      console.log();
+      return this.rooms.filter((r) => r.players.length < 2);
+    },
   },
 
   mounted() {

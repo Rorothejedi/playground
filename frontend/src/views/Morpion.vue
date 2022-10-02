@@ -55,7 +55,6 @@ export default {
         findRoom === undefined &&
         this.isReady
       ) {
-        console.log("in");
         window.$alert.error("Votre adversaire a quitté la partie");
         this.$router.push({ name: "Rooms" });
       }
