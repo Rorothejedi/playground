@@ -1,12 +1,17 @@
 <template>
   <n-config-provider :theme="darkTheme">
-    <n-message-provider :placement="placement">
-      <alerts />
-      <div id="nav">
-        <n-menu mode="horizontal" :options="menuOptions" />
-      </div>
-      <router-view />
-    </n-message-provider>
+    <n-loading-bar-provider>
+      <n-dialog-provider>
+        <n-message-provider :placement="placement">
+          <utils-for-naive />
+
+          <div id="nav">
+            <n-menu mode="horizontal" :options="menuOptions" />
+          </div>
+          <router-view />
+        </n-message-provider>
+      </n-dialog-provider>
+    </n-loading-bar-provider>
   </n-config-provider>
 </template>
 
@@ -15,7 +20,8 @@ import { darkTheme } from "naive-ui";
 import { h, ref } from "vue";
 import { RouterLink } from "vue-router";
 import SocketioService from "./services/socketio.service.js";
-import Alerts from "@/components/utils/Alerts.vue";
+import UtilsForNaive from "@/components/utils/UtilsForNaive.vue";
+import { mapActions } from "vuex";
 
 const menuOptions = [
   {
@@ -62,7 +68,7 @@ const menuOptions = [
 export default {
   name: "App",
   components: {
-    Alerts,
+    UtilsForNaive,
   },
 
   data() {
@@ -76,8 +82,16 @@ export default {
   created() {
     SocketioService.setupSocketConnection();
   },
+  mounted() {
+    this.listenRooms();
+    this.listenStartGame();
+  },
   beforeUnmount() {
     SocketioService.disconnect();
+  },
+
+  methods: {
+    ...mapActions("room", ["listenRooms", "listenStartGame"]),
   },
 };
 </script>
@@ -90,5 +104,8 @@ export default {
   color: #2c3e50;
   background-color: rgb(24, 24, 28);
   min-height: 100vh;
+}
+a {
+  text-decoration: none;
 }
 </style>

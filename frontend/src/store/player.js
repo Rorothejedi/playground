@@ -30,6 +30,9 @@ export default {
         SET_HOST(state, payload) {
             state.host = payload
         },
+        SET_ROOM_ID(state, payload) {
+            state.roomId = payload
+        },
         SET_SOCKET_ID(state, payload) {
             state.socketId = payload
         },
@@ -46,14 +49,25 @@ export default {
         changeUsername(store, value) {
             store.commit('SET_USERNAME', value)
         },
-
+        changeHost(store, value) {
+            store.commit('SET_HOST', value)
+        },
+        changeRoomId(store, value) {
+            store.commit('SET_ROOM_ID', value)
+        },
+        changeSocketId(store, value) {
+            store.commit('SET_SOCKET_ID', value)
+        },
         changeGame(store, value) {
+            if (value === '') socketioService.socket.emit("leaveGame", store.state);
+
             store.commit('SET_GAME', value)
+        },
+        changeTurn(store, value) {
+            store.commit('SET_TURN', value)
         },
 
         emitPlayerData(store) {
-            store.commit('SET_HOST', true)
-            store.commit('SET_TURN', true)
             store.commit('SET_SOCKET_ID', socketioService.socket.id)
 
             socketioService.socket.emit("playerData", store.state);

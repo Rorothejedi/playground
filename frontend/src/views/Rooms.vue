@@ -1,5 +1,5 @@
 <template>
-  <div class="rooms">
+  <n-collapse-transition class="rooms" :show="!loadingCreatingRoom">
     <n-h1>Playground</n-h1>
 
     <div class="username-card">
@@ -66,13 +66,7 @@
                   </n-space>
 
                   <template #suffix>
-                    <router-link
-                      :to="`${room.players[0].game.toLowerCase()}?room=${
-                        room.id
-                      }`"
-                    >
-                      <n-button>Rejoindre</n-button>
-                    </router-link>
+                    <n-button @click="joinRoom(room)">Rejoindre</n-button>
                   </template>
                 </n-list-item>
               </n-list>
@@ -90,14 +84,15 @@
         </n-card>
       </div>
     </n-collapse-transition>
-  </div>
+  </n-collapse-transition>
 </template>
 
 <script>
 import { mapState, mapActions } from "vuex";
+import socketioService from "../services/socketio.service";
 
 export default {
-  name: "Morpion",
+  name: "Rooms",
 
   data() {
     return {
@@ -109,17 +104,21 @@ export default {
         { label: "Skyjo", value: "Skyjo" },
         { label: "President", value: "President" },
       ],
+      loadingCreatingRoom: false,
     };
   },
 
   computed: {
-    ...mapState("player", ["username"]),
+    ...mapState("player", ["username", "game"]),
     ...mapState("room", ["rooms"]),
   },
 
   mounted() {
+    if (this.game !== "") this.changeGame("");
+    this.changeRoomId("");
+    this.changeRoomPlayers([]);
+
     this.emitRooms();
-    this.listenRooms();
 
     if (this.username === "") return;
 
@@ -128,8 +127,16 @@ export default {
   },
 
   methods: {
-    ...mapActions("player", ["changeUsername", "changeGame", "emitPlayerData"]),
-    ...mapActions("room", ["emitRooms", "listenRooms"]),
+    ...mapActions("player", [
+      "changeUsername",
+      "changeGame",
+      "changeHost",
+      "changeRoomId",
+      "changeSocketId",
+      "changeTurn",
+      "emitPlayerData",
+    ]),
+    ...mapActions("room", ["emitRooms", "changeRoomPlayers"]),
 
     validUsername() {
       this.lockUsernameInput = !this.lockUsernameInput;
@@ -140,7 +147,7 @@ export default {
     welcome() {
       if (!this.lockUsernameInput) return;
 
-      window.$message.success(
+      window.$alert.success(
         `Yo ${this.username}, tu peux maintenant créer ou rejoindre un salon !`
       );
     },
@@ -151,34 +158,39 @@ export default {
     },
 
     createRoom() {
-      this.changeGame("Morpion");
+      this.changeGame(this.selectedGame);
+      this.changeHost(true);
+      this.changeTurn(true);
+      this.changeSocketId(socketioService.socket.id);
 
       this.emitPlayerData();
 
-      // to improve
+      window.$loading.start();
+      window.$alert.loading(`Salon en cours de création...`, {
+        duration: 2000,
+      });
+      this.loadingCreatingRoom = true;
+
       setTimeout(() => {
         this.$router.push({
           name: this.selectedGame,
           query: { room: this.rooms.at(-1).id },
         });
-      }, 1);
+
+        window.$loading.finish();
+      }, 2000);
     },
 
-    joinRoom() {
-      this.changeGame("Morpion");
+    joinRoom(room) {
+      this.changeGame(room.players[0].game);
+      this.changeRoomId(room.id);
+      this.changeSocketId(socketioService.socket.id);
 
       this.emitPlayerData();
 
-      setTimeout(() => {
-        this.$router.push({
-          name: this.selectedGame,
-          query: { room: this.rooms[0].id },
-        });
-      }, 1);
-
       this.$router.push({
-        name: this.selectedGame,
-        // params: { id: this.rooms.at(-1).id },
+        name: room.players[0].game,
+        query: { room: room.id },
       });
     },
   },

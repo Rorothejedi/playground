@@ -29,19 +29,30 @@ io.on('connection', (socket) => {
 
             if (room === undefined) return
 
+            player.roomId = room.id;
             room.players.push(player)
         }
 
         socket.join(room.id)
         io.to(socket.id).emit('joinRoom', room.id)
+        console.log(`[join room] ${room.id}`)
 
         if (room.players.length === 2) {
             io.to(room.id).emit('startGame', room.players)
+            console.log(`[start game] ${room.id}`)
         }
     })
 
-    socket.on('destroyRoom', () => {
+    // socket.on('destroyRoom', () => {
+    //     console.log('destroyRoom')
+
+    //     destroyRoom(socket, rooms)
+    // })
+
+    socket.on('leaveGame', (room) => {
+        console.log('leaveGame')
         destroyRoom(socket, rooms)
+        io.to(room.id).emit('leaveRoom', room.players)
     })
 
     socket.on('roomsData', () => {
@@ -78,11 +89,13 @@ function destroyRoom(socket) {
 
     rooms.forEach(r => {
         r.players.forEach(p => {
-            if (p.socketId === socket.id && p.host) {
+            if (p.socketId === socket.id) {
                 room = r
                 rooms = rooms.filter(r => r !== room)
 
                 console.log(`[destroy room] - ${room.id} - ${p.username}`)
+
+                socket.leave(room.id)
             }
         })
     })

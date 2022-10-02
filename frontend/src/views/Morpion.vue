@@ -4,26 +4,27 @@
 
     <div v-if="!isReady">
       <n-collapse-transition class="waiting-card" :show="displayWaitingCard">
-        <n-card title="En attente d'un 2ème joueur...">
-          <n-button @click="isReady = !isReady">
-            {{ !isReady ? "Ready" : "Not ready" }}
-          </n-button>
-          <n-button @click="leaveMorpionRoom()"> Annuler </n-button>
-        </n-card>
+        <n-alert type="success">
+          <template #icon>
+            <n-spin size="small" />
+          </template>
+          En attente d'un autre joueur...
+        </n-alert>
+        <n-button @click="quitRoom()"> Annuler </n-button>
       </n-collapse-transition>
     </div>
 
-    <div v-else>
+    <div v-else class="grid-wrapper">
       <grid />
-      <n-button @click="isReady = !isReady">
-        {{ !isReady ? "Ready" : "Not ready" }}
+      <n-button @click="quitRoomConfirm()" class="quit-button">
+        Quitter la partie
       </n-button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import Grid from "@/components/morpion/Grid.vue";
 
 export default {
@@ -38,32 +39,69 @@ export default {
   },
 
   computed: {
-    ...mapState("player", ["username"]),
-    ...mapState("room", ["rooms"]),
+    ...mapState("player", ["host"]),
+    ...mapState("room", ["rooms", "roomPlayers"]),
+  },
+
+  watch: {
+    rooms(newValue) {
+      const findRoom = newValue.find(
+        (room) => room.id === this.$route.query.room
+      );
+
+      if (findRoom === undefined && this.isReady) {
+        window.$alert.error("Votre adversaire à quitter la partie");
+        this.quitRoom();
+      }
+    },
+    roomPlayers(newValue) {
+      this.watchRoom(newValue);
+    },
   },
 
   mounted() {
-    this.listenStartGame();
+    this.watchRoom(this.roomPlayers);
   },
 
   methods: {
-    ...mapActions("player", ["changeGame"]),
-    ...mapActions("room", ["listenStartGame", "leaveRoom"]),
+    ...mapActions("room", ["emitLeaveRoom"]),
 
-    checkRoomForStartGame() {
-      // const roomId = this.
-    },
-
-    leaveMorpionRoom() {
-      this.changeGame("");
-
-      this.leaveRoom();
-
-      this.$router.push({ name: "Rooms" });
+    watchRoom(roomPlayers) {
+      if (roomPlayers.length === 2 && !this.isReady) {
+        this.startGame();
+      }
     },
 
     startGame() {
       this.isReady = true;
+
+      let message = this.host
+        ? "Un joueur à rejoint la partie."
+        : "La partie commence maintenant.";
+      message += " Que le meilleur gagne !";
+
+      window.$alert.success(message);
+    },
+
+    quitRoomConfirm() {
+      window.$dialog.warning({
+        title: "Quitter la partie ?",
+        content:
+          "Vous êtes certain de vouloir quitter ? Dans ce cas, votre adversaire sera expulsé de la partie...",
+        positiveText: "Oui, je suis sûr",
+        negativeText: "Finalement non",
+        onPositiveClick: () => {
+          this.quitRoom();
+        },
+        onNegativeClick: () => {
+          return;
+        },
+      });
+    },
+
+    quitRoom() {
+      this.emitLeaveRoom();
+      this.$router.push({ name: "Rooms" });
     },
   },
 };
@@ -73,19 +111,24 @@ export default {
 .n-h1 {
   text-align: center;
 }
-.waiting-card,
-.info-alert {
+.n-h3 {
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+.waiting-card {
   display: flex;
   justify-content: center;
+  flex-direction: column;
+  align-items: center;
+
+  .n-alert {
+    margin-bottom: 15px;
+  }
 }
-.room-card,
-.info-alert {
-  padding-top: 15px;
-}
-.n-card {
-  max-width: 500px;
-}
-.n-alert {
-  width: 500px;
+
+.grid-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
