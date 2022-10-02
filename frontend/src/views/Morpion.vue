@@ -16,7 +16,7 @@
 
     <div v-else class="grid-wrapper">
       <grid />
-      <n-button @click="quitRoomConfirm()" class="quit-button">
+      <n-button @click="quitRoomConfirm(quitRoom)" class="quit-button">
         Quitter la partie
       </n-button>
     </div>
@@ -35,7 +35,7 @@ export default {
     return {
       isReady: false,
       displayWaitingCard: true,
-      backButton: false,
+      toBack: false,
     };
   },
 
@@ -55,8 +55,8 @@ export default {
         findRoom === undefined &&
         this.isReady
       ) {
-        window.$alert.error("Votre adversaire a quitté la partie");
-        this.$router.push({ name: "Rooms" });
+        window.$message.error("Votre adversaire a quitté la partie");
+        this.quitRoom();
       }
     },
     roomPlayers(newValue) {
@@ -64,42 +64,31 @@ export default {
     },
   },
 
+  created() {
+    if (this.host) {
+      this.changeRoomId(this.$route.query.room);
+    }
+  },
+
   mounted() {
     this.watchRoom(this.roomPlayers);
 
     window.onpopstate = () => {
-      this.backButton = true;
+      this.toBack = true;
     };
   },
 
   beforeRouteLeave(to, from, next) {
     setTimeout(() => {
-      if (!this.backButton) {
-        return next();
-      }
+      if (!this.toBack) return next();
 
-      // if (confirm("You may have unsaved changes. Do you want to continue?")) {
-      //   return next();
-      // }
-
-      window.$dialog.warning({
-        title: "Quitter la partie ?",
-        content:
-          "Vous êtes certain de vouloir quitter ? Dans ce cas, votre adversaire sera expulsé de la partie...",
-        positiveText: "Oui, je suis sûr",
-        negativeText: "Finalement non",
-        onPositiveClick: () => {
-          return next();
-        },
-        onNegativeClick: () => {
-          return next(false);
-        },
-      });
+      this.quitRoomConfirm(next);
     }, 100);
   },
 
   methods: {
     ...mapActions("room", ["emitLeaveRoom"]),
+    ...mapActions("player", ["changeRoomId"]),
 
     watchRoom(roomPlayers) {
       if (roomPlayers.length === 2 && !this.isReady) {
@@ -115,10 +104,10 @@ export default {
         : "La partie commence maintenant.";
       message += " Que le meilleur gagne !";
 
-      window.$alert.success(message);
+      window.$message.success(message);
     },
 
-    quitRoomConfirm() {
+    quitRoomConfirm(onPositive) {
       window.$dialog.warning({
         title: "Quitter la partie ?",
         content:
@@ -126,16 +115,13 @@ export default {
         positiveText: "Oui, je suis sûr",
         negativeText: "Finalement non",
         onPositiveClick: () => {
-          this.quitRoom();
-        },
-        onNegativeClick: () => {
-          return;
+          onPositive();
         },
       });
     },
 
     quitRoom() {
-      this.emitLeaveRoom();
+      this.toBack = false;
       this.$router.push({ name: "Rooms" });
     },
   },
@@ -143,9 +129,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.n-h1 {
-  text-align: center;
-}
 .n-h3 {
   margin-top: 5px;
   margin-bottom: 15px;

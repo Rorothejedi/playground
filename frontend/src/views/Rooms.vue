@@ -152,7 +152,7 @@ export default {
     welcome() {
       if (!this.lockUsernameInput) return;
 
-      window.$alert.success(
+      window.$message.success(
         `Yo ${this.username}, tu peux maintenant créer ou rejoindre un salon !`
       );
     },
@@ -171,7 +171,7 @@ export default {
       this.emitPlayerData();
 
       window.$loading.start();
-      window.$alert.loading(`Salon en cours de création...`, {
+      window.$message.loading(`Salon en cours de création...`, {
         duration: 2000,
       });
       this.loadingCreatingRoom = true;
@@ -189,6 +189,7 @@ export default {
     joinRoom(room) {
       this.changeGame(room.players[0].game);
       this.changeRoomId(room.id);
+      this.changeTurn(false);
       this.changeSocketId(socketioService.socket.id);
 
       this.emitPlayerData();
@@ -203,9 +204,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.n-h1 {
-  text-align: center;
-}
 .username-card,
 .room-card,
 .create-room-card {

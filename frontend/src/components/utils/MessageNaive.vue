@@ -8,7 +8,7 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   setup() {
-    window.$alert = useMessage();
+    window.$message = useMessage();
   },
 });
 </script>

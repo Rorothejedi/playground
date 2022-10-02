@@ -1,20 +1,20 @@
 <template>
-  <alert-naive />
   <dialog-naive />
   <loading-bar-naive />
+  <message-naive />
 </template>
 
 <script>
-import AlertNaive from "./AlertNaive.vue";
-import LoadingBarNaive from "./LoadingBarNaive.vue";
 import DialogNaive from "./DialogNaive.vue";
+import LoadingBarNaive from "./LoadingBarNaive.vue";
+import MessageNaive from "./MessageNaive.vue";
 
 export default {
   name: "UtilsForNaive",
   components: {
-    AlertNaive,
     DialogNaive,
     LoadingBarNaive,
+    MessageNaive,
   },
 };
 </script>

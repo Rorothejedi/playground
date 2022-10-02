@@ -15,12 +15,14 @@ export default {
         roomId: null,
         socketId: '',
         game: '',
+        turn: false,
+        win: false,
 
         // morpion
         playedCell: '',
         symbol: 'X',
-        turn: false,
-        win: false,
+
+        enemyPlayer: [],
     },
 
     mutations: {
@@ -39,9 +41,17 @@ export default {
         SET_GAME(state, payload) {
             state.game = payload
         },
-
         SET_TURN(state, payload) {
             state.turn = payload
+        },
+
+        // morpion
+        SET_PLAYED_CELL(state, payload) {
+            state.playedCell = payload
+        },
+
+        SET_ENEMY_PLAYER(state, payload) {
+            state.enemyPlayer = payload
         },
     },
 
@@ -66,11 +76,24 @@ export default {
         changeTurn(store, value) {
             store.commit('SET_TURN', value)
         },
+        changePlayedCell(store, value) {
+            store.commit('SET_PLAYED_CELL', value)
+        },
 
         emitPlayerData(store) {
             store.commit('SET_SOCKET_ID', socketioService.socket.id)
 
             socketioService.socket.emit("playerData", store.state);
         },
+
+        emitPlay(store) {
+            socketioService.socket.emit('play', store.state)
+        },
+
+        listenPlay(store) {
+            socketioService.socket.on('play', (enemyPlayer) => {
+                store.commit('SET_ENEMY_PLAYER', enemyPlayer)
+            })
+        }
     }
 }

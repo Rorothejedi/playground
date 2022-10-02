@@ -29,7 +29,13 @@ TODO
 - Gérer les actions sur le morpion
 - Gérer les cas de victoire et de défaite
 - Gérer le responsive
-- Animation de victoire ?
 - Débug final
 - Refacto final
 - Mise en ligne (alpha 0.1)
+
+IMPROVEMENT
+
+- Gérer le fait de rejoindre une partie avec le lien (demande du username si pas renseigné puis redirection)
+- Compter les scores
+- Ajouter un autre jeu (puissance 4 ?)
+- Ajuster le code pour qu'il soit le plus générique possible

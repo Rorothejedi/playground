@@ -54,6 +54,13 @@ io.on('connection', (socket) => {
         io.emit('allRooms', rooms)
     })
 
+    socket.on('play', (player) => {
+        delete player.enemyPlayer
+
+        console.log(`[play] ${player}`)
+        io.to(player.roomId).emit('play', player)
+    })
+
     socket.on('disconnect', () => {
         destroyRoom(socket)
 
