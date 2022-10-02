@@ -43,14 +43,8 @@ io.on('connection', (socket) => {
         }
     })
 
-    // socket.on('destroyRoom', () => {
-    //     console.log('destroyRoom')
-
-    //     destroyRoom(socket, rooms)
-    // })
-
     socket.on('leaveGame', (room) => {
-        console.log('leaveGame')
+        console.log('leaveGame', socket.id)
         destroyRoom(socket, rooms)
         io.to(room.id).emit('leaveRoom', room.players)
     })

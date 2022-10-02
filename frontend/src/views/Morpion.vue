@@ -35,6 +35,7 @@ export default {
     return {
       isReady: false,
       displayWaitingCard: true,
+      backButton: false,
     };
   },
 
@@ -44,14 +45,19 @@ export default {
   },
 
   watch: {
-    rooms(newValue) {
+    rooms(newValue, oldValue) {
       const findRoom = newValue.find(
         (room) => room.id === this.$route.query.room
       );
 
-      if (findRoom === undefined && this.isReady) {
-        window.$alert.error("Votre adversaire à quitter la partie");
-        this.quitRoom();
+      if (
+        newValue.length !== oldValue.length &&
+        findRoom === undefined &&
+        this.isReady
+      ) {
+        console.log("in");
+        window.$alert.error("Votre adversaire a quitté la partie");
+        this.$router.push({ name: "Rooms" });
       }
     },
     roomPlayers(newValue) {
@@ -61,6 +67,36 @@ export default {
 
   mounted() {
     this.watchRoom(this.roomPlayers);
+
+    window.onpopstate = () => {
+      this.backButton = true;
+    };
+  },
+
+  beforeRouteLeave(to, from, next) {
+    setTimeout(() => {
+      if (!this.backButton) {
+        return next();
+      }
+
+      // if (confirm("You may have unsaved changes. Do you want to continue?")) {
+      //   return next();
+      // }
+
+      window.$dialog.warning({
+        title: "Quitter la partie ?",
+        content:
+          "Vous êtes certain de vouloir quitter ? Dans ce cas, votre adversaire sera expulsé de la partie...",
+        positiveText: "Oui, je suis sûr",
+        negativeText: "Finalement non",
+        onPositiveClick: () => {
+          return next();
+        },
+        onNegativeClick: () => {
+          return next(false);
+        },
+      });
+    }, 100);
   },
 
   methods: {
