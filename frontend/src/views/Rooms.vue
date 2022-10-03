@@ -167,6 +167,10 @@ export default {
     },
 
     createRoom() {
+      if (this.loadingCreatingRoom) return;
+
+      this.loadingCreatingRoom = true;
+
       this.changeGame(this.selectedGame);
       this.changeHost(true);
       this.changeTurn(true);
@@ -179,7 +183,6 @@ export default {
       window.$message.loading(`Salon en cours de création...`, {
         duration: 2000,
       });
-      this.loadingCreatingRoom = true;
 
       setTimeout(() => {
         this.$router.push({

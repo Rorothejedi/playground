@@ -202,10 +202,13 @@ export default {
 
     checkWin() {
       if (this.enemyPlayer.length === 0) return;
-      if (!this.checkWinHorizontal()) return;
-      if (!this.checkWinVertical()) return;
-      if (!this.checkWinDiagonalBack()) return;
-      if (!this.checkWinDiagonalForward()) return;
+      if (
+        !this.checkWinHorizontal() &&
+        !this.checkWinVertical() &&
+        !this.checkWinDiagonalBack() &&
+        !this.checkWinDiagonalForward()
+      )
+        return;
 
       this.displayGrid = false;
       this.changeWin(true);
