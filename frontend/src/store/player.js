@@ -17,6 +17,7 @@ export default {
         game: '',
         turn: false,
         win: false,
+        outcome: '',
 
         // morpion
         playedCell: '',
@@ -46,6 +47,9 @@ export default {
         },
         SET_WIN(state, payload) {
             state.win = payload
+        },
+        SET_OUTCOME(state, payload) {
+            state.outcome = payload
         },
 
         // morpion
@@ -82,6 +86,9 @@ export default {
         changeWin(store, value) {
             store.commit('SET_WIN', value)
         },
+        changeOutcome(store, value) {
+            store.commit('SET_OUTCOME', value)
+        },
         changePlayedCell(store, value) {
             store.commit('SET_PLAYED_CELL', value)
         },
@@ -100,6 +107,10 @@ export default {
             socketioService.socket.on('play', (enemyPlayer) => {
                 store.commit('SET_ENEMY_PLAYER', enemyPlayer)
             })
-        }
+        },
+
+        emitReplay(store) {
+            socketioService.socket.emit('replay', store.state.roomId)
+        },
     }
 }

@@ -131,7 +131,7 @@ export default {
     }
 
     this.tempUsername = this.username;
-    this.validUsername();
+    this.chooseUsername();
   },
 
   methods: {
@@ -147,23 +147,10 @@ export default {
     ]),
     ...mapActions("room", ["emitRooms", "changeRoomPlayers"]),
 
-    validUsername() {
+    chooseUsername() {
       this.lockUsernameInput = !this.lockUsernameInput;
 
       this.changeUsername(this.tempUsername);
-    },
-
-    welcome() {
-      if (!this.lockUsernameInput) return;
-
-      window.$message.success(
-        `Yo ${this.username}, tu peux maintenant créer ou rejoindre un salon !`
-      );
-    },
-
-    chooseUsername() {
-      this.validUsername();
-      this.welcome();
     },
 
     createRoom() {

@@ -12,6 +12,13 @@ export default {
     state: {
         rooms: [],
         roomPlayers: [],
+
+        replay: false,
+
+        // should be here
+        // game
+        // roomId
+        // 
     },
 
     mutations: {
@@ -20,6 +27,10 @@ export default {
         },
         SET_ROOM_PLAYERS(state, payload) {
             state.roomPlayers = payload
+        },
+
+        SET_REPLAY(state, payload) {
+            state.replay = payload
         },
     },
 
@@ -44,8 +55,18 @@ export default {
             })
         },
 
+        listenReplay(store) {
+            socketioService.socket.on('replay', () => {
+                store.commit('SET_REPLAY', true)
+            })
+        },
+
         changeRoomPlayers(store, value) {
             store.commit('SET_ROOM_PLAYERS', value)
-        }
+        },
+
+        changeReplay(store, value) {
+            store.commit('SET_REPLAY', value)
+        },
     }
 }

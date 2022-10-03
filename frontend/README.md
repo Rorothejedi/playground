@@ -26,9 +26,8 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 TODO
 
-- Gérer l'event "replay"
-- Gérer la ligne de victoire
-- Design de jolie éléments 'X' et 'O' 
+- Gérer l'affichage de la ligne de victoire
+- Design de jolie éléments 'X' et 'O'
 - Gérer le responsive du bordel
 - Débug divers (backButton, rooms, etc)
 - Refacto 
@@ -36,8 +35,10 @@ TODO
 
 IMPROVEMENT
 
+- Afficher le nom de l'adversaire (peut-être dans le message loading)
+- Gérer une modal quand l'adversaire propose de rejouer une partie
 - Gérer de jolies transitions
 - Gérer le fait de rejoindre une partie avec le lien (demande du username si pas renseigné puis redirection)
 - Compter les scores
-- Ajouter un autre jeu (puissance 4 ?)
+- Ajouter un autre jeu (puissance 4, shi-fu-mi ?)
 - Ajuster le code pour qu'il soit le plus générique possible

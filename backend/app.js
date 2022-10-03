@@ -61,6 +61,15 @@ io.on('connection', (socket) => {
         io.to(player.roomId).emit('play', player)
     })
 
+    socket.on('replay', (roomId) => {
+        const room = rooms.find(r => r.id === roomId)
+
+        if (room && room.players.length === 2) {
+            console.log(`[replay] ${roomId}`)
+            io.to(room.id).emit('replay')
+        }
+    })
+
     socket.on('disconnect', () => {
         destroyRoom(socket)
 

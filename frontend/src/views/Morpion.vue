@@ -15,7 +15,19 @@
     </div>
 
     <div v-else class="grid-wrapper">
-      <grid />
+      <grid v-if="outcome === ''" />
+
+      <n-collapse-transition :show="outcome !== ''">
+        <div class="end-game">
+          <n-h2 v-if="outcome === 'equality'">Egalité</n-h2>
+          <n-h2 v-else-if="outcome === 'win'">Victoire</n-h2>
+          <n-h2 v-else-if="outcome === 'defeat'">Défaite</n-h2>
+          <n-button @click="restartGame()" v-if="host && outcome">
+            Rejouer
+          </n-button>
+        </div>
+      </n-collapse-transition>
+
       <n-button @click="quitRoomConfirm(quitRoom)" class="quit-button">
         Quitter la partie
       </n-button>
@@ -40,8 +52,8 @@ export default {
   },
 
   computed: {
-    ...mapState("player", ["host"]),
-    ...mapState("room", ["rooms", "roomPlayers"]),
+    ...mapState("player", ["host", "outcome"]),
+    ...mapState("room", ["rooms", "roomPlayers", "replay"]),
   },
 
   watch: {
@@ -62,6 +74,9 @@ export default {
     roomPlayers(newValue) {
       this.watchRoom(newValue);
     },
+    replay(newValue, oldValue) {
+      if (newValue && !oldValue && !this.host) this.resetGame();
+    },
   },
 
   created() {
@@ -71,6 +86,7 @@ export default {
   },
 
   mounted() {
+    this.listenReplay();
     this.watchRoom(this.roomPlayers);
 
     window.onpopstate = () => {
@@ -87,24 +103,34 @@ export default {
   },
 
   methods: {
-    ...mapActions("room", ["emitLeaveRoom"]),
-    ...mapActions("player", ["changeRoomId"]),
+    ...mapActions("room", ["emitLeaveRoom", "listenReplay", "changeReplay"]),
+    ...mapActions("player", [
+      "changeRoomId",
+      "emitReplay",
+      "changeTurn",
+      "changeWin",
+      "changeOutcome",
+    ]),
 
     watchRoom(roomPlayers) {
       if (roomPlayers.length === 2 && !this.isReady) {
-        this.startGame();
+        this.isReady = true;
       }
     },
 
-    startGame() {
-      this.isReady = true;
+    restartGame() {
+      this.emitReplay();
+      this.resetGame();
+    },
 
-      let message = this.host
-        ? "Un joueur à rejoint la partie."
-        : "La partie commence maintenant.";
-      message += " Que le meilleur gagne !";
+    resetGame() {
+      let turn =
+        this.outcome === "defeat" || (this.outcome === "equality" && this.host);
 
-      window.$message.success(message);
+      this.changeTurn(turn);
+      this.changeOutcome("");
+      this.changeWin(false);
+      this.changeReplay(false);
     },
 
     quitRoomConfirm(onPositive) {
@@ -122,6 +148,7 @@ export default {
 
     quitRoom() {
       this.toBack = false;
+      this.changeOutcome("");
       this.$router.push({ name: "Rooms" });
     },
   },
@@ -148,5 +175,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.end-game {
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 </style>

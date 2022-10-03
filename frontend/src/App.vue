@@ -27,7 +27,7 @@ export default {
   data() {
     return {
       darkTheme,
-      placement: ref("top-right"),
+      placement: ref("top"),
     };
   },
 

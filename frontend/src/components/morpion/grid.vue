@@ -39,16 +39,6 @@
         </tbody>
       </table>
     </n-collapse-transition>
-
-    <n-collapse-transition :show="!displayGrid">
-      <div class="test">
-        <n-h2 v-if="equality">Egalité</n-h2>
-        <n-h2 v-else-if="win">Victoire</n-h2>
-        <n-h2 v-else-if="loose">Défaite</n-h2>
-        <n-button @click="replay()">Rejouer ?</n-button>
-        <!-- <n-button @click="removeMessage()">Rejouer</n-button> -->
-      </div>
-    </n-collapse-transition>
   </div>
 </template>
 
@@ -68,14 +58,13 @@ export default {
       displayGrid: true,
       loadingMessage: null,
       infoMessage: null,
-
-      equality: false,
-      loose: false,
+      endGame: "",
     };
   },
 
   computed: {
     ...mapState("player", [
+      "host",
       "turn",
       "socketId",
       "win",
@@ -87,21 +76,7 @@ export default {
 
   watch: {
     enemyPlayer() {
-      if (
-        this.socketId !== this.enemyPlayer.socketId &&
-        !this.enemyPlayer.turn
-      ) {
-        this.removeMessage();
-
-        let cell = this.enemyPlayer.playedCell;
-        this.grid_content[cell[0]][cell[1]] = "O";
-
-        if (this.checkEquality()) return;
-        if (this.checkLoose()) return;
-
-        this.changeTurn(true);
-        this.createInfoMessage();
-      }
+      this.placeEnemyItem();
     },
   },
 
@@ -127,6 +102,7 @@ export default {
       "emitPlay",
       "listenPlay",
     ]),
+    ...mapActions("player", ["changeOutcome"]),
 
     createLoadingMessage() {
       if (this.loadingMessage) return;
@@ -172,10 +148,26 @@ export default {
       this.changeTurn(false);
       this.emitPlay();
 
-      if (this.checkEquality()) return;
       if (this.win) return;
+      if (this.checkEquality()) return;
 
       this.createLoadingMessage();
+    },
+
+    placeEnemyItem() {
+      if (this.socketId === this.enemyPlayer.socketId) return;
+      if (this.enemyPlayer.turn) return;
+
+      this.removeMessage();
+
+      let cell = this.enemyPlayer.playedCell;
+      this.grid_content[cell[0]][cell[1]] = "O";
+
+      if (this.checkDefeat()) return;
+      if (this.checkEquality()) return;
+
+      this.changeTurn(true);
+      this.createInfoMessage();
     },
 
     checkEquality() {
@@ -185,17 +177,15 @@ export default {
         }
       }
 
-      this.displayGrid = false;
-      this.equality = true;
+      this.gameOver("equality");
 
       return true;
     },
 
-    checkLoose() {
+    checkDefeat() {
       if (!this.enemyPlayer.win) return false;
 
-      this.loose = true;
-      this.displayGrid = false;
+      this.gameOver("defeat");
 
       return true;
     },
@@ -210,8 +200,8 @@ export default {
       )
         return;
 
-      this.displayGrid = false;
       this.changeWin(true);
+      this.gameOver("win");
     },
 
     checkWinHorizontal() {
@@ -260,17 +250,9 @@ export default {
       return true;
     },
 
-    replay() {
-      this.grid_content = [
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-      ];
-      this.equality = false;
-      this.loose = false;
-      this.displayGrid = true;
-
-      this.changeWin(false);
+    gameOver(way) {
+      this.displayGrid = false;
+      this.changeOutcome(way);
     },
   },
 };
@@ -309,13 +291,5 @@ td {
 }
 .w-3 {
   border-left: #63e2b7 2px solid;
-}
-
-.test {
-  height: 60vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 </style>
