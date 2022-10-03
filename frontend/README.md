@@ -26,15 +26,17 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 TODO
 
-- Gérer les actions sur le morpion
-- Gérer les cas de victoire et de défaite
-- Gérer le responsive
-- Débug final
-- Refacto final
+- Gérer l'event "replay"
+- Gérer la ligne de victoire
+- Design de jolie éléments 'X' et 'O' 
+- Gérer le responsive du bordel
+- Débug divers (backButton, rooms, etc)
+- Refacto 
 - Mise en ligne (alpha 0.1)
 
 IMPROVEMENT
 
+- Gérer de jolies transitions
 - Gérer le fait de rejoindre une partie avec le lien (demande du username si pas renseigné puis redirection)
 - Compter les scores
 - Ajouter un autre jeu (puissance 4 ?)

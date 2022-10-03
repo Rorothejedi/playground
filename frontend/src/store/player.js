@@ -44,6 +44,9 @@ export default {
         SET_TURN(state, payload) {
             state.turn = payload
         },
+        SET_WIN(state, payload) {
+            state.win = payload
+        },
 
         // morpion
         SET_PLAYED_CELL(state, payload) {
@@ -75,6 +78,9 @@ export default {
         },
         changeTurn(store, value) {
             store.commit('SET_TURN', value)
+        },
+        changeWin(store, value) {
+            store.commit('SET_WIN', value)
         },
         changePlayedCell(store, value) {
             store.commit('SET_PLAYED_CELL', value)

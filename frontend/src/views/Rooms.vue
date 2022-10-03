@@ -7,6 +7,7 @@
         <n-input-group>
           <n-input
             v-model:value="tempUsername"
+            ref="usernameInput"
             type="text"
             placeholder="ex: Toto"
             :disabled="lockUsernameInput"
@@ -113,7 +114,6 @@ export default {
     ...mapState("room", ["rooms"]),
 
     availableRooms() {
-      console.log();
       return this.rooms.filter((r) => r.players.length < 2);
     },
   },
@@ -125,7 +125,10 @@ export default {
 
     this.emitRooms();
 
-    if (this.username === "") return;
+    if (this.username === "") {
+      this.$refs.usernameInput.focus();
+      return;
+    }
 
     this.tempUsername = this.username;
     this.validUsername();
@@ -139,6 +142,7 @@ export default {
       "changeRoomId",
       "changeSocketId",
       "changeTurn",
+      "changeWin",
       "emitPlayerData",
     ]),
     ...mapActions("room", ["emitRooms", "changeRoomPlayers"]),
@@ -166,6 +170,7 @@ export default {
       this.changeGame(this.selectedGame);
       this.changeHost(true);
       this.changeTurn(true);
+      this.changeWin(false);
       this.changeSocketId(socketioService.socket.id);
 
       this.emitPlayerData();
@@ -190,6 +195,7 @@ export default {
       this.changeGame(room.players[0].game);
       this.changeRoomId(room.id);
       this.changeTurn(false);
+      this.changeWin(false);
       this.changeSocketId(socketioService.socket.id);
 
       this.emitPlayerData();
