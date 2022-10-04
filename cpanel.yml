@@ -2,6 +2,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/xgul4921/playground.rodolphe-cabotiau.com/
-    - /bin/cp -R ./frontend/dist/css $DEPLOYPATH
-    - /bin/cp -R ./frontend/dist/js $DEPLOYPATH
-    - /bin/cp ./frontend/dist/index.html $DEPLOYPATH
+    - /bin/cp frontend/dist/index.html $DEPLOYPATH
