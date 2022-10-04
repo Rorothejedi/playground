@@ -19,12 +19,18 @@
 
       <n-collapse-transition :show="outcome !== ''">
         <div class="end-game">
-          <n-h2 v-if="outcome === 'equality'">Egalité</n-h2>
-          <n-h2 v-else-if="outcome === 'win'">Victoire</n-h2>
-          <n-h2 v-else-if="outcome === 'defeat'">Défaite</n-h2>
-          <n-button @click="restartGame()" v-if="host && outcome">
-            Rejouer
-          </n-button>
+          <n-result
+            :status="statusEndGame"
+            :title="titleEndGame"
+            :description="descriptionEndGame"
+          >
+            <template #footer>
+              <n-button @click="restartGame()" v-if="host && outcome">
+                Rejouer
+              </n-button>
+              <n-spin v-else size="medium" />
+            </template>
+          </n-result>
         </div>
       </n-collapse-transition>
 
@@ -54,6 +60,27 @@ export default {
   computed: {
     ...mapState("player", ["host", "outcome"]),
     ...mapState("room", ["rooms", "roomPlayers", "replay"]),
+
+    statusEndGame() {
+      if (this.outcome === "defeat") return "500";
+      if (this.outcome === "win") return "418";
+
+      return "404";
+    },
+    titleEndGame() {
+      if (this.outcome === "defeat") return "Défaite";
+      if (this.outcome === "win") return "Victoire";
+
+      return "Egalité";
+    },
+    descriptionEndGame() {
+      if (this.outcome === "defeat")
+        return "Aïe ! Pourquoi ne pas retenter votre chance ?";
+      if (this.outcome === "win")
+        return "Trop facile ! Vous prendrez bien un thé ?";
+
+      return "Bizarre... J'était pourtant sûr que vous alliez l'avoir !";
+    },
   },
 
   watch: {

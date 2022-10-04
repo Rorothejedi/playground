@@ -140,10 +140,7 @@ export default {
       displayGrid: true,
       loadingMessage: null,
       infoMessage: null,
-      endGame: "",
-
       endLineColor: "#63e2b7",
-
       lineHorizontalTop: false,
       lineHorizontalCenter: false,
       lineHorizontalBottom: false,
@@ -607,6 +604,101 @@ td {
   }
   100% {
     width: 149%;
+  }
+}
+
+// RESPONSIVE
+
+@media screen and (max-width: 500px) {
+  td {
+    height: 100px;
+    width: 100px;
+  }
+
+  // CIRCLE
+
+  .circle:before {
+    left: calc(15% - 3px);
+    top: calc(15% - 3px);
+    width: 50px;
+    height: 50px;
+  }
+
+  // CROSS
+
+  .cross:before,
+  .cross:after {
+    top: 8px;
+    left: 45px;
+    height: 85px;
+  }
+
+  @keyframes cross-appear {
+    0% {
+      height: 0;
+      top: 50px;
+    }
+    100% {
+      height: 85px;
+      top: 8px;
+    }
+  }
+
+  // HORIZONTAL AND VERTICAL CASES
+
+  .h-0-0:before,
+  .h-0-1:before,
+  .h-0-2:before,
+  .h-1-0:before,
+  .h-1-1:before,
+  .h-1-2:before,
+  .h-2-0:before,
+  .h-2-1:before,
+  .h-2-2:before {
+    width: 110px;
+    left: -5px;
+  }
+
+  .v-0-0:before,
+  .v-1-0:before,
+  .v-2-0:before,
+  .v-0-1:before,
+  .v-1-1:before,
+  .v-2-1:before,
+  .v-0-2:before,
+  .v-1-2:before,
+  .v-2-2:before {
+    width: 110px;
+    top: -5px;
+  }
+
+  @keyframes line {
+    0% {
+      width: 0px;
+    }
+    100% {
+      width: 110px;
+    }
+  }
+
+  //  DIAGONAL CASES
+
+  .db-0-0:before,
+  .db-1-1:before,
+  .db-2-2:before,
+  .df-0-2:before,
+  .df-1-1:before,
+  .df-2-0:before {
+    width: 153%;
+  }
+
+  @keyframes diagonal-line {
+    0% {
+      width: 0%;
+    }
+    100% {
+      width: 153%;
+    }
   }
 }
 </style>

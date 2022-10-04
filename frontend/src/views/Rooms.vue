@@ -102,8 +102,10 @@ export default {
       selectedGame: null,
       gamesAvailable: [
         { label: "Morpion", value: "Morpion" },
-        { label: "Skyjo", value: "Skyjo" },
-        { label: "President", value: "President" },
+        // { label: "Shifumi", value: "Shifumi" },
+        // { label: "Puissance4", value: "Puissance4" },
+        // { label: "Skyjo", value: "Skyjo" },
+        // { label: "President", value: "President" },
       ],
       loadingCreatingRoom: false,
     };
