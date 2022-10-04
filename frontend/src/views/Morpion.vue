@@ -156,6 +156,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.n-h1 {
+  padding-top: 70px;
+}
 .n-h3 {
   margin-top: 5px;
   margin-bottom: 15px;

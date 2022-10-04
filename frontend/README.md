@@ -26,11 +26,9 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 TODO
 
-- Gérer l'affichage de la ligne de victoire
 - Design de jolie éléments 'X' et 'O'
 - Gérer le responsive du bordel
-- Débug divers (backButton, rooms, etc)
-- Refacto 
+- Check
 - Mise en ligne (alpha 0.1)
 
 IMPROVEMENT

@@ -1,38 +1,111 @@
 <template>
   <div>
     <n-collapse-transition :show="displayGrid" appear>
+      <div id="test"></div>
+
       <table cellspacing="0" cellpadding="0">
         <tbody>
-          <tr>
-            <td class="cell h-1 w-1" @click="placeItem(0, 0)">
+          <tr class="case-h case-v">
+            <td
+              class="cell h-1 w-1"
+              :class="{
+                'h-0-0': lineHorizontalTop,
+                'v-0-0': lineVerticalLeft,
+                'db-0-0': lineDiagonalBack,
+              }"
+              @click="placeItem(0, 0)"
+            >
               {{ grid_content[0][0] }}
             </td>
-            <td class="cell h-1 w-2" @click="placeItem(0, 1)">
+            <td
+              class="cell h-1 w-2"
+              :class="{
+                'h-0-1': lineHorizontalTop,
+                'v-0-1': lineVerticalCenter,
+              }"
+              @click="placeItem(0, 1)"
+            >
               {{ grid_content[0][1] }}
             </td>
-            <td class="cell h-1 w-3" @click="placeItem(0, 2)">
+            <td
+              class="cell h-1 w-3"
+              :class="{
+                'h-0-2': lineHorizontalTop,
+                'v-0-2': lineVerticalRight,
+                'df-0-2': lineDiagonalForward,
+              }"
+              @click="placeItem(0, 2)"
+            >
               {{ grid_content[0][2] }}
             </td>
           </tr>
-          <tr>
-            <td class="cell h-2 w-1" @click="placeItem(1, 0)">
+
+          <tr class="case-h case-v">
+            <td
+              class="cell h-2 w-1"
+              :class="{
+                'h-1-0': lineHorizontalCenter,
+                'v-1-0': lineVerticalLeft,
+              }"
+              @click="placeItem(1, 0)"
+            >
               {{ grid_content[1][0] }}
             </td>
-            <td class="cell h-2 w-2" @click="placeItem(1, 1)">
+            <td
+              class="cell h-2 w-2"
+              :class="{
+                'h-1-1': lineHorizontalCenter,
+                'v-1-1': lineVerticalCenter,
+                'db-1-1': lineDiagonalBack,
+                'df-1-1': lineDiagonalForward,
+              }"
+              @click="placeItem(1, 1)"
+            >
               {{ grid_content[1][1] }}
             </td>
-            <td class="cell h-2 w-3" @click="placeItem(1, 2)">
+            <td
+              class="cell h-2 w-3"
+              :class="{
+                'h-1-2': lineHorizontalCenter,
+                'v-1-2': lineVerticalRight,
+              }"
+              @click="placeItem(1, 2)"
+            >
               {{ grid_content[1][2] }}
             </td>
           </tr>
-          <tr>
-            <td class="cell h-3 w-1" @click="placeItem(2, 0)">
+
+          <tr class="case-h case-v">
+            <td
+              class="cell h-3 w-1"
+              :class="{
+                'h-2-0': lineHorizontalBottom,
+                'v-2-0': lineVerticalLeft,
+                'df-2-0': lineDiagonalForward,
+              }"
+              @click="placeItem(2, 0)"
+            >
               {{ grid_content[2][0] }}
             </td>
-            <td class="cell h-3 w-2" @click="placeItem(2, 1)">
+            <td
+              class="cell h-3 w-2"
+              :class="{
+                'h-2-1': lineHorizontalBottom,
+                'v-2-1': lineVerticalCenter,
+              }"
+              @click="placeItem(2, 1)"
+            >
               {{ grid_content[2][1] }}
             </td>
-            <td class="cell h-3 w-3" @click="placeItem(2, 2)">
+            <td
+              class="cell h-3 w-3"
+              :class="{
+                'h-2-2': lineHorizontalBottom,
+                'v-2-2': lineVerticalRight,
+                'db-2-2': lineDiagonalBack,
+              }"
+              @click="placeItem(2, 2)"
+            >
               {{ grid_content[2][2] }}
             </td>
           </tr>
@@ -44,9 +117,11 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
+import utils from "@/mixins/utils";
 
 export default {
   name: "grid",
+  mixins: [utils],
 
   data() {
     return {
@@ -59,6 +134,15 @@ export default {
       loadingMessage: null,
       infoMessage: null,
       endGame: "",
+
+      lineHorizontalTop: false,
+      lineHorizontalCenter: false,
+      lineHorizontalBottom: false,
+      lineVerticalLeft: false,
+      lineVerticalCenter: false,
+      lineVerticalRight: false,
+      lineDiagonalBack: false,
+      lineDiagonalForward: false,
     };
   },
 
@@ -99,10 +183,11 @@ export default {
       "changePlayedCell",
       "changeTurn",
       "changeWin",
+      "changeOutcome",
+      "changeVictoryWay",
       "emitPlay",
       "listenPlay",
     ]),
-    ...mapActions("player", ["changeOutcome"]),
 
     createLoadingMessage() {
       if (this.loadingMessage) return;
@@ -185,6 +270,7 @@ export default {
     checkDefeat() {
       if (!this.enemyPlayer.win) return false;
 
+      this.addLine(this.enemyPlayer.victoryWay);
       this.gameOver("defeat");
 
       return true;
@@ -211,6 +297,10 @@ export default {
         if (this.grid_content[row][y] !== this.symbol) return false;
       }
 
+      if (row === 0) this.addLine("h-t");
+      if (row === 1) this.addLine("h-c");
+      if (row === 2) this.addLine("h-b");
+
       return true;
     },
 
@@ -220,6 +310,10 @@ export default {
       for (let x = 0; x < 3; x++) {
         if (this.grid_content[x][column] !== this.symbol) return false;
       }
+
+      if (column === 0) this.addLine("v-l");
+      if (column === 1) this.addLine("v-c");
+      if (column === 2) this.addLine("v-r");
 
       return true;
     },
@@ -232,6 +326,8 @@ export default {
       for (let i = 0; i < 3; i++) {
         if (this.grid_content[i][i] !== this.symbol) return false;
       }
+
+      this.addLine("d-b");
 
       return true;
     },
@@ -247,12 +343,31 @@ export default {
         if (this.grid_content[x][y] !== this.symbol) return false;
       }
 
+      this.addLine("d-f");
+
       return true;
     },
 
-    gameOver(way) {
+    async gameOver(way) {
+      if (way !== "equality") await this.sleep(2500);
+      else await this.sleep(1000);
       this.displayGrid = false;
       this.changeOutcome(way);
+    },
+
+    addLine(type) {
+      if (type === "h-t") this.lineHorizontalTop = !this.lineHorizontalTop;
+      if (type === "h-c")
+        this.lineHorizontalCenter = !this.lineHorizontalCenter;
+      if (type === "h-b")
+        this.lineHorizontalBottom = !this.lineHorizontalBottom;
+      if (type === "v-l") this.lineVerticalLeft = !this.lineVerticalLeft;
+      if (type === "v-c") this.lineVerticalCenter = !this.lineVerticalCenter;
+      if (type === "v-r") this.lineVerticalRight = !this.lineVerticalRight;
+      if (type === "d-b") this.lineDiagonalBack = !this.lineDiagonalBack;
+      if (type === "d-f") this.lineDiagonalForward = !this.lineDiagonalForward;
+
+      this.changeVictoryWay(type);
     },
   },
 };
@@ -270,6 +385,7 @@ td {
   text-align: center;
   vertical-align: middle;
   width: 150px;
+  position: relative;
 }
 
 .h-1 {
@@ -291,5 +407,131 @@ td {
 }
 .w-3 {
   border-left: #63e2b7 2px solid;
+}
+
+// HORIZONTAL AND VERTICAL CASES
+
+.h-0-0:before,
+.h-0-1:before,
+.h-0-2:before,
+.h-1-0:before,
+.h-1-1:before,
+.h-1-2:before,
+.h-2-0:before,
+.h-2-1:before,
+.h-2-2:before {
+  content: " ";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  border-bottom: 3px solid #f8e9e9;
+}
+
+.v-0-0:before,
+.v-1-0:before,
+.v-2-0:before,
+.v-0-1:before,
+.v-1-1:before,
+.v-2-1:before,
+.v-0-2:before,
+.v-1-2:before,
+.v-2-2:before {
+  content: " ";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 100%;
+  width: 100%;
+  border-bottom: 3px solid #f8e9e9;
+  transform: rotate(90deg);
+  transform-origin: top left;
+}
+
+.h-0-0:before,
+.h-1-0:before,
+.h-2-0:before,
+.v-0-0:before,
+.v-0-1:before,
+.v-0-2:before {
+  animation: line 0.2s linear;
+}
+.h-0-1:before,
+.h-1-1:before,
+.h-2-1:before,
+.v-1-0:before,
+.v-1-1:before,
+.v-1-2:before {
+  animation: line 0.2s linear 0.2s both;
+}
+.h-0-2:before,
+.h-1-2:before,
+.h-2-2:before,
+.v-2-0:before,
+.v-2-1:before,
+.v-2-2:before {
+  animation: line 0.2s linear 0.4s both;
+}
+
+@keyframes line {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+//  DIAGONAL CASES
+
+.db-0-0:before,
+.db-1-1:before,
+.db-2-2:before,
+.df-0-2:before,
+.df-1-1:before,
+.df-2-0:before {
+  content: " ";
+  position: absolute;
+  top: -2px;
+  width: 143%;
+  border-bottom: 3px solid #f8e9e9;
+}
+
+.db-0-0:before,
+.db-1-1:before,
+.db-2-2:before {
+  left: 0;
+  transform: rotate(45deg);
+  transform-origin: top left;
+}
+
+.df-0-2:before,
+.df-1-1:before,
+.df-2-0:before {
+  right: 0;
+  transform: rotate(-45deg);
+  transform-origin: top right;
+}
+
+.db-0-0:before,
+.df-0-2:before {
+  animation: diagonal-line 0.2s linear;
+}
+.db-1-1:before,
+.df-1-1:before {
+  animation: diagonal-line 0.2s linear 0.2s both;
+}
+.db-2-2:before,
+.df-2-0:before {
+  animation: diagonal-line 0.2s linear 0.4s both;
+}
+
+@keyframes diagonal-line {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 143%;
+  }
 }
 </style>

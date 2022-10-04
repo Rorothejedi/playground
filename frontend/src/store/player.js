@@ -22,6 +22,7 @@ export default {
         // morpion
         playedCell: '',
         symbol: 'X',
+        victoryWay: '',
 
         enemyPlayer: [],
     },
@@ -55,6 +56,9 @@ export default {
         // morpion
         SET_PLAYED_CELL(state, payload) {
             state.playedCell = payload
+        },
+        SET_VICTORY_WAY(state, payload) {
+            state.victoryWay = payload
         },
 
         SET_ENEMY_PLAYER(state, payload) {
@@ -91,6 +95,9 @@ export default {
         },
         changePlayedCell(store, value) {
             store.commit('SET_PLAYED_CELL', value)
+        },
+        changeVictoryWay(store, value) {
+            store.commit('SET_VICTORY_WAY', value)
         },
 
         emitPlayerData(store) {
