@@ -1,8 +1,6 @@
 <template>
   <div>
     <n-collapse-transition :show="displayGrid" appear>
-      <div id="test"></div>
-
       <table cellspacing="0" cellpadding="0">
         <tbody>
           <tr class="case-h case-v">
@@ -144,6 +142,8 @@ export default {
       infoMessage: null,
       endGame: "",
 
+      endLineColor: "#63e2b7",
+
       lineHorizontalTop: false,
       lineHorizontalCenter: false,
       lineHorizontalBottom: false,
@@ -279,6 +279,7 @@ export default {
     checkDefeat() {
       if (!this.enemyPlayer.win) return false;
 
+      this.endLineColor = "#e88080";
       this.addLine(this.enemyPlayer.victoryWay);
       this.gameOver("defeat");
 
@@ -358,9 +359,10 @@ export default {
     },
 
     async gameOver(way) {
-      if (way !== "equality") await this.sleep(2500);
+      if (way !== "equality") await this.sleep(2000);
       else await this.sleep(1000);
       this.displayGrid = false;
+      this.endLineColor = "#63e2b7";
       this.changeOutcome(way);
     },
 
@@ -494,7 +496,8 @@ td {
   left: -15px;
   top: calc(50% - 5px);
   width: 180px;
-  border-bottom: 10px solid #63e2b7;
+  border-bottom: 10px solid;
+  border-bottom-color: v-bind(endLineColor);
 }
 
 .v-0-0:before,
@@ -512,7 +515,8 @@ td {
   left: calc(50% + 5px);
   top: -15px;
   width: 180px;
-  border-bottom: 10px solid #63e2b7;
+  border-bottom: 10px solid;
+  border-bottom-color: v-bind(endLineColor);
   transform: rotate(90deg);
   transform-origin: top left;
 }
@@ -564,7 +568,8 @@ td {
   position: absolute;
   top: -5px;
   width: 149%;
-  border-bottom: 10px solid #63e2b7;
+  border-bottom: 10px solid;
+  border-bottom-color: v-bind(endLineColor);
 }
 
 .db-0-0:before,
