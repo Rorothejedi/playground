@@ -1,14 +1,26 @@
 const app = require('express')();
 const http = require('http').createServer(app);
-const io = require('socket.io')(http, {
-    cors: {
-        origins: ['http://localhost:8080']
-    }
-});
+
+// localhost
+
+// const frontendHost = 'http://localhost:8080'
+// const host = 'http://localhost'
+// const port = 3000
+
+// production
+
+const frontendHost = 'https://playground.rodolphe-cabotiau.com'
+const host = 'https://node.playground.rodolphe-cabotiau.com'
 const port = 3000
 
+const io = require('socket.io')(http, {
+    cors: {
+        origins: [frontendHost]
+    }
+});
+
 http.listen(port, () => {
-    console.log(`Listening on http://localhost:${port}/`)
+    console.log(`Listening on ${host}:${port}/`)
 })
 
 // ---------------------------------
