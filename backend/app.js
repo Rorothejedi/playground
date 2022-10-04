@@ -9,8 +9,8 @@ const http = require('http').createServer(app);
 
 // production
 
-const frontendHost = 'https://playground.rodolphe-cabotiau.com'
-const host = 'https://node.playground.rodolphe-cabotiau.com'
+const frontendHost = 'http://playground.rodolphe-cabotiau.com'
+const host = 'http://node.playground.rodolphe-cabotiau.com'
 const port = 3000
 
 const io = require('socket.io')(http, {
