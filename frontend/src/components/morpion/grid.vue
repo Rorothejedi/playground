@@ -15,7 +15,8 @@
               }"
               @click="placeItem(0, 0)"
             >
-              {{ grid_content[0][0] }}
+              <span class="circle" v-if="grid_content[0][0] === 'O'"></span>
+              <span class="cross" v-if="grid_content[0][0] === 'X'"></span>
             </td>
             <td
               class="cell h-1 w-2"
@@ -25,7 +26,8 @@
               }"
               @click="placeItem(0, 1)"
             >
-              {{ grid_content[0][1] }}
+              <span class="circle" v-if="grid_content[0][1] === 'O'"></span>
+              <span class="cross" v-if="grid_content[0][1] === 'X'"></span>
             </td>
             <td
               class="cell h-1 w-3"
@@ -36,7 +38,8 @@
               }"
               @click="placeItem(0, 2)"
             >
-              {{ grid_content[0][2] }}
+              <span class="circle" v-if="grid_content[0][2] === 'O'"></span>
+              <span class="cross" v-if="grid_content[0][2] === 'X'"></span>
             </td>
           </tr>
 
@@ -49,7 +52,8 @@
               }"
               @click="placeItem(1, 0)"
             >
-              {{ grid_content[1][0] }}
+              <span class="circle" v-if="grid_content[1][0] === 'O'"></span>
+              <span class="cross" v-if="grid_content[1][0] === 'X'"></span>
             </td>
             <td
               class="cell h-2 w-2"
@@ -61,7 +65,8 @@
               }"
               @click="placeItem(1, 1)"
             >
-              {{ grid_content[1][1] }}
+              <span class="circle" v-if="grid_content[1][1] === 'O'"></span>
+              <span class="cross" v-if="grid_content[1][1] === 'X'"></span>
             </td>
             <td
               class="cell h-2 w-3"
@@ -71,7 +76,8 @@
               }"
               @click="placeItem(1, 2)"
             >
-              {{ grid_content[1][2] }}
+              <span class="circle" v-if="grid_content[1][2] === 'O'"></span>
+              <span class="cross" v-if="grid_content[1][2] === 'X'"></span>
             </td>
           </tr>
 
@@ -85,7 +91,8 @@
               }"
               @click="placeItem(2, 0)"
             >
-              {{ grid_content[2][0] }}
+              <span class="circle" v-if="grid_content[2][0] === 'O'"></span>
+              <span class="cross" v-if="grid_content[2][0] === 'X'"></span>
             </td>
             <td
               class="cell h-3 w-2"
@@ -95,7 +102,8 @@
               }"
               @click="placeItem(2, 1)"
             >
-              {{ grid_content[2][1] }}
+              <span class="circle" v-if="grid_content[2][1] === 'O'"></span>
+              <span class="cross" v-if="grid_content[2][1] === 'X'"></span>
             </td>
             <td
               class="cell h-3 w-3"
@@ -106,7 +114,8 @@
               }"
               @click="placeItem(2, 2)"
             >
-              {{ grid_content[2][2] }}
+              <span class="circle" v-if="grid_content[2][2] === 'O'"></span>
+              <span class="cross" v-if="grid_content[2][2] === 'X'"></span>
             </td>
           </tr>
         </tbody>
@@ -375,6 +384,7 @@ export default {
 
 <style lang="less" scoped>
 table {
+  z-index: 3;
   height: 60vh;
   display: flex;
   justify-content: center;
@@ -389,24 +399,82 @@ td {
 }
 
 .h-1 {
-  border-bottom: #63e2b7 2px solid;
+  border-bottom: #ffffffd1 4px solid;
 }
 .h-2 {
-  border-top: #63e2b7 2px solid;
-  border-bottom: #63e2b7 2px solid;
+  border-top: #ffffffd1 4px solid;
+  border-bottom: #ffffffd1 4px solid;
 }
 .h-3 {
-  border-top: #63e2b7 2px solid;
+  border-top: #ffffffd1 4px solid;
 }
 .w-1 {
-  border-right: #63e2b7 2px solid;
+  border-right: #ffffffd1 4px solid;
 }
 .w-2 {
-  border-left: #63e2b7 2px solid;
-  border-right: #63e2b7 2px solid;
+  border-left: #ffffffd1 4px solid;
+  border-right: #ffffffd1 4px solid;
 }
 .w-3 {
-  border-left: #63e2b7 2px solid;
+  border-left: #ffffffd1 4px solid;
+}
+
+// CIRCLE
+
+.circle:before {
+  z-index: 1;
+  content: " ";
+  position: absolute;
+  left: calc(25% - 3px);
+  top: calc(25% - 3px);
+  width: 60px;
+  height: 60px;
+  border: 10px solid #e88080;
+  border-radius: 100%;
+  opacity: 1;
+  animation: circle-appear 0.3s ease;
+}
+
+@keyframes circle-appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// CROSS
+
+.cross:before,
+.cross:after {
+  z-index: 1;
+  content: " ";
+  position: absolute;
+  top: 28px;
+  left: 70px;
+  height: 95px;
+  width: 10px;
+  background-color: #63e2b7;
+}
+.cross:before {
+  transform: rotate(45deg);
+  animation: cross-appear 0.3s ease;
+}
+.cross:after {
+  transform: rotate(-45deg);
+  animation: cross-appear 0.3s ease;
+}
+
+@keyframes cross-appear {
+  0% {
+    height: 0;
+    top: 75px;
+  }
+  100% {
+    height: 95px;
+    top: 28px;
+  }
 }
 
 // HORIZONTAL AND VERTICAL CASES
@@ -420,12 +488,13 @@ td {
 .h-2-0:before,
 .h-2-1:before,
 .h-2-2:before {
+  z-index: 2;
   content: " ";
   position: absolute;
-  left: 0;
-  top: 50%;
-  width: 100%;
-  border-bottom: 3px solid #f8e9e9;
+  left: -15px;
+  top: calc(50% - 5px);
+  width: 180px;
+  border-bottom: 10px solid #63e2b7;
 }
 
 .v-0-0:before,
@@ -437,13 +506,13 @@ td {
 .v-0-2:before,
 .v-1-2:before,
 .v-2-2:before {
+  z-index: 2;
   content: " ";
   position: absolute;
-  left: 50%;
-  top: 0;
-  width: 100%;
-  width: 100%;
-  border-bottom: 3px solid #f8e9e9;
+  left: calc(50% + 5px);
+  top: -15px;
+  width: 180px;
+  border-bottom: 10px solid #63e2b7;
   transform: rotate(90deg);
   transform-origin: top left;
 }
@@ -454,7 +523,7 @@ td {
 .v-0-0:before,
 .v-0-1:before,
 .v-0-2:before {
-  animation: line 0.2s linear;
+  animation: line 0.1s linear;
 }
 .h-0-1:before,
 .h-1-1:before,
@@ -462,7 +531,7 @@ td {
 .v-1-0:before,
 .v-1-1:before,
 .v-1-2:before {
-  animation: line 0.2s linear 0.2s both;
+  animation: line 0.1s linear 0.1s both;
 }
 .h-0-2:before,
 .h-1-2:before,
@@ -470,15 +539,15 @@ td {
 .v-2-0:before,
 .v-2-1:before,
 .v-2-2:before {
-  animation: line 0.2s linear 0.4s both;
+  animation: line 0.1s linear 0.2s both;
 }
 
 @keyframes line {
   0% {
-    width: 0%;
+    width: 0px;
   }
   100% {
-    width: 100%;
+    width: 180px;
   }
 }
 
@@ -490,17 +559,18 @@ td {
 .df-0-2:before,
 .df-1-1:before,
 .df-2-0:before {
+  z-index: 2;
   content: " ";
   position: absolute;
-  top: -2px;
-  width: 143%;
-  border-bottom: 3px solid #f8e9e9;
+  top: -5px;
+  width: 149%;
+  border-bottom: 10px solid #63e2b7;
 }
 
 .db-0-0:before,
 .db-1-1:before,
 .db-2-2:before {
-  left: 0;
+  left: 2px;
   transform: rotate(45deg);
   transform-origin: top left;
 }
@@ -508,22 +578,22 @@ td {
 .df-0-2:before,
 .df-1-1:before,
 .df-2-0:before {
-  right: 0;
+  right: 2px;
   transform: rotate(-45deg);
   transform-origin: top right;
 }
 
 .db-0-0:before,
 .df-0-2:before {
-  animation: diagonal-line 0.2s linear;
+  animation: diagonal-line 0.1s linear;
 }
 .db-1-1:before,
 .df-1-1:before {
-  animation: diagonal-line 0.2s linear 0.2s both;
+  animation: diagonal-line 0.1s linear 0.1s both;
 }
 .db-2-2:before,
 .df-2-0:before {
-  animation: diagonal-line 0.2s linear 0.4s both;
+  animation: diagonal-line 0.1s linear 0.2s both;
 }
 
 @keyframes diagonal-line {
@@ -531,7 +601,7 @@ td {
     width: 0%;
   }
   100% {
-    width: 143%;
+    width: 149%;
   }
 }
 </style>

@@ -26,7 +26,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 TODO
 
-- Design de jolie éléments 'X' et 'O'
 - Gérer le responsive du bordel
 - Check
 - Mise en ligne (alpha 0.1)
