@@ -2,6 +2,6 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/xgul4921/playground.rodolphe-cabotiau.com/
-    - /bin/cp -R dist/frontend/* $DEPLOYPATH
+    - /bin/cp -R frontend/dist/* $DEPLOYPATH
     - export DEPLOYPATH=/home/xgul4921/node.playground.rodolphe-cabotiau.com/
-    - /bin/cp -R dist/backend/* $DEPLOYPATH
+    - /bin/cp -R backend/* $DEPLOYPATH
