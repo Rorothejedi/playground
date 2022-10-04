@@ -26,7 +26,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 TODO
 
-- Voir pour les cas victoire/défaite
 - Mise en ligne (alpha 0.1)
 
 IMPROVEMENT
