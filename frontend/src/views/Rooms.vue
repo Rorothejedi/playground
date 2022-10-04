@@ -29,8 +29,7 @@
           <n-space justify="space-between" size="small">
             <n-select
               v-model:value="selectedGame"
-              filterable
-              placeholder="Choisi un jeu"
+              placeholder="Choisir un jeu"
               :options="gamesAvailable"
             />
 
@@ -186,6 +185,7 @@ export default {
     joinRoom(room) {
       this.changeGame(room.players[0].game);
       this.changeRoomId(room.id);
+      this.changeHost(false);
       this.changeTurn(false);
       this.changeWin(false);
       this.changeSocketId(socketioService.socket.id);
