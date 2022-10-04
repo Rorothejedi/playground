@@ -11,11 +11,13 @@
             type="text"
             placeholder="ex: Toto"
             :disabled="lockUsernameInput"
+            size="large"
           />
           <n-button
             :type="!lockUsernameInput ? 'primary' : ''"
             @click="chooseUsername()"
             :disabled="tempUsername === ''"
+            size="large"
           >
             {{ !lockUsernameInput ? "Choisir" : "Modifier" }}
           </n-button>
@@ -26,11 +28,12 @@
     <n-collapse-transition :show="lockUsernameInput">
       <div class="create-room-card">
         <n-card>
-          <n-space justify="space-between" size="small">
+          <!-- <n-space size="small"> -->
+          <n-input-group>
             <n-select
               v-model:value="selectedGame"
-              placeholder="Choisir un jeu"
               :options="gamesAvailable"
+              placeholder="Choisir un jeu"
             />
 
             <n-button
@@ -39,7 +42,8 @@
             >
               Créer un salon
             </n-button>
-          </n-space>
+          </n-input-group>
+          <!-- </n-space> -->
         </n-card>
       </div>
 
