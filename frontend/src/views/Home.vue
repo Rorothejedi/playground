@@ -95,7 +95,7 @@ import socketioService from "../services/socketio.service";
 import title from "@/mixins/title.js";
 
 export default {
-  name: "Rooms",
+  name: "Home",
   title: "Playground",
   mixins: [title],
 
@@ -106,10 +106,12 @@ export default {
       selectedGame: null,
       gamesAvailable: [
         { label: "Morpion", value: "Morpion" },
-        // { label: "Shifumi", value: "Shifumi" },
+        {
+          label: "Pierre-papier-ciseaux",
+          value: "Pierre-papier-ciseaux",
+        },
         // { label: "Puissance4", value: "Puissance4" },
         // { label: "Skyjo", value: "Skyjo" },
-        // { label: "President", value: "President" },
       ],
       loadingCreatingRoom: false,
     };
@@ -173,14 +175,14 @@ export default {
       this.emitPlayerData();
 
       window.$loading.start();
-      window.$message.loading(`Salon en cours de création...`, {
+      window.$message.loading("Salon en cours de création...", {
         duration: 2000,
       });
 
       setTimeout(() => {
         this.$router.push({
-          name: this.selectedGame,
-          query: { room: this.rooms.at(-1).id },
+          name: "Room",
+          query: { id: this.rooms.at(-1).id },
         });
 
         window.$loading.finish();
@@ -198,8 +200,8 @@ export default {
       this.emitPlayerData();
 
       this.$router.push({
-        name: room.players[0].game,
-        query: { room: room.id },
+        name: "Room",
+        query: { id: room.id },
       });
     },
   },
@@ -207,6 +209,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.n-h1 {
+  font-family: "Major Mono Display", monospace;
+}
 .username-card,
 .room-card,
 .create-room-card {

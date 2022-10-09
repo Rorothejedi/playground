@@ -1,7 +1,7 @@
 <template>
   <div class="room">
     <div v-if="!isReady" class="waiting-card">
-      <n-h1>Morpion</n-h1>
+      <n-h1>{{ game }}</n-h1>
 
       <n-alert type="success">
         <template #icon>
@@ -13,11 +13,12 @@
     </div>
 
     <div v-else class="game-wrapper">
-      <n-h1>Morpion</n-h1>
+      <n-h1>{{ game }}</n-h1>
 
       <div class="game">
         <n-collapse-transition :show="outcome === ''" appear>
-          <grid />
+          <morpion v-if="game === 'Morpion'" />
+          <rock-paper-scissors v-else-if="game === 'Pierre-papier-ciseaux'" />
         </n-collapse-transition>
 
         <n-collapse-transition :show="outcome !== ''" appear>
@@ -48,13 +49,14 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import title from "@/mixins/title.js";
-import Grid from "@/components/morpion/Grid.vue";
+import Morpion from "@/components/Morpion.vue";
+import RockPaperScissors from "@/components/RockPaperScissors.vue";
 
 export default {
-  name: "Morpion",
+  name: "Room",
   title: "Room | Playground",
   mixins: [title],
-  components: { Grid },
+  components: { Morpion, RockPaperScissors },
 
   data() {
     return {
@@ -64,7 +66,7 @@ export default {
   },
 
   computed: {
-    ...mapState("player", ["host", "outcome"]),
+    ...mapState("player", ["host", "outcome", "game"]),
     ...mapState("room", ["rooms", "roomPlayers", "replay"]),
 
     statusEndGame() {
@@ -92,7 +94,7 @@ export default {
   watch: {
     rooms(newValue, oldValue) {
       const findRoom = newValue.find(
-        (room) => room.id === this.$route.query.room
+        (room) => room.id === this.$route.query.id
       );
 
       if (
@@ -114,7 +116,7 @@ export default {
 
   created() {
     if (this.host) {
-      this.changeRoomId(this.$route.query.room);
+      this.changeRoomId(this.$route.query.id);
     }
   },
 
@@ -152,6 +154,7 @@ export default {
     },
 
     restartGame() {
+      console.log("replay");
       this.emitReplay();
       this.resetGame();
     },
@@ -164,6 +167,7 @@ export default {
       this.changeOutcome("");
       this.changeWin(false);
       this.changeReplay(false);
+      console.log("reset game");
     },
 
     quitRoomConfirm(onPositive) {
@@ -182,7 +186,8 @@ export default {
     quitRoom() {
       this.toBack = false;
       this.changeOutcome("");
-      this.$router.push({ name: "Rooms" });
+      this.changeReplay(false);
+      this.$router.push({ name: "Home" });
     },
   },
 };

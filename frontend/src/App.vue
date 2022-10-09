@@ -54,7 +54,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  background-color: rgb(24, 24, 28);
+  background-color: #18181c;
   min-height: 100vh;
 
   .n-config-provider {

@@ -18,13 +18,17 @@ export default {
         turn: false,
         win: false,
         outcome: '',
+        enemyPlayer: [],
 
         // morpion
+
         playedCell: '',
         symbol: 'X',
         victoryWay: '',
 
-        enemyPlayer: [],
+        // rock-paper-scissors
+
+        itemChosen: '',
     },
 
     mutations: {
@@ -52,8 +56,12 @@ export default {
         SET_OUTCOME(state, payload) {
             state.outcome = payload
         },
+        SET_ENEMY_PLAYER(state, payload) {
+            state.enemyPlayer = payload
+        },
 
         // morpion
+
         SET_PLAYED_CELL(state, payload) {
             state.playedCell = payload
         },
@@ -61,9 +69,11 @@ export default {
             state.victoryWay = payload
         },
 
-        SET_ENEMY_PLAYER(state, payload) {
-            state.enemyPlayer = payload
-        },
+        // rock-paper-scissors
+
+        SET_ITEM_CHOSEN(state, payload) {
+            state.itemChosen = payload
+        }
     },
 
     actions: {
@@ -93,12 +103,26 @@ export default {
         changeOutcome(store, value) {
             store.commit('SET_OUTCOME', value)
         },
+        changeEnemyPlayer(store, value) {
+            store.commit('SET_ENEMY_PLAYER', value)
+        },
+
+        // morpion
+
         changePlayedCell(store, value) {
             store.commit('SET_PLAYED_CELL', value)
         },
         changeVictoryWay(store, value) {
             store.commit('SET_VICTORY_WAY', value)
         },
+
+        // rock-paper-scissors
+
+        changeItemChosen(store, value) {
+            store.commit('SET_ITEM_CHOSEN', value)
+        },
+
+        // emit & listen methods
 
         emitPlayerData(store) {
             store.commit('SET_SOCKET_ID', socketioService.socket.id)

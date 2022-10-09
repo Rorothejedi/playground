@@ -73,6 +73,10 @@ io.on('connection', (socket) => {
         io.to(player.roomId).emit('play', player)
     })
 
+    socket.on('playRockPaperScissors', (data) => {
+        socket.to(data.roomId).emit('playRockPaperScissors', data)
+    })
+
     socket.on('replay', (roomId) => {
         const room = rooms.find(r => r.id === roomId)
 

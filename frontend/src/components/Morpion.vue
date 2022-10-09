@@ -1,5 +1,6 @@
 <template>
   <div class="morpion">
+    <!-- <n-collapse-transition :show="displayGrid" appear> -->
     <table cellspacing="0" cellpadding="0">
       <tbody>
         <tr>
@@ -117,16 +118,18 @@
         </tr>
       </tbody>
     </table>
+    <!-- </n-collapse-transition> -->
   </div>
 </template>
 
 <script>
 import { mapActions, mapState } from "vuex";
+import gameMessages from "@/mixins/gameMessages";
 import utils from "@/mixins/utils";
 
 export default {
-  name: "grid",
-  mixins: [utils],
+  name: "Morpion",
+  mixins: [gameMessages, utils],
 
   data() {
     return {
@@ -136,8 +139,6 @@ export default {
         ["", "", ""],
       ],
       displayGrid: true,
-      loadingMessage: null,
-      infoMessage: null,
       endLineColor: "#63e2b7",
       lineHorizontalTop: false,
       lineHorizontalCenter: false,
@@ -172,14 +173,10 @@ export default {
     this.listenPlay();
 
     if (this.turn) {
-      this.createInfoMessage();
+      this.createInfoMessage("A toi de jouer");
     } else {
-      this.createLoadingMessage();
+      this.createLoadingMessage("L'adversaire prépare son coup");
     }
-  },
-
-  beforeUnmount() {
-    this.removeMessage();
   },
 
   methods: {
@@ -192,36 +189,6 @@ export default {
       "emitPlay",
       "listenPlay",
     ]),
-
-    createLoadingMessage() {
-      if (this.loadingMessage) return;
-
-      this.loadingMessage = window.$message.loading(
-        "L'adversaire prépare son coup",
-        {
-          duration: 0,
-        }
-      );
-    },
-
-    createInfoMessage() {
-      if (this.infoMessage) return;
-
-      this.infoMessage = window.$message.info("A toi de jouer", {
-        duration: 0,
-      });
-    },
-
-    removeMessage() {
-      if (this.loadingMessage) {
-        this.loadingMessage.destroy();
-        this.loadingMessage = null;
-      }
-      if (this.infoMessage) {
-        this.infoMessage.destroy();
-        this.infoMessage = null;
-      }
-    },
 
     placeItem(x, y) {
       if (!this.turn) return;
@@ -240,7 +207,7 @@ export default {
       if (this.win) return;
       if (this.checkEquality()) return;
 
-      this.createLoadingMessage();
+      this.createLoadingMessage("L'adversaire prépare son coup");
     },
 
     placeEnemyItem() {
@@ -256,7 +223,7 @@ export default {
       if (this.checkEquality()) return;
 
       this.changeTurn(true);
-      this.createInfoMessage();
+      this.createInfoMessage("A toi de jouer");
     },
 
     checkEquality() {
@@ -356,8 +323,9 @@ export default {
     async gameOver(way) {
       if (way !== "equality") await this.sleep(2000);
       else await this.sleep(1000);
-      this.displayGrid = false;
       this.endLineColor = "#63e2b7";
+      this.displayGrid = false;
+
       this.changeOutcome(way);
     },
 
