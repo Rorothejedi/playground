@@ -28,7 +28,6 @@
     <n-collapse-transition :show="lockUsernameInput">
       <div class="create-room-card">
         <n-card>
-          <!-- <n-space size="small"> -->
           <n-input-group>
             <n-select
               v-model:value="selectedGame"
@@ -43,7 +42,6 @@
               Créer un salon
             </n-button>
           </n-input-group>
-          <!-- </n-space> -->
         </n-card>
       </div>
 
@@ -94,9 +92,12 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import socketioService from "../services/socketio.service";
+import title from "@/mixins/title.js";
 
 export default {
   name: "Rooms",
+  title: "Playground",
+  mixins: [title],
 
   data() {
     return {

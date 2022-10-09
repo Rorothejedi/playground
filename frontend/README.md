@@ -26,14 +26,13 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 TODO
 
-- Gérer le title de l'app
-- Faire un random pour savoir qui commence en cas d'égalité
 - Faire le pierre-papier-ciseaux-lesard-spock 
   - integration
   - design
 
 IMPROVEMENT
 
+- Améliorer les cas d'égalité (morpion)
 - Compter les scores et en gérer l'affichage
 - Mettre en https
 - Afficher le nom de l'adversaire (peut-être dans le message loading / avec les scores)
@@ -41,7 +40,6 @@ IMPROVEMENT
 - Ajuster le code pour qu'il soit le plus générique possible
 - Ajouter un autre jeu (puissance 4, shi-fu-mi, bataille)
 
-- Transitions stylées
 - Fonts sympa
 
 IMPROVEMENT (hyper facultatif)

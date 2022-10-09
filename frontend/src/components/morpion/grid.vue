@@ -135,6 +135,7 @@ export default {
         ["", "", ""],
         ["", "", ""],
       ],
+      displayGrid: true,
       loadingMessage: null,
       infoMessage: null,
       endLineColor: "#63e2b7",
@@ -355,6 +356,7 @@ export default {
     async gameOver(way) {
       if (way !== "equality") await this.sleep(2000);
       else await this.sleep(1000);
+      this.displayGrid = false;
       this.endLineColor = "#63e2b7";
       this.changeOutcome(way);
     },

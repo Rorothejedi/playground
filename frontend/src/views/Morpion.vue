@@ -15,21 +15,27 @@
     <div v-else class="game-wrapper">
       <n-h1>Morpion</n-h1>
 
-      <grid v-if="outcome === ''" />
+      <div class="game">
+        <n-collapse-transition :show="outcome === ''" appear>
+          <grid />
+        </n-collapse-transition>
 
-      <div v-else class="end-game">
-        <n-result
-          :status="statusEndGame"
-          :title="titleEndGame"
-          :description="descriptionEndGame"
-        >
-          <template #footer>
-            <n-button @click="restartGame()" v-if="host && outcome">
-              Rejouer
-            </n-button>
-            <n-spin v-else size="medium" />
-          </template>
-        </n-result>
+        <n-collapse-transition :show="outcome !== ''" appear>
+          <div class="end-game">
+            <n-result
+              :status="statusEndGame"
+              :title="titleEndGame"
+              :description="descriptionEndGame"
+            >
+              <template #footer>
+                <n-button @click="restartGame()" v-if="host && outcome">
+                  Rejouer
+                </n-button>
+                <n-spin v-else size="medium" />
+              </template>
+            </n-result>
+          </div>
+        </n-collapse-transition>
       </div>
 
       <n-button @click="quitRoomConfirm(quitRoom)" class="quit-button">
@@ -41,10 +47,13 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
+import title from "@/mixins/title.js";
 import Grid from "@/components/morpion/Grid.vue";
 
 export default {
   name: "Morpion",
+  title: "Room | Playground",
+  mixins: [title],
   components: { Grid },
 
   data() {
@@ -199,6 +208,13 @@ export default {
   align-items: center;
 }
 
+.game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .game-wrapper {
   height: 100vh;
   display: flex;
@@ -208,7 +224,6 @@ export default {
 }
 
 .end-game {
-  height: 466px;
   display: flex;
   flex-direction: column;
   align-items: center;

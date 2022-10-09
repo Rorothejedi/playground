@@ -6,8 +6,21 @@ import {
 const routes = [{
     path: "/",
     name: "Rooms",
+    meta: {
+      title: 'Home Page - Example App',
+      metaTags: [{
+          name: 'description',
+          content: 'The home page of our example app.'
+        },
+        {
+          property: 'og:description',
+          content: 'The home page of our example app.'
+        }
+      ]
+    },
     component: () =>
       import("../views/Rooms.vue"),
+
   }, {
     path: "/morpion/:room?",
     name: "Morpion",
