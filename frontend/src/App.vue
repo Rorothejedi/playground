@@ -56,7 +56,12 @@ export default {
   color: #2c3e50;
   background-color: rgb(24, 24, 28);
   min-height: 100vh;
+
+  .n-config-provider {
+    min-height: 100vh;
+  }
 }
+
 .n-h1 {
   text-align: center;
   padding-top: 50px;

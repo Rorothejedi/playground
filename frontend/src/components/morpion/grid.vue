@@ -1,124 +1,122 @@
 <template>
-  <div>
-    <n-collapse-transition :show="displayGrid" appear>
-      <table cellspacing="0" cellpadding="0">
-        <tbody>
-          <tr class="case-h case-v">
-            <td
-              class="cell h-1 w-1"
-              :class="{
-                'h-0-0': lineHorizontalTop,
-                'v-0-0': lineVerticalLeft,
-                'db-0-0': lineDiagonalBack,
-              }"
-              @click="placeItem(0, 0)"
-            >
-              <span class="circle" v-if="grid_content[0][0] === 'O'"></span>
-              <span class="cross" v-if="grid_content[0][0] === 'X'"></span>
-            </td>
-            <td
-              class="cell h-1 w-2"
-              :class="{
-                'h-0-1': lineHorizontalTop,
-                'v-0-1': lineVerticalCenter,
-              }"
-              @click="placeItem(0, 1)"
-            >
-              <span class="circle" v-if="grid_content[0][1] === 'O'"></span>
-              <span class="cross" v-if="grid_content[0][1] === 'X'"></span>
-            </td>
-            <td
-              class="cell h-1 w-3"
-              :class="{
-                'h-0-2': lineHorizontalTop,
-                'v-0-2': lineVerticalRight,
-                'df-0-2': lineDiagonalForward,
-              }"
-              @click="placeItem(0, 2)"
-            >
-              <span class="circle" v-if="grid_content[0][2] === 'O'"></span>
-              <span class="cross" v-if="grid_content[0][2] === 'X'"></span>
-            </td>
-          </tr>
+  <div class="morpion">
+    <table cellspacing="0" cellpadding="0">
+      <tbody>
+        <tr>
+          <td
+            class="h-1 w-1"
+            :class="{
+              'h-0-0': lineHorizontalTop,
+              'v-0-0': lineVerticalLeft,
+              'db-0-0': lineDiagonalBack,
+            }"
+            @click="placeItem(0, 0)"
+          >
+            <span class="circle" v-if="grid_content[0][0] === 'O'"></span>
+            <span class="cross" v-if="grid_content[0][0] === 'X'"></span>
+          </td>
+          <td
+            class="h-1 w-2"
+            :class="{
+              'h-0-1': lineHorizontalTop,
+              'v-0-1': lineVerticalCenter,
+            }"
+            @click="placeItem(0, 1)"
+          >
+            <span class="circle" v-if="grid_content[0][1] === 'O'"></span>
+            <span class="cross" v-if="grid_content[0][1] === 'X'"></span>
+          </td>
+          <td
+            class="h-1 w-3"
+            :class="{
+              'h-0-2': lineHorizontalTop,
+              'v-0-2': lineVerticalRight,
+              'df-0-2': lineDiagonalForward,
+            }"
+            @click="placeItem(0, 2)"
+          >
+            <span class="circle" v-if="grid_content[0][2] === 'O'"></span>
+            <span class="cross" v-if="grid_content[0][2] === 'X'"></span>
+          </td>
+        </tr>
 
-          <tr class="case-h case-v">
-            <td
-              class="cell h-2 w-1"
-              :class="{
-                'h-1-0': lineHorizontalCenter,
-                'v-1-0': lineVerticalLeft,
-              }"
-              @click="placeItem(1, 0)"
-            >
-              <span class="circle" v-if="grid_content[1][0] === 'O'"></span>
-              <span class="cross" v-if="grid_content[1][0] === 'X'"></span>
-            </td>
-            <td
-              class="cell h-2 w-2"
-              :class="{
-                'h-1-1': lineHorizontalCenter,
-                'v-1-1': lineVerticalCenter,
-                'db-1-1': lineDiagonalBack,
-                'df-1-1': lineDiagonalForward,
-              }"
-              @click="placeItem(1, 1)"
-            >
-              <span class="circle" v-if="grid_content[1][1] === 'O'"></span>
-              <span class="cross" v-if="grid_content[1][1] === 'X'"></span>
-            </td>
-            <td
-              class="cell h-2 w-3"
-              :class="{
-                'h-1-2': lineHorizontalCenter,
-                'v-1-2': lineVerticalRight,
-              }"
-              @click="placeItem(1, 2)"
-            >
-              <span class="circle" v-if="grid_content[1][2] === 'O'"></span>
-              <span class="cross" v-if="grid_content[1][2] === 'X'"></span>
-            </td>
-          </tr>
+        <tr>
+          <td
+            class="h-2 w-1"
+            :class="{
+              'h-1-0': lineHorizontalCenter,
+              'v-1-0': lineVerticalLeft,
+            }"
+            @click="placeItem(1, 0)"
+          >
+            <span class="circle" v-if="grid_content[1][0] === 'O'"></span>
+            <span class="cross" v-if="grid_content[1][0] === 'X'"></span>
+          </td>
+          <td
+            class="h-2 w-2"
+            :class="{
+              'h-1-1': lineHorizontalCenter,
+              'v-1-1': lineVerticalCenter,
+              'db-1-1': lineDiagonalBack,
+              'df-1-1': lineDiagonalForward,
+            }"
+            @click="placeItem(1, 1)"
+          >
+            <span class="circle" v-if="grid_content[1][1] === 'O'"></span>
+            <span class="cross" v-if="grid_content[1][1] === 'X'"></span>
+          </td>
+          <td
+            class="h-2 w-3"
+            :class="{
+              'h-1-2': lineHorizontalCenter,
+              'v-1-2': lineVerticalRight,
+            }"
+            @click="placeItem(1, 2)"
+          >
+            <span class="circle" v-if="grid_content[1][2] === 'O'"></span>
+            <span class="cross" v-if="grid_content[1][2] === 'X'"></span>
+          </td>
+        </tr>
 
-          <tr class="case-h case-v">
-            <td
-              class="cell h-3 w-1"
-              :class="{
-                'h-2-0': lineHorizontalBottom,
-                'v-2-0': lineVerticalLeft,
-                'df-2-0': lineDiagonalForward,
-              }"
-              @click="placeItem(2, 0)"
-            >
-              <span class="circle" v-if="grid_content[2][0] === 'O'"></span>
-              <span class="cross" v-if="grid_content[2][0] === 'X'"></span>
-            </td>
-            <td
-              class="cell h-3 w-2"
-              :class="{
-                'h-2-1': lineHorizontalBottom,
-                'v-2-1': lineVerticalCenter,
-              }"
-              @click="placeItem(2, 1)"
-            >
-              <span class="circle" v-if="grid_content[2][1] === 'O'"></span>
-              <span class="cross" v-if="grid_content[2][1] === 'X'"></span>
-            </td>
-            <td
-              class="cell h-3 w-3"
-              :class="{
-                'h-2-2': lineHorizontalBottom,
-                'v-2-2': lineVerticalRight,
-                'db-2-2': lineDiagonalBack,
-              }"
-              @click="placeItem(2, 2)"
-            >
-              <span class="circle" v-if="grid_content[2][2] === 'O'"></span>
-              <span class="cross" v-if="grid_content[2][2] === 'X'"></span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </n-collapse-transition>
+        <tr>
+          <td
+            class="h-3 w-1"
+            :class="{
+              'h-2-0': lineHorizontalBottom,
+              'v-2-0': lineVerticalLeft,
+              'df-2-0': lineDiagonalForward,
+            }"
+            @click="placeItem(2, 0)"
+          >
+            <span class="circle" v-if="grid_content[2][0] === 'O'"></span>
+            <span class="cross" v-if="grid_content[2][0] === 'X'"></span>
+          </td>
+          <td
+            class="h-3 w-2"
+            :class="{
+              'h-2-1': lineHorizontalBottom,
+              'v-2-1': lineVerticalCenter,
+            }"
+            @click="placeItem(2, 1)"
+          >
+            <span class="circle" v-if="grid_content[2][1] === 'O'"></span>
+            <span class="cross" v-if="grid_content[2][1] === 'X'"></span>
+          </td>
+          <td
+            class="h-3 w-3"
+            :class="{
+              'h-2-2': lineHorizontalBottom,
+              'v-2-2': lineVerticalRight,
+              'db-2-2': lineDiagonalBack,
+            }"
+            @click="placeItem(2, 2)"
+          >
+            <span class="circle" v-if="grid_content[2][2] === 'O'"></span>
+            <span class="cross" v-if="grid_content[2][2] === 'X'"></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -137,7 +135,6 @@ export default {
         ["", "", ""],
         ["", "", ""],
       ],
-      displayGrid: true,
       loadingMessage: null,
       infoMessage: null,
       endLineColor: "#63e2b7",
@@ -358,7 +355,6 @@ export default {
     async gameOver(way) {
       if (way !== "equality") await this.sleep(2000);
       else await this.sleep(1000);
-      this.displayGrid = false;
       this.endLineColor = "#63e2b7";
       this.changeOutcome(way);
     },
@@ -382,9 +378,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-table {
-  z-index: 3;
-  height: 60vh;
+.morpion {
+  height: 466px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -615,7 +610,7 @@ td {
     width: 100px;
   }
 
-  // CIRCLE
+  // CIRCLE - RESPONSIVE
 
   .circle:before {
     left: calc(15% - 3px);
@@ -624,7 +619,7 @@ td {
     height: 50px;
   }
 
-  // CROSS
+  // CROSS - RESPONSIVE
 
   .cross:before,
   .cross:after {
@@ -644,7 +639,7 @@ td {
     }
   }
 
-  // HORIZONTAL AND VERTICAL CASES
+  // HORIZONTAL AND VERTICAL CASES - RESPONSIVE
 
   .h-0-0:before,
   .h-0-1:before,
@@ -681,7 +676,7 @@ td {
     }
   }
 
-  //  DIAGONAL CASES
+  //  DIAGONAL CASES - RESPONSIVE
 
   .db-0-0:before,
   .db-1-1:before,

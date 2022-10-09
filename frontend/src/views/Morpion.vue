@@ -1,38 +1,36 @@
 <template>
-  <div class="morpion">
-    <n-h1>Morpion</n-h1>
+  <div class="room">
+    <div v-if="!isReady" class="waiting-card">
+      <n-h1>Morpion</n-h1>
 
-    <div v-if="!isReady">
-      <n-collapse-transition class="waiting-card" :show="displayWaitingCard">
-        <n-alert type="success">
-          <template #icon>
-            <n-spin size="small" />
-          </template>
-          En attente d'un autre joueur...
-        </n-alert>
-        <n-button @click="quitRoom()"> Annuler </n-button>
-      </n-collapse-transition>
+      <n-alert type="success">
+        <template #icon>
+          <n-spin size="small" />
+        </template>
+        En attente d'un autre joueur...
+      </n-alert>
+      <n-button @click="quitRoom()"> Annuler </n-button>
     </div>
 
-    <div v-else class="grid-wrapper">
+    <div v-else class="game-wrapper">
+      <n-h1>Morpion</n-h1>
+
       <grid v-if="outcome === ''" />
 
-      <n-collapse-transition :show="outcome !== ''">
-        <div class="end-game">
-          <n-result
-            :status="statusEndGame"
-            :title="titleEndGame"
-            :description="descriptionEndGame"
-          >
-            <template #footer>
-              <n-button @click="restartGame()" v-if="host && outcome">
-                Rejouer
-              </n-button>
-              <n-spin v-else size="medium" />
-            </template>
-          </n-result>
-        </div>
-      </n-collapse-transition>
+      <div v-else class="end-game">
+        <n-result
+          :status="statusEndGame"
+          :title="titleEndGame"
+          :description="descriptionEndGame"
+        >
+          <template #footer>
+            <n-button @click="restartGame()" v-if="host && outcome">
+              Rejouer
+            </n-button>
+            <n-spin v-else size="medium" />
+          </template>
+        </n-result>
+      </div>
 
       <n-button @click="quitRoomConfirm(quitRoom)" class="quit-button">
         Quitter la partie
@@ -52,7 +50,6 @@ export default {
   data() {
     return {
       isReady: false,
-      displayWaitingCard: true,
       toBack: false,
     };
   },
@@ -183,32 +180,35 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.room {
+  min-height: 100vh;
+}
 .n-h1 {
-  padding-top: 70px;
+  padding-top: 1em;
+  margin-bottom: 0;
 }
 .n-h3 {
   margin-top: 5px;
   margin-bottom: 15px;
 }
 .waiting-card {
+  height: 100vh;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   flex-direction: column;
   align-items: center;
-
-  .n-alert {
-    margin-bottom: 15px;
-  }
 }
 
-.grid-wrapper {
+.game-wrapper {
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-around;
 }
 
 .end-game {
-  height: 60vh;
+  height: 466px;
   display: flex;
   flex-direction: column;
   align-items: center;

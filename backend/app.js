@@ -5,12 +5,12 @@ const http = require('http').createServer(app);
 
 // const frontendHost = 'http://localhost:8080'
 // const host = 'http://localhost'
-// const port = 3000
 
 // production
 
 const frontendHost = 'http://playground.rodolphe-cabotiau.com'
 const host = 'http://node.playground.rodolphe-cabotiau.com'
+
 const port = 3000
 
 const io = require('socket.io')(http, {
