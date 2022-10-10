@@ -41,6 +41,7 @@ npm run serve
 
 ## TODO
 
+- Gérer correctement l'event resize (liste des salons sur la home)
 - Ajouter le mode 3 joueurs pour le pierre-papier-ciseaux
 
 ## IMPROVEMENT

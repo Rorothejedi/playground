@@ -12,6 +12,8 @@
             placeholder="ex: Toto"
             :disabled="lockUsernameInput"
             size="large"
+            maxlength="30"
+            show-count
           />
           <n-button
             :type="!lockUsernameInput ? 'primary' : ''"
@@ -72,26 +74,33 @@
         <n-card title="Liste des salons disponibles">
           <n-space vertical :size="12">
             <div v-if="availableRooms.length !== 0">
-              <n-list bordered>
+              <n-list>
                 <n-list-item v-for="(room, key) in availableRooms" :key="key">
                   <template #prefix>
-                    <n-tag :bordered="false" type="success">
+                    <n-tag
+                      :bordered="false"
+                      type="success"
+                      :size="isMobile ? 'small' : 'medium'"
+                      round
+                    >
                       {{ room.players[0].game }}
                     </n-tag>
+
+                    <n-text v-if="isMobile" italic class="room-creator">
+                      by {{ room.players[0].username }}
+                    </n-text>
                   </template>
 
-                  <n-space justify="space-between">
-                    <span>
-                      by
-                      <i>
-                        {{ room.players[0].username }}
-                      </i>
-                    </span>
-                    <!-- <n-text depth="3">{{ room.id }}</n-text> -->
-                  </n-space>
+                  <n-text v-if="!isMobile" italic class="room-creator">
+                    by {{ room.players[0].username }}
+                  </n-text>
 
                   <template #suffix>
-                    <n-button @click="joinRoom(room)">Rejoindre</n-button>
+                    <n-button
+                      @click="joinRoom(room)"
+                      :size="isMobile ? 'small' : 'medium'"
+                      >Rejoindre</n-button
+                    >
                   </template>
                 </n-list-item>
               </n-list>
@@ -135,6 +144,7 @@ export default {
         },
       ],
       loadingCreatingRoom: false,
+      windowWidth: window.innerWidth,
 
       // game options (rock-paper-scissors)
       localNumberOfPlayer: 2,
@@ -149,6 +159,9 @@ export default {
 
     availableRooms() {
       return this.rooms.filter((r) => r.players.length < 2);
+    },
+    isMobile() {
+      return this.windowWidth <= 600;
     },
   },
 
@@ -178,6 +191,14 @@ export default {
 
     this.tempUsername = this.username;
     this.chooseUsername();
+
+    window.addEventListener("resize", () => {
+      this.windowWidth = window.innerWidth;
+    });
+  },
+
+  beforeUnmount() {
+    window.removeEventListener("resize");
   },
 
   methods: {
@@ -280,5 +301,26 @@ export default {
 .no-room {
   padding-top: 30px;
   padding-bottom: 30px;
+}
+
+.n-list-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.room-creator {
+  margin-left: 20px;
+}
+.n-tag {
+  width: fit-content;
+}
+</style>
+
+<style>
+.n-list-item__prefix {
+  margin-right: 0px !important;
+  flex: initial !important;
+  display: flex;
+  flex-direction: column;
 }
 </style>
