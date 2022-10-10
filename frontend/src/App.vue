@@ -65,7 +65,6 @@ export default {
 
 .n-h1 {
   text-align: center;
-  padding-top: 50px;
   font-family: "Major Mono Display", monospace;
 }
 </style>

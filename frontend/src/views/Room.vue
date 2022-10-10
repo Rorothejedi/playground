@@ -186,7 +186,6 @@ export default {
 
     quitRoom() {
       this.toBack = false;
-      // this.changeOutcome("");
       this.changeReplay(false);
       this.$router.push({ name: "Home" });
     },
@@ -199,7 +198,6 @@ export default {
   min-height: 100vh;
 }
 .n-h1 {
-  padding-top: 1em;
   margin-bottom: 0;
 }
 .n-h3 {

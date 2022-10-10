@@ -4,10 +4,8 @@ export default {
     namespaced: true,
 
     state: {
-        // encapsulated data 
         enemyData: [],
 
-        // game data
         game: '',
         scoreToReach: 1,
         numberOfPlayer: 2,
@@ -21,12 +19,10 @@ export default {
     },
 
     mutations: {
-        // encapsulated data 
         SET_ENEMY_DATA(state, payload) {
             state.enemyData = payload
         },
 
-        // game data
         SET_GAME(state, payload) {
             state.game = payload
         },
@@ -53,14 +49,16 @@ export default {
 
     actions: {
 
-        // ROCK-PAPER-SCISSORS EVENTS
-        emitPlayToRockPaperScissors(store) {
+        // PLAY_TO_ROCK_PAPER_SCISSORS EVENTS
+        emitPlayToRockPaperScissors(store, newRound = false) {
             const data = {
                 socketId: store.rootState.player.socketId,
                 roomId: store.rootState.player.roomId,
                 username: store.rootState.player.username,
                 chosenItem: store.state.chosenItem,
                 score: store.rootState.player.score,
+
+                newRound: newRound,
             }
 
             socketioService.socket.emit('toServer_playRockPaperScissors', data)
@@ -72,7 +70,7 @@ export default {
             })
         },
 
-        // MORPION EVENTS
+        // PLAY_TO_MORPION EVENTS
         emitPlayToMorpion(store) {
             const data = {
                 socketId: store.rootState.player.socketId,
@@ -93,12 +91,14 @@ export default {
             })
         },
 
-        // edit state methods
+        // ---------
+
+        changeEnemyData(store, value) {
+            store.commit('SET_ENEMY_DATA', value)
+        },
         resetEnemyData(store) {
             store.commit('SET_ENEMY_DATA', [])
         },
-
-        // game data
 
         changeGame(store, value) {
             store.commit('SET_GAME', value)

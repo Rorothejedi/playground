@@ -43,7 +43,7 @@
             <n-form inline>
               <n-form-item label="Nombre de joueur">
                 <n-input-number
-                  v-model:value="roomNumberOfPlayer"
+                  v-model:value="localNumberOfPlayer"
                   :min="2"
                   :max="5"
                   :disabled="true"
@@ -51,9 +51,9 @@
               </n-form-item>
               <n-form-item label="Score à atteindre">
                 <n-input-number
-                  v-model:value="roomScoreToReach"
+                  v-model:value="localScoreToReach"
                   :min="1"
-                  :max="10"
+                  :max="100"
                 />
               </n-form-item>
             </n-form>
@@ -87,7 +87,7 @@
                         {{ room.players[0].username }}
                       </i>
                     </span>
-                    <n-text depth="3">{{ room.id }}</n-text>
+                    <!-- <n-text depth="3">{{ room.id }}</n-text> -->
                   </n-space>
 
                   <template #suffix>
@@ -137,8 +137,8 @@ export default {
       loadingCreatingRoom: false,
 
       // game options (rock-paper-scissors)
-      roomNumberOfPlayer: 2,
-      roomScoreToReach: 1,
+      localNumberOfPlayer: 2,
+      localScoreToReach: 1,
     };
   },
 
@@ -153,10 +153,10 @@ export default {
   },
 
   watch: {
-    roomScoreToReach(newValue) {
+    localScoreToReach(newValue) {
       this.changeScoreToReach(newValue);
     },
-    roomNumberOfPlayer(newValue) {
+    localNumberOfPlayer(newValue) {
       this.changeNumberOfPlayer(newValue);
     },
   },
@@ -189,9 +189,12 @@ export default {
       "changeTurn",
       "changeIsWinner",
       "changeOutcome",
-      "emitCreateOrJoinRoom",
     ]),
-    ...mapActions("room", ["emitGetRooms", "emitLeaveRoom"]),
+    ...mapActions("room", [
+      "emitCreateOrJoinRoom",
+      "emitGetRooms",
+      "emitLeaveRoom",
+    ]),
     ...mapActions("game", [
       "resetEnemyData",
       "changeGame",
@@ -256,6 +259,7 @@ export default {
 .n-h1 {
   font-size: 2.5em;
   padding-bottom: 20px;
+  padding-top: 50px;
 }
 .username-card,
 .room-card,

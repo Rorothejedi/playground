@@ -5,10 +5,8 @@ Site online: http://playground.rodolphe-cabotiau.com/
 
 ## Jeux présents
 
-- Morpion
-- Pierre-papier-ciseaux (alpha)
-
---------------
+- Morpion (2 joueurs)
+- Pierre-papier-ciseaux (beta) (2 joueurs)
 
 ## backend 
 
@@ -29,7 +27,6 @@ npm install
 npm run serve
 ```
 
---------------
 
 ## Technos utilisées:
 
@@ -42,23 +39,21 @@ npm run serve
 - Naive UI (v2.33.4) - https://www.naiveui.com/en-US/dark
 - less
 
---------------
-
 ## TODO
 
-- Refacto global
-- Faire l'intégration du score sur le pierre-papier-ciseaux
+- Ajouter le mode 3 joueurs pour le pierre-papier-ciseaux
 
 ## IMPROVEMENT
 
+- Afficher les options du salon sur la liste des salons
+- Ajouter le pierre-papier-ciseaux-lesard-spock
 - En cas de refresh, redirection vers la home pour eviter un loader infini sur la room
 - Pouvoir choisir les croix ou les ronds (morpion) (option)
 - Améliorer les cas d'égalité (morpion)
 - Compter les scores et en gérer l'affichage (morpion)
 - Mettre en https
-- Afficher le nom de l'adversaire (peut-être dans le message loading / avec les scores)
 - Gérer le fait de rejoindre une partie avec le lien (demande du username si pas renseigné puis redirection)
-- Ajouter un autre jeu (puissance 4, shi-fu-mi, bataille)
+- Ajouter d'autres jeux (puissance 4, bataille, skyjo)
 
 ## IMPROVEMENT (hyper facultatif)
 

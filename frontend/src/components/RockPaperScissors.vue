@@ -1,61 +1,72 @@
 <template>
   <div>
-    <div class="choices" v-if="displayChoices">
-      <div class="choice">
-        <img
-          src="@/assets/rock.svg"
-          alt="La pierre"
-          @click="chooseItem('rock')"
-          :class="{
-            chosen: chosenItem === 'rock',
-            'disabled-item': chosenItem !== '',
-          }"
-        />
+    <n-collapse-transition :show="displayChoices">
+      <div class="choices">
+        <div class="choice">
+          <img
+            src="@/assets/rock.svg"
+            alt="La pierre"
+            title="La pierre"
+            @click="chooseItem('rock')"
+            :class="{
+              chosen: chosenItem === 'rock',
+              'disabled-item': chosenItem !== '',
+            }"
+            rel="preload"
+          />
+        </div>
+        <div class="choice">
+          <img
+            src="@/assets/paper.svg"
+            alt="Le papier"
+            title="Le Papier"
+            @click="chooseItem('paper')"
+            :class="{
+              chosen: chosenItem === 'paper',
+              'disabled-item': chosenItem !== '',
+            }"
+            rel="preload"
+          />
+        </div>
+        <div class="choice">
+          <img
+            src="@/assets/scissors.svg"
+            alt="Les ciseaux"
+            title="Les ciseaux"
+            @click="chooseItem('scissors')"
+            :class="{
+              chosen: chosenItem === 'scissors',
+              'disabled-item': chosenItem !== '',
+            }"
+            rel="preload"
+          />
+        </div>
       </div>
-      <div class="choice">
-        <img
-          src="@/assets/paper.svg"
-          alt="Le papier"
-          @click="chooseItem('paper')"
-          :class="{
-            chosen: chosenItem === 'paper',
-            'disabled-item': chosenItem !== '',
-          }"
-        />
-      </div>
-      <div class="choice">
-        <img
-          src="@/assets/scissors.svg"
-          alt="Les ciseaux"
-          @click="chooseItem('scissors')"
-          :class="{
-            chosen: chosenItem === 'scissors',
-            'disabled-item': chosenItem !== '',
-          }"
-        />
-      </div>
-    </div>
+    </n-collapse-transition>
 
     <n-collapse-transition :show="displayEndgame">
       <div class="endgame">
         <div>
           <img
-            v-if="chosenItem === 'rock'"
+            v-show="chosenItem === 'rock'"
             src="@/assets/rock.svg"
             alt="La pierre"
             :class="localOutcome"
+            rel="preload"
           />
           <img
-            v-else-if="chosenItem === 'paper'"
+            v-show="chosenItem === 'paper'"
             src="@/assets/paper.svg"
             alt="Le papier"
             :class="localOutcome"
+            rel="preload"
           />
           <img
-            v-else-if="chosenItem === 'scissors'"
+            v-show="chosenItem === 'scissors'"
             src="@/assets/scissors.svg"
             alt="Les ciseaux"
             :class="localOutcome"
+            rel="preload"
           />
         </div>
 
@@ -63,36 +74,51 @@
 
         <div>
           <img
-            v-if="enemyData.chosenItem === 'rock'"
+            v-show="enemyData.chosenItem === 'rock'"
             src="@/assets/rock-reverse.svg"
             alt="La pierre"
             :class="enemyEndgameColorClass"
+            rel="preload"
           />
           <img
-            v-else-if="enemyData.chosenItem === 'paper'"
+            v-show="enemyData.chosenItem === 'paper'"
             src="@/assets/paper-reverse.svg"
             alt="Le papier"
             :class="enemyEndgameColorClass"
+            rel="preload"
           />
           <img
-            v-else-if="enemyData.chosenItem === 'scissors'"
+            v-show="enemyData.chosenItem === 'scissors'"
             src="@/assets/scissors-reverse.svg"
             alt="Les ciseaux"
             :class="enemyEndgameColorClass"
+            rel="preload"
           />
         </div>
       </div>
     </n-collapse-transition>
 
-    <div>
-      <n-text>Score : </n-text>
-      <n-text>{{}}</n-text>
+    <div class="scores">
+      <div>
+        <n-text italic>{{ username }} </n-text>
+        <n-text> - {{ score }} </n-text>
+      </div>
+
+      <div>
+        <n-text italic>
+          {{ enemy !== undefined ? enemy.username : "" }}
+        </n-text>
+        <n-text>
+          -
+          {{ enemyData.length !== 0 ? enemyData.score : 0 }}
+        </n-text>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import gameMessages from "@/mixins/gameMessages";
 import utils from "@/mixins/utils";
 
@@ -109,7 +135,9 @@ export default {
   },
 
   computed: {
-    ...mapState("game", ["chosenItem", "enemyData"]),
+    ...mapState("player", ["username", "score"]),
+    ...mapState("game", ["enemyData", "chosenItem", "scoreToReach"]),
+    ...mapGetters("room", ["room", "enemy"]),
 
     enemyEndgameColorClass() {
       if (this.localOutcome === "victory") return "defeat";
@@ -121,30 +149,31 @@ export default {
 
   watch: {
     enemyData(newValue) {
-      // console.log("watch enemy data", newValue);
       if (newValue.length === 0) return;
-      if (this.chosenItem === "")
+      if (this.chosenItem === "") {
         this.createInfoMessage(`${newValue.username} a choisi son coup`);
+      }
+
       this.checkResult();
     },
   },
 
   mounted() {
     this.listenPlayToRockPaperScissors();
-    this.resetEnemyData();
-    this.changeChosenItem("");
   },
 
   beforeUnmount() {
     this.resetEnemyData();
     this.changeChosenItem("");
+    this.changeScore(0);
   },
 
   methods: {
-    ...mapActions("player", ["changeOutcome"]),
+    ...mapActions("player", ["changeOutcome", "changeScore"]),
     ...mapActions("game", [
       "emitPlayToRockPaperScissors",
       "listenPlayToRockPaperScissors",
+      "changeEnemyData",
       "resetEnemyData",
       "changeChosenItem",
     ]),
@@ -175,7 +204,7 @@ export default {
         (enemyItem === "paper" && this.chosenItem === "paper") ||
         (enemyItem === "scissors" && this.chosenItem === "scissors")
       ) {
-        this.gameOver("equality");
+        this.roundOver("equality");
       }
     },
 
@@ -185,7 +214,8 @@ export default {
         (enemyItem === "paper" && this.chosenItem === "scissors") ||
         (enemyItem === "scissors" && this.chosenItem === "rock")
       ) {
-        this.gameOver("victory");
+        this.changeScore(this.score + 1);
+        this.roundOver("victory");
       }
     },
 
@@ -195,18 +225,39 @@ export default {
         (enemyItem === "paper" && this.chosenItem === "rock") ||
         (enemyItem === "scissors" && this.chosenItem === "paper")
       ) {
-        this.gameOver("defeat");
+        let data = this.enemyData;
+
+        data.score = this.enemyData.score + 1;
+
+        this.changeEnemyData(data);
+        this.roundOver("defeat");
       }
     },
 
-    async gameOver(way) {
+    async roundOver(way) {
       this.localOutcome = way;
       this.displayChoices = false;
       this.displayEndgame = true;
 
       await this.sleep(2000);
 
-      this.displayEndgame = false;
+      let data = this.enemyData;
+      data.chosenItem = "";
+      this.changeEnemyData(data);
+      this.changeChosenItem("");
+
+      if (this.score === this.room.scoreToReach) {
+        this.gameOver("victory");
+      } else if (this.enemyData.score === this.room.scoreToReach) {
+        this.gameOver("defeat");
+      } else {
+        this.displayEndgame = false;
+        this.displayChoices = true;
+      }
+    },
+
+    gameOver(way) {
+      this.displayChoices = false;
 
       this.changeOutcome(way);
     },
@@ -217,7 +268,7 @@ export default {
 <style lang="less" scoped>
 .choices {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   width: 600px;
   height: 200px;
@@ -245,16 +296,6 @@ export default {
     border-radius: 50%;
     transition: all 0.3s;
     box-shadow: 0px 0px 0px 1px #ffffffd1;
-
-    // #e88080
-    // filter: brightness(0) saturate(100%) invert(53%) sepia(17%) saturate(1351%)
-    //   hue-rotate(312deg) brightness(112%) contrast(82%);
-    // #63e2b7
-    // filter: brightness(0) saturate(100%) invert(81%) sepia(34%) saturate(568%)
-    //   hue-rotate(102deg) brightness(93%) contrast(92%);
-    // #f2c97d
-    // filter: brightness(0) saturate(100%) invert(87%) sepia(17%) saturate(1176%)
-    //   hue-rotate(339deg) brightness(98%) contrast(94%);
   }
   img:hover {
     cursor: pointer;
@@ -267,6 +308,7 @@ export default {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  width: 600px;
 
   div {
     img {
@@ -275,23 +317,68 @@ export default {
     }
 
     .victory {
+      // #63e2b7
       filter: brightness(0) saturate(100%) invert(81%) sepia(34%) saturate(568%)
         hue-rotate(102deg) brightness(93%) contrast(92%);
     }
     .defeat {
+      // e88080
       filter: brightness(0) saturate(100%) invert(53%) sepia(17%)
         saturate(1351%) hue-rotate(312deg) brightness(112%) contrast(82%);
     }
     .equality {
+      // #f2c97d
       filter: brightness(0) saturate(100%) invert(87%) sepia(17%)
         saturate(1176%) hue-rotate(339deg) brightness(98%) contrast(94%);
     }
   }
 }
 
-@media screen and (max-width: 500px) {
+.scores {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  font-size: 1.3rem;
+  padding-top: 50px;
+}
+
+@media screen and (max-width: 620px) {
   .choices {
-    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 95vw;
+    height: auto;
+
+    .choice {
+      width: 150px;
+      padding-top: 5px;
+    }
+    img {
+      width: 120px;
+    }
+  }
+
+  .endgame {
+    width: 95vw;
+
+    div img {
+      width: 170px;
+    }
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .choice {
+    padding-top: 10px !important;
+  }
+  img {
+    width: 110px !important;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  .scores {
+    padding-top: 0px !important;
   }
 }
 </style>

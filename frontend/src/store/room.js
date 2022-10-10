@@ -30,6 +30,24 @@ export default {
 
     actions: {
 
+        // CREATE_OR_JOIN_ROOM EVENT
+        emitCreateOrJoinRoom(store) {
+            store.commit('player/SET_SOCKET_ID', socketioService.socket.id, {
+                root: true
+            })
+
+            const data = {
+                socketId: store.rootState.player.socketId,
+                username: store.rootState.player.username,
+                roomId: store.rootState.player.roomId,
+                host: store.rootState.player.host,
+                game: store.rootState.game.game,
+                scoreToReach: store.rootState.game.scoreToReach,
+            }
+
+            socketioService.socket.emit("toServer_createOrJoinRoom", data);
+        },
+
         // GET_ROOMS EVENT
         emitGetRooms(store) {
             socketioService.socket.emit("toServer_getRooms", store.state);
@@ -57,7 +75,8 @@ export default {
             })
         },
 
-        // edit state methods
+        // ------
+
         changeReplay(store, value) {
             store.commit('SET_REPLAY', value)
         },

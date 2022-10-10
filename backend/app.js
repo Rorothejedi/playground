@@ -3,13 +3,13 @@ const http = require('http').createServer(app);
 
 // localhost
 
-const frontendHost = 'http://localhost:8080'
-const host = 'http://localhost'
+// const frontendHost = 'http://localhost:8080'
+// const host = 'http://localhost'
 
 // production
 
-// const frontendHost = 'http://playground.rodolphe-cabotiau.com'
-// const host = 'http://node.playground.rodolphe-cabotiau.com'
+const frontendHost = 'http://playground.rodolphe-cabotiau.com'
+const host = 'http://node.playground.rodolphe-cabotiau.com'
 
 const port = 3000
 
@@ -83,17 +83,18 @@ io.on('connection', (socket) => {
     })
 })
 
-function createRoom(player) {
+function createRoom(data) {
     const room = {
         id: createRoomId(),
+        scoreToReach: data.scoreToReach,
         players: []
     }
 
-    player.roomId = room.id
-    room.players.push(player)
+    data.roomId = room.id
+    room.players.push(data)
     rooms.push(room)
 
-    console.log(`[create room] - ${room.id} - ${player.username}`)
+    console.log(`[create room] - ${room.id} - ${data.username}`)
 
     io.emit('toClient_getRooms', rooms)
 
