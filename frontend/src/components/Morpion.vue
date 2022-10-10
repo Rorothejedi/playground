@@ -1,6 +1,5 @@
 <template>
   <div class="morpion">
-    <!-- <n-collapse-transition :show="displayGrid" appear> -->
     <table cellspacing="0" cellpadding="0">
       <tbody>
         <tr>
@@ -118,12 +117,11 @@
         </tr>
       </tbody>
     </table>
-    <!-- </n-collapse-transition> -->
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import gameMessages from "@/mixins/gameMessages";
 import utils from "@/mixins/utils";
 
@@ -138,7 +136,8 @@ export default {
         ["", "", ""],
         ["", "", ""],
       ],
-      displayGrid: true,
+      symbol: "X",
+      enemySymbol: "O",
       endLineColor: "#63e2b7",
       lineHorizontalTop: false,
       lineHorizontalCenter: false,
@@ -152,42 +151,34 @@ export default {
   },
 
   computed: {
-    ...mapState("player", [
-      "host",
-      "turn",
-      "socketId",
-      "win",
-      "playedCell",
-      "symbol",
-      "enemyPlayer",
-    ]),
+    ...mapState("player", ["socketId", "host", "turn", "isWinner"]),
+    ...mapState("game", ["playedCell", "enemyData"]),
+    ...mapGetters("room", ["enemy"]),
   },
 
   watch: {
-    enemyPlayer() {
+    enemyData() {
       this.placeEnemyItem();
     },
   },
 
   mounted() {
-    this.listenPlay();
+    this.listenPlayToMorpion();
 
     if (this.turn) {
       this.createInfoMessage("A toi de jouer");
     } else {
-      this.createLoadingMessage("L'adversaire prépare son coup");
+      this.createLoadingMessage(`${this.enemy.username} prépare son coup`);
     }
   },
 
   methods: {
-    ...mapActions("player", [
+    ...mapActions("player", ["changeTurn", "changeIsWinner", "changeOutcome"]),
+    ...mapActions("game", [
+      "emitPlayToMorpion",
+      "listenPlayToMorpion",
       "changePlayedCell",
-      "changeTurn",
-      "changeWin",
-      "changeOutcome",
       "changeVictoryWay",
-      "emitPlay",
-      "listenPlay",
     ]),
 
     placeItem(x, y) {
@@ -196,28 +187,29 @@ export default {
 
       this.removeMessage();
 
-      this.grid_content[x][y] = "X";
+      this.grid_content[x][y] = this.symbol;
       this.changePlayedCell([x, y]);
 
-      this.checkWin();
+      this.checkVictory();
 
       this.changeTurn(false);
-      this.emitPlay();
+      this.emitPlayToMorpion();
 
-      if (this.win) return;
+      if (this.isWinner) return;
       if (this.checkEquality()) return;
 
       this.createLoadingMessage("L'adversaire prépare son coup");
     },
 
     placeEnemyItem() {
-      if (this.socketId === this.enemyPlayer.socketId) return;
-      if (this.enemyPlayer.turn) return;
+      if (this.enemyData.length === 0) return;
+      if (this.socketId === this.enemyData.socketId) return;
+      if (this.enemyData.turn) return;
 
       this.removeMessage();
 
-      let cell = this.enemyPlayer.playedCell;
-      this.grid_content[cell[0]][cell[1]] = "O";
+      let cell = this.enemyData.playedCell;
+      this.grid_content[cell[0]][cell[1]] = this.enemySymbol;
 
       if (this.checkDefeat()) return;
       if (this.checkEquality()) return;
@@ -239,30 +231,30 @@ export default {
     },
 
     checkDefeat() {
-      if (!this.enemyPlayer.win) return false;
+      if (!this.enemyData.isWinner) return false;
 
       this.endLineColor = "#e88080";
-      this.addLine(this.enemyPlayer.victoryWay);
+      this.addLine(this.enemyData.victoryWay);
       this.gameOver("defeat");
 
       return true;
     },
 
-    checkWin() {
-      if (this.enemyPlayer.length === 0) return;
+    checkVictory() {
+      if (this.enemyData.length === 0) return;
       if (
-        !this.checkWinHorizontal() &&
-        !this.checkWinVertical() &&
-        !this.checkWinDiagonalBack() &&
-        !this.checkWinDiagonalForward()
+        !this.checkVictoryHorizontal() &&
+        !this.checkVictoryVertical() &&
+        !this.checkVictoryDiagonalBack() &&
+        !this.checkVictoryDiagonalForward()
       )
         return;
 
-      this.changeWin(true);
-      this.gameOver("win");
+      this.changeIsWinner(true);
+      this.gameOver("victory");
     },
 
-    checkWinHorizontal() {
+    checkVictoryHorizontal() {
       let row = this.playedCell[0];
 
       for (let y = 0; y < 3; y++) {
@@ -276,7 +268,7 @@ export default {
       return true;
     },
 
-    checkWinVertical() {
+    checkVictoryVertical() {
       let column = this.playedCell[1];
 
       for (let x = 0; x < 3; x++) {
@@ -290,7 +282,7 @@ export default {
       return true;
     },
 
-    checkWinDiagonalBack() {
+    checkVictoryDiagonalBack() {
       // * - -
       // - * -
       // - - *
@@ -304,7 +296,7 @@ export default {
       return true;
     },
 
-    checkWinDiagonalForward() {
+    checkVictoryDiagonalForward() {
       // - - *
       // - * -
       // * - -
@@ -324,7 +316,6 @@ export default {
       if (way !== "equality") await this.sleep(2000);
       else await this.sleep(1000);
       this.endLineColor = "#63e2b7";
-      this.displayGrid = false;
 
       this.changeOutcome(way);
     },

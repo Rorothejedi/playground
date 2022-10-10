@@ -28,20 +28,43 @@
     <n-collapse-transition :show="lockUsernameInput">
       <div class="create-room-card">
         <n-card>
-          <n-input-group>
-            <n-select
-              v-model:value="selectedGame"
-              :options="gamesAvailable"
-              placeholder="Choisir un jeu"
-            />
+          <n-form>
+            <n-form-item label="Jeu">
+              <n-select
+                v-model:value="selectedGame"
+                :options="gamesAvailable"
+                placeholder="Choisir un jeu"
+              />
+            </n-form-item>
+          </n-form>
+          <n-collapse-transition
+            :show="selectedGame === 'Pierre-papier-ciseaux'"
+          >
+            <n-form inline>
+              <n-form-item label="Nombre de joueur">
+                <n-input-number
+                  v-model:value="roomNumberOfPlayer"
+                  :min="2"
+                  :max="5"
+                  :disabled="true"
+                />
+              </n-form-item>
+              <n-form-item label="Score à atteindre">
+                <n-input-number
+                  v-model:value="roomScoreToReach"
+                  :min="1"
+                  :max="10"
+                />
+              </n-form-item>
+            </n-form>
+          </n-collapse-transition>
 
-            <n-button
-              @click="createRoom()"
-              :disabled="!lockUsernameInput || !selectedGame"
-            >
-              Créer un salon
-            </n-button>
-          </n-input-group>
+          <n-button
+            @click="createRoom()"
+            :disabled="!lockUsernameInput || !selectedGame"
+          >
+            Créer un salon
+          </n-button>
         </n-card>
       </div>
 
@@ -110,28 +133,43 @@ export default {
           label: "Pierre-papier-ciseaux",
           value: "Pierre-papier-ciseaux",
         },
-        // { label: "Puissance4", value: "Puissance4" },
-        // { label: "Skyjo", value: "Skyjo" },
       ],
       loadingCreatingRoom: false,
+
+      // game options (rock-paper-scissors)
+      roomNumberOfPlayer: 2,
+      roomScoreToReach: 1,
     };
   },
 
   computed: {
-    ...mapState("player", ["username", "game"]),
+    ...mapState("player", ["username"]),
     ...mapState("room", ["rooms"]),
+    ...mapState("game", ["game"]),
 
     availableRooms() {
       return this.rooms.filter((r) => r.players.length < 2);
     },
   },
 
-  mounted() {
-    if (this.game !== "") this.changeGame("");
-    this.changeRoomId("");
-    this.changeRoomPlayers([]);
+  watch: {
+    roomScoreToReach(newValue) {
+      this.changeScoreToReach(newValue);
+    },
+    roomNumberOfPlayer(newValue) {
+      this.changeNumberOfPlayer(newValue);
+    },
+  },
 
-    this.emitRooms();
+  mounted() {
+    if (this.game !== "") this.emitLeaveRoom();
+
+    this.resetEnemyData();
+    this.changeOutcome("");
+    this.changeGame("");
+    this.changeRoomId("");
+
+    this.emitGetRooms();
 
     if (this.username === "") {
       this.$refs.usernameInput.focus();
@@ -145,15 +183,21 @@ export default {
   methods: {
     ...mapActions("player", [
       "changeUsername",
-      "changeGame",
       "changeHost",
       "changeRoomId",
       "changeSocketId",
       "changeTurn",
-      "changeWin",
-      "emitPlayerData",
+      "changeIsWinner",
+      "changeOutcome",
+      "emitCreateOrJoinRoom",
     ]),
-    ...mapActions("room", ["emitRooms", "changeRoomPlayers"]),
+    ...mapActions("room", ["emitGetRooms", "emitLeaveRoom"]),
+    ...mapActions("game", [
+      "resetEnemyData",
+      "changeGame",
+      "changeScoreToReach",
+      "changeNumberOfPlayer",
+    ]),
 
     chooseUsername() {
       this.lockUsernameInput = !this.lockUsernameInput;
@@ -166,13 +210,13 @@ export default {
 
       this.loadingCreatingRoom = true;
 
+      this.changeSocketId(socketioService.socket.id);
       this.changeGame(this.selectedGame);
       this.changeHost(true);
       this.changeTurn(true);
-      this.changeWin(false);
-      this.changeSocketId(socketioService.socket.id);
+      this.changeIsWinner(false);
 
-      this.emitPlayerData();
+      this.emitCreateOrJoinRoom();
 
       window.$loading.start();
       window.$message.loading("Salon en cours de création...", {
@@ -190,14 +234,14 @@ export default {
     },
 
     joinRoom(room) {
+      this.changeSocketId(socketioService.socket.id);
       this.changeGame(room.players[0].game);
       this.changeRoomId(room.id);
       this.changeHost(false);
       this.changeTurn(false);
-      this.changeWin(false);
-      this.changeSocketId(socketioService.socket.id);
+      this.changeIsWinner(false);
 
-      this.emitPlayerData();
+      this.emitCreateOrJoinRoom();
 
       this.$router.push({
         name: "Room",
@@ -210,7 +254,8 @@ export default {
 
 <style lang="less" scoped>
 .n-h1 {
-  font-family: "Major Mono Display", monospace;
+  font-size: 2.5em;
+  padding-bottom: 20px;
 }
 .username-card,
 .room-card,

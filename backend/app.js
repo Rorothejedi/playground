@@ -3,13 +3,13 @@ const http = require('http').createServer(app);
 
 // localhost
 
-// const frontendHost = 'http://localhost:8080'
-// const host = 'http://localhost'
+const frontendHost = 'http://localhost:8080'
+const host = 'http://localhost'
 
 // production
 
-const frontendHost = 'http://playground.rodolphe-cabotiau.com'
-const host = 'http://node.playground.rodolphe-cabotiau.com'
+// const frontendHost = 'http://playground.rodolphe-cabotiau.com'
+// const host = 'http://node.playground.rodolphe-cabotiau.com'
 
 const port = 3000
 
@@ -30,66 +30,55 @@ let rooms = []
 io.on('connection', (socket) => {
     console.log(`[connection] ${socket.id}`)
 
-    socket.on('playerData', (player) => {
-        console.log(`[player data received] ${player.username}`)
+    socket.on('toServer_createOrJoinRoom', (data) => {
         let room = null
 
-        if (!player.roomId) {
-            room = createRoom(player)
+        if (!data.roomId) {
+            room = createRoom(data)
         } else {
-            room = rooms.find(r => r.id === player.roomId)
+            room = rooms.find(r => r.id === data.roomId)
 
             if (room === undefined) return
 
-            player.roomId = room.id;
-            room.players.push(player)
+            data.roomId = room.id
+            room.players.push(data)
         }
 
         socket.join(room.id)
-        io.to(socket.id).emit('joinRoom', room.id)
-        console.log(`[join room] ${room.id}`)
 
         if (room.players.length === 2) {
-            io.to(room.id).emit('startGame', room.players)
-            io.emit('allRooms', rooms)
-            console.log(`[start game] ${room.id}`)
+            io.emit('toClient_getRooms', rooms)
         }
     })
 
-    socket.on('leaveGame', (room) => {
-        console.log('leaveGame', socket.id)
+    socket.on('toServer_leaveRoom', () => {
         destroyRoom(socket, rooms)
-        io.to(room.id).emit('leaveRoom', room.players)
     })
 
-    socket.on('roomsData', () => {
-        io.emit('allRooms', rooms)
+    socket.on('toServer_getRooms', () => {
+        io.emit('toClient_getRooms', rooms)
     })
 
-    socket.on('play', (player) => {
-        delete player.enemyPlayer
-
-        console.log(`[play] ${player}`)
-        io.to(player.roomId).emit('play', player)
+    socket.on('toServer_playToMorpion', (data) => {
+        socket.to(data.roomId).emit('toClient_playToMorpion', data)
     })
 
-    socket.on('playRockPaperScissors', (data) => {
-        socket.to(data.roomId).emit('playRockPaperScissors', data)
+    socket.on('toServer_playRockPaperScissors', (data) => {
+        socket.to(data.roomId).emit('toClient_playRockPaperScissors', data)
     })
 
-    socket.on('replay', (roomId) => {
+    socket.on('toServer_replay', (roomId) => {
         const room = rooms.find(r => r.id === roomId)
 
         if (room && room.players.length === 2) {
-            console.log(`[replay] ${roomId}`)
-            io.to(room.id).emit('replay')
+            socket.to(room.id).emit('toClient_replay')
         }
     })
 
     socket.on('disconnect', () => {
         destroyRoom(socket)
 
-        console.log('rooms : ', rooms)
+        console.log('ROOMS AVAILABLE : ', rooms)
         console.log(`[disconnect] ${socket.id}`)
     })
 })
@@ -106,7 +95,7 @@ function createRoom(player) {
 
     console.log(`[create room] - ${room.id} - ${player.username}`)
 
-    io.emit('allRooms', rooms)
+    io.emit('toClient_getRooms', rooms)
 
     return room
 }
@@ -116,18 +105,17 @@ function destroyRoom(socket) {
 
     rooms.forEach(r => {
         r.players.forEach(p => {
-            if (p.socketId === socket.id) {
-                room = r
-                rooms = rooms.filter(r => r !== room)
+            if (p.socketId !== socket.id) return
+            room = r;
+            rooms = rooms.filter(r => r !== room);
 
-                console.log(`[destroy room] - ${room.id} - ${p.username}`)
+            console.log(`[destroy room] - ${room.id}`);
 
-                socket.leave(room.id)
-            }
-        })
+            socket.leave(room.id);
+        });
     })
 
-    socket.broadcast.emit('allRooms', rooms)
+    socket.broadcast.emit('toClient_getRooms', rooms)
 }
 
 function createRoomId() {

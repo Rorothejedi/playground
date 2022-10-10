@@ -10,138 +10,95 @@ export default {
     },
 
     state: {
-        username: '',
-        host: false,
-        roomId: null,
         socketId: '',
-        game: '',
+
+        username: '',
+        roomId: null,
+        host: false,
+
         turn: false,
-        win: false,
+        isWinner: false,
         outcome: '',
-        enemyPlayer: [],
 
-        // morpion
-
-        playedCell: '',
-        symbol: 'X',
-        victoryWay: '',
-
-        // rock-paper-scissors
-
-        itemChosen: '',
+        score: 0,
     },
 
     mutations: {
+        SET_SOCKET_ID(state, payload) {
+            state.socketId = payload
+        },
+
         SET_USERNAME(state, payload) {
             state.username = payload
-        },
-        SET_HOST(state, payload) {
-            state.host = payload
         },
         SET_ROOM_ID(state, payload) {
             state.roomId = payload
         },
-        SET_SOCKET_ID(state, payload) {
-            state.socketId = payload
+        SET_HOST(state, payload) {
+            state.host = payload
         },
-        SET_GAME(state, payload) {
-            state.game = payload
-        },
+
+
         SET_TURN(state, payload) {
             state.turn = payload
         },
-        SET_WIN(state, payload) {
-            state.win = payload
+        SET_IS_WINNER(state, payload) {
+            state.isWinner = payload
         },
         SET_OUTCOME(state, payload) {
             state.outcome = payload
         },
-        SET_ENEMY_PLAYER(state, payload) {
-            state.enemyPlayer = payload
+
+
+        SET_SCORE(state, payload) {
+            state.score = payload
         },
-
-        // morpion
-
-        SET_PLAYED_CELL(state, payload) {
-            state.playedCell = payload
-        },
-        SET_VICTORY_WAY(state, payload) {
-            state.victoryWay = payload
-        },
-
-        // rock-paper-scissors
-
-        SET_ITEM_CHOSEN(state, payload) {
-            state.itemChosen = payload
-        }
     },
 
     actions: {
+        changeSocketId(store, value) {
+            store.commit('SET_SOCKET_ID', value)
+        },
+
         changeUsername(store, value) {
             store.commit('SET_USERNAME', value)
-        },
-        changeHost(store, value) {
-            store.commit('SET_HOST', value)
         },
         changeRoomId(store, value) {
             store.commit('SET_ROOM_ID', value)
         },
-        changeSocketId(store, value) {
-            store.commit('SET_SOCKET_ID', value)
+        changeHost(store, value) {
+            store.commit('SET_HOST', value)
         },
-        changeGame(store, value) {
-            if (value === '') socketioService.socket.emit("leaveGame", store.state);
 
-            store.commit('SET_GAME', value)
-        },
+
         changeTurn(store, value) {
             store.commit('SET_TURN', value)
         },
-        changeWin(store, value) {
-            store.commit('SET_WIN', value)
+        changeIsWinner(store, value) {
+            store.commit('SET_IS_WINNER', value)
         },
         changeOutcome(store, value) {
             store.commit('SET_OUTCOME', value)
         },
-        changeEnemyPlayer(store, value) {
-            store.commit('SET_ENEMY_PLAYER', value)
-        },
 
-        // morpion
-
-        changePlayedCell(store, value) {
-            store.commit('SET_PLAYED_CELL', value)
-        },
-        changeVictoryWay(store, value) {
-            store.commit('SET_VICTORY_WAY', value)
-        },
-
-        // rock-paper-scissors
-
-        changeItemChosen(store, value) {
-            store.commit('SET_ITEM_CHOSEN', value)
+        changeScore(store, value) {
+            store.commit('SET_SCORE', value)
         },
 
         // emit & listen methods
 
-        emitPlayerData(store) {
+        emitCreateOrJoinRoom(store) {
             store.commit('SET_SOCKET_ID', socketioService.socket.id)
 
-            socketioService.socket.emit("playerData", store.state);
-        },
+            const data = {
+                socketId: store.state.socketId,
+                username: store.state.username,
+                roomId: store.state.roomId,
+                host: store.state.host,
+                game: store.rootState.game.game,
+            }
 
-        emitPlay(store) {
-            socketioService.socket.emit('play', store.state)
-        },
-
-        listenPlay(store) {
-            socketioService.socket.on('play', (enemyPlayer) => {
-                store.commit('SET_ENEMY_PLAYER', enemyPlayer)
-            })
-        },
-
-        emitReplay(store) {
-            socketioService.socket.emit('replay', store.state.roomId)
+            socketioService.socket.emit("toServer_createOrJoinRoom", data);
         },
     }
 }

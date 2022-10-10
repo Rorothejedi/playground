@@ -66,25 +66,26 @@ export default {
   },
 
   computed: {
-    ...mapState("player", ["host", "outcome", "game"]),
-    ...mapState("room", ["rooms", "roomPlayers", "replay"]),
+    ...mapState("player", ["host", "outcome"]),
+    ...mapState("room", ["rooms", "replay"]),
+    ...mapState("game", ["game"]),
 
     statusEndGame() {
       if (this.outcome === "defeat") return "500";
-      if (this.outcome === "win") return "418";
+      if (this.outcome === "victory") return "418";
 
       return "404";
     },
     titleEndGame() {
       if (this.outcome === "defeat") return "Défaite";
-      if (this.outcome === "win") return "Victoire";
+      if (this.outcome === "victory") return "Victoire";
 
       return "Egalité";
     },
     descriptionEndGame() {
       if (this.outcome === "defeat")
         return "Aïe ! Pourquoi ne pas retenter votre chance ?";
-      if (this.outcome === "win")
+      if (this.outcome === "victory")
         return "Trop facile ! Vous prendrez bien un thé ?";
 
       return "Bizarre... J'était pourtant sûr que vous alliez l'avoir !";
@@ -105,10 +106,10 @@ export default {
         window.$message.error("Votre adversaire a quitté la partie");
         this.quitRoom();
       }
+
+      this.watchRoom();
     },
-    roomPlayers(newValue) {
-      this.watchRoom(newValue);
-    },
+
     replay(newValue, oldValue) {
       if (newValue && !oldValue && !this.host) this.resetGame();
     },
@@ -122,7 +123,7 @@ export default {
 
   mounted() {
     this.listenReplay();
-    this.watchRoom(this.roomPlayers);
+    this.watchRoom();
 
     window.onpopstate = () => {
       this.toBack = true;
@@ -138,23 +139,24 @@ export default {
   },
 
   methods: {
-    ...mapActions("room", ["emitLeaveRoom", "listenReplay", "changeReplay"]),
+    ...mapActions("room", ["emitReplay", "listenReplay", "changeReplay"]),
     ...mapActions("player", [
       "changeRoomId",
-      "emitReplay",
       "changeTurn",
-      "changeWin",
+      "changeIsWinner",
       "changeOutcome",
     ]),
 
-    watchRoom(roomPlayers) {
-      if (roomPlayers.length === 2 && !this.isReady) {
-        this.isReady = true;
-      }
+    watchRoom() {
+      const room = this.rooms.find((r) => r.id === this.$route.query.id);
+
+      if (room === undefined || room.players.length !== 2 || this.isReady)
+        return;
+
+      this.isReady = true;
     },
 
     restartGame() {
-      console.log("replay");
       this.emitReplay();
       this.resetGame();
     },
@@ -165,9 +167,8 @@ export default {
 
       this.changeTurn(turn);
       this.changeOutcome("");
-      this.changeWin(false);
+      this.changeIsWinner(false);
       this.changeReplay(false);
-      console.log("reset game");
     },
 
     quitRoomConfirm(onPositive) {
@@ -185,7 +186,7 @@ export default {
 
     quitRoom() {
       this.toBack = false;
-      this.changeOutcome("");
+      // this.changeOutcome("");
       this.changeReplay(false);
       this.$router.push({ name: "Home" });
     },

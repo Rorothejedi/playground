@@ -7,8 +7,8 @@
           alt="La pierre"
           @click="chooseItem('rock')"
           :class="{
-            chosen: itemChosen === 'rock',
-            'disabled-item': itemChosen !== '',
+            chosen: chosenItem === 'rock',
+            'disabled-item': chosenItem !== '',
           }"
         />
       </div>
@@ -18,8 +18,8 @@
           alt="Le papier"
           @click="chooseItem('paper')"
           :class="{
-            chosen: itemChosen === 'paper',
-            'disabled-item': itemChosen !== '',
+            chosen: chosenItem === 'paper',
+            'disabled-item': chosenItem !== '',
           }"
         />
       </div>
@@ -29,8 +29,8 @@
           alt="Les ciseaux"
           @click="chooseItem('scissors')"
           :class="{
-            chosen: itemChosen === 'scissors',
-            'disabled-item': itemChosen !== '',
+            chosen: chosenItem === 'scissors',
+            'disabled-item': chosenItem !== '',
           }"
         />
       </div>
@@ -40,19 +40,19 @@
       <div class="endgame">
         <div>
           <img
-            v-if="itemChosen === 'rock'"
+            v-if="chosenItem === 'rock'"
             src="@/assets/rock.svg"
             alt="La pierre"
             :class="localOutcome"
           />
           <img
-            v-else-if="itemChosen === 'paper'"
+            v-else-if="chosenItem === 'paper'"
             src="@/assets/paper.svg"
             alt="Le papier"
             :class="localOutcome"
           />
           <img
-            v-else-if="itemChosen === 'scissors'"
+            v-else-if="chosenItem === 'scissors'"
             src="@/assets/scissors.svg"
             alt="Les ciseaux"
             :class="localOutcome"
@@ -63,19 +63,19 @@
 
         <div>
           <img
-            v-if="enemyData[0].itemChosen === 'rock'"
+            v-if="enemyData.chosenItem === 'rock'"
             src="@/assets/rock-reverse.svg"
             alt="La pierre"
             :class="enemyEndgameColorClass"
           />
           <img
-            v-else-if="enemyData[0].itemChosen === 'paper'"
+            v-else-if="enemyData.chosenItem === 'paper'"
             src="@/assets/paper-reverse.svg"
             alt="Le papier"
             :class="enemyEndgameColorClass"
           />
           <img
-            v-else-if="enemyData[0].itemChosen === 'scissors'"
+            v-else-if="enemyData.chosenItem === 'scissors'"
             src="@/assets/scissors-reverse.svg"
             alt="Les ciseaux"
             :class="enemyEndgameColorClass"
@@ -83,6 +83,11 @@
         </div>
       </div>
     </n-collapse-transition>
+
+    <div>
+      <n-text>Score : </n-text>
+      <n-text>{{}}</n-text>
+    </div>
   </div>
 </template>
 
@@ -104,51 +109,58 @@ export default {
   },
 
   computed: {
-    ...mapState("player", ["itemChosen"]),
-    ...mapState("game", ["enemyData"]),
+    ...mapState("game", ["chosenItem", "enemyData"]),
 
     enemyEndgameColorClass() {
-      if (this.localOutcome === "win") return "defeat";
-      if (this.localOutcome === "defeat") return "win";
+      if (this.localOutcome === "victory") return "defeat";
+      if (this.localOutcome === "defeat") return "victory";
+
       return "equality";
     },
   },
 
   watch: {
     enemyData(newValue) {
-      if (this.itemChosen === "")
-        this.createInfoMessage(`${newValue[0].username} a choisi son coup`);
+      // console.log("watch enemy data", newValue);
+      if (newValue.length === 0) return;
+      if (this.chosenItem === "")
+        this.createInfoMessage(`${newValue.username} a choisi son coup`);
       this.checkResult();
     },
   },
 
   mounted() {
-    this.listenPlay();
+    this.listenPlayToRockPaperScissors();
     this.resetEnemyData();
-    this.changeItemChosen("");
+    this.changeChosenItem("");
   },
 
   beforeUnmount() {
     this.resetEnemyData();
-    this.changeItemChosen("");
+    this.changeChosenItem("");
   },
 
   methods: {
-    ...mapActions("player", ["changeItemChosen", "changeOutcome"]),
-    ...mapActions("game", ["emitPlay", "listenPlay", "resetEnemyData"]),
+    ...mapActions("player", ["changeOutcome"]),
+    ...mapActions("game", [
+      "emitPlayToRockPaperScissors",
+      "listenPlayToRockPaperScissors",
+      "resetEnemyData",
+      "changeChosenItem",
+    ]),
 
     chooseItem(item) {
-      if (this.itemChosen !== "") return;
+      if (this.chosenItem !== "") return;
 
-      this.changeItemChosen(item);
-      this.emitPlay();
+      this.changeChosenItem(item);
+      this.emitPlayToRockPaperScissors();
       this.checkResult();
     },
 
     checkResult() {
-      if (this.enemyData.length === 0 || this.itemChosen === "") return;
+      if (this.enemyData.length === 0 || this.chosenItem === "") return;
 
-      const enemyItem = this.enemyData[0].itemChosen;
+      const enemyItem = this.enemyData.chosenItem;
 
       this.removeMessage();
 
@@ -159,9 +171,9 @@ export default {
 
     checkEquality(enemyItem) {
       if (
-        (enemyItem === "rock" && this.itemChosen === "rock") ||
-        (enemyItem === "paper" && this.itemChosen === "paper") ||
-        (enemyItem === "scissors" && this.itemChosen === "scissors")
+        (enemyItem === "rock" && this.chosenItem === "rock") ||
+        (enemyItem === "paper" && this.chosenItem === "paper") ||
+        (enemyItem === "scissors" && this.chosenItem === "scissors")
       ) {
         this.gameOver("equality");
       }
@@ -169,19 +181,19 @@ export default {
 
     checkVictory(enemyItem) {
       if (
-        (enemyItem === "rock" && this.itemChosen === "paper") ||
-        (enemyItem === "paper" && this.itemChosen === "scissors") ||
-        (enemyItem === "scissors" && this.itemChosen === "rock")
+        (enemyItem === "rock" && this.chosenItem === "paper") ||
+        (enemyItem === "paper" && this.chosenItem === "scissors") ||
+        (enemyItem === "scissors" && this.chosenItem === "rock")
       ) {
-        this.gameOver("win");
+        this.gameOver("victory");
       }
     },
 
     checkDefeat(enemyItem) {
       if (
-        (enemyItem === "rock" && this.itemChosen === "scissors") ||
-        (enemyItem === "paper" && this.itemChosen === "rock") ||
-        (enemyItem === "scissors" && this.itemChosen === "paper")
+        (enemyItem === "rock" && this.chosenItem === "scissors") ||
+        (enemyItem === "paper" && this.chosenItem === "rock") ||
+        (enemyItem === "scissors" && this.chosenItem === "paper")
       ) {
         this.gameOver("defeat");
       }
@@ -262,7 +274,7 @@ export default {
       height: auto;
     }
 
-    .win {
+    .victory {
       filter: brightness(0) saturate(100%) invert(81%) sepia(34%) saturate(568%)
         hue-rotate(102deg) brightness(93%) contrast(92%);
     }

@@ -34,23 +34,24 @@ export default {
   created() {
     SocketioService.setupSocketConnection();
   },
+
   mounted() {
-    this.listenRooms();
-    this.listenStartGame();
+    this.listenGetRooms();
   },
+
   beforeUnmount() {
     SocketioService.disconnect();
   },
 
   methods: {
-    ...mapActions("room", ["listenRooms", "listenStartGame"]),
+    ...mapActions("room", ["listenGetRooms"]),
   },
 };
 </script>
 
 <style lang="less">
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Exo 2", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
@@ -65,5 +66,6 @@ export default {
 .n-h1 {
   text-align: center;
   padding-top: 50px;
+  font-family: "Major Mono Display", monospace;
 }
 </style>

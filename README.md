@@ -1,26 +1,65 @@
 # playground
-Plateforme permettant à des joueurs de s'affronter sur différents jeux célèbres.
+Plateforme permettant à des joueurs de s'affronter sur différents jeux célèbres via la création de salon.
 
 Site online: http://playground.rodolphe-cabotiau.com/
 
+## Jeux présents
+
+- Morpion
+- Pierre-papier-ciseaux (alpha)
 
 --------------
 
+## backend 
 
-Lancer le site :
+### Project setup
+```
+node app.js
+```
 
-backend -> `node app.js`
+## frontend
 
-frontend -> `npm run serve` (et `npm install` si premier lancement du projet en local)
+### Project setup
+```
+npm install
+```
 
-Technos utilisées:
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
+
+--------------
+
+## Technos utilisées:
 
 - Vue.js (v3)
-- Node.js (with express.js)
+  - vue router (v4)
+  - vuex (v4)
+  - axios
+- Node.js (v16) (with express.js)
 - Socket.io - https://socket.io/
-- Naive UI - https://www.naiveui.com/en-US/dark
+- Naive UI (v2.33.4) - https://www.naiveui.com/en-US/dark
+- less
 
-TODO
+--------------
 
-- shifumi
-- scores
+## TODO
+
+- Refacto global
+- Faire l'intégration du score sur le pierre-papier-ciseaux
+
+## IMPROVEMENT
+
+- En cas de refresh, redirection vers la home pour eviter un loader infini sur la room
+- Pouvoir choisir les croix ou les ronds (morpion) (option)
+- Améliorer les cas d'égalité (morpion)
+- Compter les scores et en gérer l'affichage (morpion)
+- Mettre en https
+- Afficher le nom de l'adversaire (peut-être dans le message loading / avec les scores)
+- Gérer le fait de rejoindre une partie avec le lien (demande du username si pas renseigné puis redirection)
+- Ajouter un autre jeu (puissance 4, shi-fu-mi, bataille)
+
+## IMPROVEMENT (hyper facultatif)
+
+- Ajouter un mode solo (avec une IA)
