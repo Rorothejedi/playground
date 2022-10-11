@@ -337,6 +337,7 @@ export default {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  flex-wrap: wrap;
   font-size: 1.3rem;
   padding-top: 50px;
 }
