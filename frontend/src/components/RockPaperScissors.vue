@@ -226,10 +226,9 @@ export default {
         (enemyItem === "scissors" && this.chosenItem === "paper")
       ) {
         let data = this.enemyData;
-
         data.score = this.enemyData.score + 1;
-
         this.changeEnemyData(data);
+
         this.roundOver("defeat");
       }
     },
@@ -239,7 +238,7 @@ export default {
       this.displayChoices = false;
       this.displayEndgame = true;
 
-      await this.sleep(2000);
+      await this.sleep(2500);
 
       let data = this.enemyData;
       data.chosenItem = "";

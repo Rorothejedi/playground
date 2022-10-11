@@ -3,13 +3,13 @@ const http = require('http').createServer(app);
 
 // localhost
 
-const frontendHost = 'http://localhost:8080'
-const host = 'http://localhost'
+// const frontendHost = 'http://localhost:8080'
+// const host = 'http://localhost'
 
 // production
 
-// const frontendHost = 'http://playground.rodolphe-cabotiau.com'
-// const host = 'http://node.playground.rodolphe-cabotiau.com'
+const frontendHost = 'http://playground.rodolphe-cabotiau.com'
+const host = 'http://node.playground.rodolphe-cabotiau.com'
 
 const port = 3000
 

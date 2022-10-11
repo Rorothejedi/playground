@@ -86,12 +86,22 @@
                       {{ room.players[0].game }}
                     </n-tag>
 
-                    <n-text v-if="isMobile" italic class="room-creator">
+                    <n-text
+                      v-if="isMobile"
+                      italic
+                      depth="2"
+                      class="room-creator"
+                    >
                       by {{ room.players[0].username }}
                     </n-text>
                   </template>
 
-                  <n-text v-if="!isMobile" italic class="room-creator">
+                  <n-text
+                    v-if="!isMobile"
+                    italic
+                    depth="2"
+                    class="room-creator"
+                  >
                     by {{ room.players[0].username }}
                   </n-text>
 
@@ -192,13 +202,11 @@ export default {
     this.tempUsername = this.username;
     this.chooseUsername();
 
-    window.addEventListener("resize", () => {
-      this.windowWidth = window.innerWidth;
-    });
+    window.addEventListener("resize", this.onResize);
   },
 
   beforeUnmount() {
-    window.removeEventListener("resize");
+    window.removeEventListener("resize", this.onResize);
   },
 
   methods: {
@@ -271,6 +279,10 @@ export default {
         name: "Room",
         query: { id: room.id },
       });
+    },
+
+    onResize() {
+      this.windowWidth = window.innerWidth;
     },
   },
 };
