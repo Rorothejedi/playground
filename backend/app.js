@@ -3,17 +3,19 @@ const http = require('http').createServer(app);
 
 // localhost
 
-// const host = 'http://localhost'
 // const frontendHost = 'http://localhost:8080'
+// const host = 'http://localhost'
 
 // production
-const host = 'https://playground.rodolphe-cabotiau.com'
+
+const frontendHost = 'https://playground.rodolphe-cabotiau.com'
+const host = 'https://node.playground.rodolphe-cabotiau.com'
 
 const port = 3000
 
 const io = require('socket.io')(http, {
     cors: {
-        origins: [host]
+        origins: [frontendHost]
     }
 });
 
