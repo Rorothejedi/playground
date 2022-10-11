@@ -12,6 +12,9 @@ Site online: http://playground.rodolphe-cabotiau.com/
 
 ### Project setup
 ```
+npm install
+```
+```
 node app.js
 ```
 
