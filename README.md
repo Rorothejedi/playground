@@ -1,7 +1,7 @@
 # playground
 Plateforme permettant à des joueurs de s'affronter sur différents jeux célèbres via la création de salon.
 
-Site online: http://playground.rodolphe-cabotiau.com/
+Site online: https://playground.rodolphe-cabotiau.com/
 
 ## Jeux présents
 
