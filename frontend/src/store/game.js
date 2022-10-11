@@ -7,7 +7,7 @@ export default {
         enemyData: [],
 
         game: '',
-        scoreToReach: 1,
+        scoreToReach: 3,
         numberOfPlayer: 2,
 
         // morpion

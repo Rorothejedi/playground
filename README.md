@@ -12,10 +12,7 @@ Site online: http://playground.rodolphe-cabotiau.com/
 
 ### Project setup
 ```
-npm install
-```
-```
-node app.js
+npm install && node app.js
 ```
 
 ## frontend
@@ -63,3 +60,4 @@ npm run serve
 ## IMPROVEMENT (hyper facultatif)
 
 - Ajouter un mode solo (avec une IA)
+- Gérer un deploiement automatisé (npm run build sur le serveur)
