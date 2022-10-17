@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import title from "@/mixins/title.js";
 import Morpion from "@/components/Morpion.vue";
 import RockPaperScissors from "@/components/RockPaperScissors.vue";
@@ -62,6 +62,7 @@ export default {
     return {
       isReady: false,
       toBack: false,
+      enemyUsername: "",
     };
   },
 
@@ -69,6 +70,7 @@ export default {
     ...mapState("player", ["host", "outcome"]),
     ...mapState("room", ["rooms", "replay"]),
     ...mapState("game", ["game"]),
+    ...mapGetters("room", ["room", "enemies"]),
 
     statusEndGame() {
       if (this.outcome === "defeat") return "500";
@@ -103,15 +105,26 @@ export default {
         findRoom === undefined &&
         this.isReady
       ) {
-        window.$message.error("Votre adversaire a quitté la partie");
+        window.$message.error(`${this.enemyUsername} a quitté la partie`);
         this.quitRoom();
       }
 
-      this.watchRoom();
+      this.watchRoomForReady();
     },
 
     replay(newValue, oldValue) {
       if (newValue && !oldValue && !this.host) this.resetGame();
+    },
+
+    enemies(newValue) {
+      if (
+        newValue === undefined ||
+        newValue.length === 0 ||
+        this.enemyUsername !== ""
+      )
+        return;
+
+      this.enemyUsername = newValue[0].username;
     },
   },
 
@@ -123,7 +136,7 @@ export default {
 
   mounted() {
     this.listenReplay();
-    this.watchRoom();
+    this.watchRoomForReady();
 
     window.onpopstate = () => {
       this.toBack = true;
@@ -147,10 +160,12 @@ export default {
       "changeOutcome",
     ]),
 
-    watchRoom() {
-      const room = this.rooms.find((r) => r.id === this.$route.query.id);
-
-      if (room === undefined || room.players.length !== 2 || this.isReady)
+    watchRoomForReady() {
+      if (
+        this.room === undefined ||
+        this.room.players.length !== this.room.numberOfPlayer ||
+        this.isReady
+      )
         return;
 
       this.isReady = true;

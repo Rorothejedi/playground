@@ -50,15 +50,13 @@ export default {
     actions: {
 
         // PLAY_TO_ROCK_PAPER_SCISSORS EVENTS
-        emitPlayToRockPaperScissors(store, newRound = false) {
+        emitPlayToRockPaperScissors(store) {
             const data = {
                 socketId: store.rootState.player.socketId,
                 roomId: store.rootState.player.roomId,
                 username: store.rootState.player.username,
                 chosenItem: store.state.chosenItem,
                 score: store.rootState.player.score,
-
-                newRound: newRound,
             }
 
             socketioService.socket.emit('toServer_playRockPaperScissors', data)
@@ -66,7 +64,9 @@ export default {
 
         listenPlayToRockPaperScissors(store) {
             socketioService.socket.on('toClient_playRockPaperScissors', (data) => {
-                store.commit('SET_ENEMY_DATA', data)
+                let enemyData = store.state.enemyData.filter(d => d.socketId !== data.socketId)
+                enemyData.push(data)
+                store.commit('SET_ENEMY_DATA', enemyData)
             })
         },
 

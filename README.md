@@ -41,21 +41,20 @@ npm run serve
 
 ## TODO
 
-- beta pierre-papier-ciseaux
-- Ajouter le mode 3 joueurs pour le pierre-papier-ciseaux
+- Ajouter le puissance 4
 
 ## IMPROVEMENT
 
-- "Votre adversaire a quitté la partie" -> "[username] a quitté la partie"
+- Ajouter l'option 4 joueurs pour le pierre-papier-ciseaux
+- Mettre les varibales d'environnements pour simplifier les deploiements sur le serveur node
 - Ajouter le pierre-papier-ciseaux-lesard-spock
-- Afficher les options du salon sur la liste des salons
+- Afficher toures les options (résumé) du salon sur la liste des salons
 - En cas de refresh, redirection vers la home pour eviter un loader infini sur la room
 - Pouvoir choisir les croix ou les ronds (morpion) (option)
 - Améliorer les cas d'égalité (morpion)
 - Compter les scores et en gérer l'affichage (morpion)
-- Mettre en https
 - Gérer le fait de rejoindre une partie avec le lien (demande du username si pas renseigné puis redirection)
-- Ajouter d'autres jeux (puissance 4, bataille, skyjo)
+- Ajouter d'autres jeux (bataille, skyjo)
 
 ## IMPROVEMENT (hyper facultatif)
 

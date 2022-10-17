@@ -1,5 +1,5 @@
 <template>
-  <n-collapse-transition class="rooms" :show="!loadingCreatingRoom">
+  <n-collapse-transition class="rooms" :show="!loadingRoom">
     <n-h1>Playground</n-h1>
 
     <n-collapse-transition :show="displayUsernameInput">
@@ -70,8 +70,6 @@
                     "
                     value="3"
                     label="3 joueurs"
-                    disabled
-                    title="En cours de développement par Roro le super dev !"
                   />
                 </n-form-item>
                 <n-form-item label="Score à atteindre">
@@ -144,6 +142,15 @@
                       </n-text>
                     </template>
 
+                    <n-tag
+                      title="Nombre de joueur requis"
+                      :size="isMobile ? 'small' : 'medium'"
+                      class="number-of-player"
+                    >
+                      {{ room.players.length }} /
+                      {{ room.numberOfPlayer }}
+                    </n-tag>
+
                     <n-text
                       v-if="!isMobile"
                       italic
@@ -157,8 +164,9 @@
                       <n-button
                         @click="joinRoom(room)"
                         :size="isMobile ? 'small' : 'medium'"
-                        >Rejoindre</n-button
                       >
+                        Rejoindre
+                      </n-button>
                     </template>
                   </n-list-item>
                 </n-list>
@@ -185,7 +193,6 @@ import { mapState, mapActions } from "vuex";
 import socketioService from "../services/socketio.service";
 import title from "@/mixins/title.js";
 import utils from "@/mixins/utils.js";
-
 import { HandScissorsRegular, HandSpockRegular } from "@vicons/fa";
 import { Grid3X3Sharp } from "@vicons/material";
 
@@ -211,7 +218,7 @@ export default {
           value: "Pierre-papier-ciseaux",
         },
       ],
-      loadingCreatingRoom: true,
+      loadingRoom: true,
       windowWidth: window.innerWidth,
 
       // game options (rock-paper-scissors)
@@ -226,7 +233,9 @@ export default {
     ...mapState("game", ["game"]),
 
     availableRooms() {
-      return this.rooms.filter((r) => r.players.length < 2);
+      return this.rooms.filter(
+        (room) => room.players.length < room.numberOfPlayer
+      );
     },
     isMobile() {
       return this.windowWidth <= 600;
@@ -250,15 +259,16 @@ export default {
   },
 
   async mounted() {
-    this.loadingCreatingRoom = false;
+    this.loadingRoom = false;
 
     if (this.game !== "") this.emitLeaveRoom();
 
-    // all of this can be in before unmount of games
+    // all of this can be in before unmount of games (and it needs number-of-player)
     this.resetEnemyData();
     this.changeOutcome("");
     this.changeGame("");
     this.changeRoomId("");
+    this.changeNumberOfPlayer(2);
 
     this.emitGetRooms();
 
@@ -303,9 +313,9 @@ export default {
     },
 
     createRoom() {
-      if (this.loadingCreatingRoom) return;
+      if (this.loadingRoom) return;
 
-      this.loadingCreatingRoom = true;
+      this.loadingRoom = true;
 
       this.changeSocketId(socketioService.socket.id);
       this.changeGame(this.selectedGame);
@@ -388,7 +398,7 @@ export default {
 }
 
 .room-creator {
-  margin-left: 20px;
+  margin-left: 5px;
 }
 .n-tag {
   width: fit-content;
@@ -396,10 +406,16 @@ export default {
 .n-tag.n-tag--icon.n-tag--round {
   padding-left: 12px;
 }
+.number-of-player {
+  margin-left: 5px;
+}
 
 @media screen and (max-width: 600px) {
   .n-tag.n-tag--icon.n-tag--round {
     padding-left: 8px;
+  }
+  .room-creator {
+    margin-left: 20px;
   }
 }
 </style>
@@ -410,5 +426,10 @@ export default {
   flex: initial !important;
   display: flex;
   flex-direction: column;
+}
+@media screen and (max-width: 600px) {
+  .n-list-item__main {
+    place-self: normal;
+  }
 }
 </style>

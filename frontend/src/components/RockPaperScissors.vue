@@ -50,21 +50,21 @@
           <img
             v-show="chosenItem === 'rock'"
             src="@/assets/rock.svg"
-            alt="La pierre"
+            alt="Ma pierre"
             :class="localOutcome"
             rel="preload"
           />
           <img
             v-show="chosenItem === 'paper'"
             src="@/assets/paper.svg"
-            alt="Le papier"
+            alt="Mon papier"
             :class="localOutcome"
             rel="preload"
           />
           <img
             v-show="chosenItem === 'scissors'"
             src="@/assets/scissors.svg"
-            alt="Les ciseaux"
+            alt="Mes ciseaux"
             :class="localOutcome"
             rel="preload"
           />
@@ -72,45 +72,49 @@
 
         <n-text italic>VS</n-text>
 
-        <div>
-          <img
-            v-show="enemyData.chosenItem === 'rock'"
-            src="@/assets/rock-reverse.svg"
-            alt="La pierre"
-            :class="enemyEndgameColorClass"
-            rel="preload"
-          />
-          <img
-            v-show="enemyData.chosenItem === 'paper'"
-            src="@/assets/paper-reverse.svg"
-            alt="Le papier"
-            :class="enemyEndgameColorClass"
-            rel="preload"
-          />
-          <img
-            v-show="enemyData.chosenItem === 'scissors'"
-            src="@/assets/scissors-reverse.svg"
-            alt="Les ciseaux"
-            :class="enemyEndgameColorClass"
-            rel="preload"
-          />
+        <div :class="{ 'endgame-enemy-choices': enemyData.length === 2 }">
+          <div v-for="enemy in enemyData" :key="enemy.socketId">
+            <img
+              v-show="enemy.chosenItem === 'rock'"
+              src="@/assets/rock-reverse.svg"
+              alt="La pierre ennemie"
+              rel="preload"
+            />
+            <img
+              v-show="enemy.chosenItem === 'paper'"
+              src="@/assets/paper-reverse.svg"
+              alt="Le papier ennemie"
+              rel="preload"
+            />
+            <img
+              v-show="enemy.chosenItem === 'scissors'"
+              src="@/assets/scissors-reverse.svg"
+              alt="Les ciseaux ennemies"
+              rel="preload"
+            />
+          </div>
         </div>
       </div>
     </n-collapse-transition>
 
     <div class="scores">
       <div>
-        <n-text italic>{{ username }} </n-text>
-        <n-text> - {{ score }} </n-text>
+        <n-text underline>{{ username }} </n-text>
+        <n-text depth="3"> - </n-text>
+        <n-text type="success"> {{ score }} </n-text>
       </div>
 
-      <div>
+      <div v-for="(enemy, i) in enemies" :key="enemy.socketId">
         <n-text italic>
-          {{ enemy !== undefined ? enemy.username : "" }}
+          {{ enemy.username }}
         </n-text>
-        <n-text>
-          -
-          {{ enemyData.length !== 0 ? enemyData.score : 0 }}
+        <n-text depth="3"> - </n-text>
+        <n-text type="warning">
+          {{
+            enemyData.length > 0 && enemyData[i] !== undefined
+              ? enemyData[i].score
+              : 0
+          }}
         </n-text>
       </div>
     </div>
@@ -137,7 +141,7 @@ export default {
   computed: {
     ...mapState("player", ["username", "score"]),
     ...mapState("game", ["enemyData", "chosenItem", "scoreToReach"]),
-    ...mapGetters("room", ["room", "enemy"]),
+    ...mapGetters("room", ["room", "enemies"]),
 
     enemyEndgameColorClass() {
       if (this.localOutcome === "victory") return "defeat";
@@ -150,8 +154,18 @@ export default {
   watch: {
     enemyData(newValue) {
       if (newValue.length === 0) return;
+
       if (this.chosenItem === "") {
-        this.createInfoMessage(`${newValue.username} a choisi son coup`);
+        const enemies = newValue.filter((enemy) => enemy.chosenItem !== "");
+
+        this.removeMessage();
+
+        if (enemies.length === 1)
+          this.createInfoMessage(`${enemies[0].username} a choisi son coup`);
+        else if (enemies.length === 2)
+          this.createInfoMessage(
+            `${enemies[0].username} et ${enemies[1].username} ont choisis leurs coups`
+          );
       }
 
       this.checkResult();
@@ -181,56 +195,133 @@ export default {
     chooseItem(item) {
       if (this.chosenItem !== "") return;
 
+      this.removeMessage();
+
       this.changeChosenItem(item);
       this.emitPlayToRockPaperScissors();
+
+      // if (this.room.numberOfPlayer === 2) this.checkResultFor2Players();
+      // else this.checkResultFor3Players();
       this.checkResult();
     },
 
+    // FOR 2 PLAYERS
+
+    // checkResultFor2Players() {
+    //   if (this.enemyData.length === 0 || this.chosenItem === "") return;
+
+    //   const checkEnemiesItems = this.enemyData.filter(
+    //     (a) => a.chosenItem !== ""
+    //   );
+
+    //   if (checkEnemiesItems.length !== this.enemyData.length) return;
+
+    //   const enemyItem = this.enemyData[0].chosenItem;
+
+    //   this.removeMessage();
+
+    //   if (this.checkEquality(enemyItem)) {
+    //     this.roundOver("equality");
+    //   }
+    //   if (this.checkVictory(enemyItem)) {
+    //     this.changeScore(this.score + 1);
+    //     this.roundOver("victory");
+    //   }
+    //   if (this.checkDefeat(enemyItem)) {
+    //     let data = this.enemyData;
+    //     data[0].score = this.enemyData[0].score + 1;
+
+    //     this.changeEnemyData(data);
+
+    //     this.roundOver("defeat");
+    //   }
+    // },
+
+    // FOR 3 PLAYERS (OR MORE)
+
     checkResult() {
-      if (this.enemyData.length === 0 || this.chosenItem === "") return;
-
-      const enemyItem = this.enemyData.chosenItem;
-
-      this.removeMessage();
-
-      this.checkEquality(enemyItem);
-      this.checkVictory(enemyItem);
-      this.checkDefeat(enemyItem);
-    },
-
-    checkEquality(enemyItem) {
       if (
-        (enemyItem === "rock" && this.chosenItem === "rock") ||
-        (enemyItem === "paper" && this.chosenItem === "paper") ||
-        (enemyItem === "scissors" && this.chosenItem === "scissors")
-      ) {
+        this.enemyData.length < this.room.numberOfPlayer - 1 ||
+        this.chosenItem === ""
+      )
+        return;
+
+      const checkEnemiesItems = this.enemyData.filter(
+        (a) => a.chosenItem !== ""
+      );
+
+      if (checkEnemiesItems.length !== this.enemyData.length) return;
+
+      let wayOfEndCursor = 0;
+      let enemyVictories = [];
+      let enemyEqualities = [];
+
+      for (let i = 0; i < this.enemyData.length; i++) {
+        const enemyItem = this.enemyData[i].chosenItem;
+
+        if (this.checkVictory(enemyItem)) {
+          wayOfEndCursor++;
+        }
+        if (this.checkDefeat(enemyItem)) {
+          enemyVictories.push(this.enemyData[i]);
+          wayOfEndCursor--;
+        }
+        if (this.checkEquality(enemyItem)) {
+          enemyEqualities.push(this.enemyData[i]);
+        }
+      }
+
+      if (wayOfEndCursor > 0) {
+        let data = this.enemyData;
+
+        enemyEqualities.forEach((enemyData) => {
+          const i = data.findIndex((el) => el.socketId === enemyData.socketId);
+          data[i].score = enemyData.score + 1;
+        });
+        this.changeEnemyData(data);
+        this.changeScore(this.score + 1);
+      }
+      if (wayOfEndCursor < 0) {
+        let data = this.enemyData;
+
+        enemyVictories.forEach((enemyData) => {
+          const i = data.findIndex((el) => el.socketId === enemyData.socketId);
+          data[i].score = enemyData.score + 1;
+        });
+        this.changeEnemyData(data);
+      }
+
+      if (wayOfEndCursor > 0) {
+        this.roundOver("victory");
+      } else if (wayOfEndCursor < 0) {
+        this.roundOver("defeat");
+      } else if (wayOfEndCursor === 0) {
         this.roundOver("equality");
       }
     },
 
+    checkEquality(enemyItem) {
+      return (
+        (enemyItem === "rock" && this.chosenItem === "rock") ||
+        (enemyItem === "paper" && this.chosenItem === "paper") ||
+        (enemyItem === "scissors" && this.chosenItem === "scissors")
+      );
+    },
+
     checkVictory(enemyItem) {
-      if (
+      return (
         (enemyItem === "rock" && this.chosenItem === "paper") ||
         (enemyItem === "paper" && this.chosenItem === "scissors") ||
         (enemyItem === "scissors" && this.chosenItem === "rock")
-      ) {
-        this.changeScore(this.score + 1);
-        this.roundOver("victory");
-      }
+      );
     },
 
     checkDefeat(enemyItem) {
-      if (
+      return (
         (enemyItem === "rock" && this.chosenItem === "scissors") ||
         (enemyItem === "paper" && this.chosenItem === "rock") ||
         (enemyItem === "scissors" && this.chosenItem === "paper")
-      ) {
-        let data = this.enemyData;
-        data.score = this.enemyData.score + 1;
-        this.changeEnemyData(data);
-
-        this.roundOver("defeat");
-      }
+      );
     },
 
     async roundOver(way) {
@@ -238,21 +329,31 @@ export default {
       this.displayChoices = false;
       this.displayEndgame = true;
 
-      await this.sleep(2500);
+      await this.sleep(this.room.numberOfPlayer * 1000 + 500);
 
-      let data = this.enemyData;
-      data.chosenItem = "";
-      this.changeEnemyData(data);
+      this.resetChosenItemForEnemyData();
       this.changeChosenItem("");
 
       if (this.score === this.room.scoreToReach) {
         this.gameOver("victory");
-      } else if (this.enemyData.score === this.room.scoreToReach) {
+      } else if (
+        this.enemyData.find((enemy) => enemy.score === this.room.scoreToReach)
+      ) {
         this.gameOver("defeat");
       } else {
         this.displayEndgame = false;
         this.displayChoices = true;
       }
+    },
+
+    resetChosenItemForEnemyData() {
+      let data = this.enemyData;
+
+      for (let i = 0; i < data.length; i++) {
+        data[i].chosenItem = "";
+      }
+
+      this.changeEnemyData(data);
     },
 
     gameOver(way) {
@@ -309,7 +410,7 @@ export default {
   align-items: center;
   width: 600px;
 
-  div {
+  div:not(.endgame-enemy-choices) {
     img {
       width: 300px;
       height: auto;
@@ -331,13 +432,19 @@ export default {
         saturate(1176%) hue-rotate(339deg) brightness(98%) contrast(94%);
     }
   }
+  .endgame-enemy-choices {
+    display: flex;
+    flex-direction: column;
+    div img {
+      width: 200px;
+      height: auto;
+    }
+  }
 }
 
 .scores {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  flex-wrap: wrap;
+  display: block;
+  text-align: center;
   font-size: 1.3rem;
   padding-top: 50px;
 }
@@ -361,9 +468,21 @@ export default {
   .endgame {
     width: 95vw;
 
-    div img {
+    div:not(.endgame-enemy-choices) img {
       width: 170px;
     }
+
+    .endgame-enemy-choices {
+      div img {
+        width: 140px;
+      }
+    }
+  }
+
+  .scores {
+    display: block;
+    text-align: center;
+    padding-top: 35px;
   }
 }
 

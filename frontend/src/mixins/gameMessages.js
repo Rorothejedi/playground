@@ -15,7 +15,7 @@ export default {
         createInfoMessage(text) {
             if (this.infoMessage) return;
 
-            this.infoMessage = window.$message.info(text, {
+            this.infoMessage = window.$message.success(text, {
                 duration: 0,
             });
         },

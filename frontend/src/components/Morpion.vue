@@ -153,7 +153,7 @@ export default {
   computed: {
     ...mapState("player", ["socketId", "host", "turn", "isWinner"]),
     ...mapState("game", ["playedCell", "enemyData"]),
-    ...mapGetters("room", ["enemy"]),
+    ...mapGetters("room", ["enemies"]),
   },
 
   watch: {
@@ -168,7 +168,7 @@ export default {
     if (this.turn) {
       this.createInfoMessage("A toi de jouer");
     } else {
-      this.createLoadingMessage(`${this.enemy.username} prépare son coup`);
+      this.createLoadingMessage(`${this.enemies[0].username} prépare son coup`);
     }
   },
 
@@ -198,7 +198,7 @@ export default {
       if (this.isWinner) return;
       if (this.checkEquality()) return;
 
-      this.createLoadingMessage("L'adversaire prépare son coup");
+      this.createLoadingMessage(`${this.enemies[0].username} prépare son coup`);
     },
 
     placeEnemyItem() {

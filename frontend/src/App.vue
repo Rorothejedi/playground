@@ -50,6 +50,8 @@ export default {
 </script>
 
 <style lang="less">
+@import "./styles/normalize.css";
+
 #app {
   font-family: "Exo 2", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

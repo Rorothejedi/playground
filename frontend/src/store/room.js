@@ -8,9 +8,9 @@ export default {
             return state.rooms.find((r) => r.id === rootState.player.roomId)
         },
         // works fine with only 2 players (need improvment for more)
-        enemy(state, getters, rootState) {
+        enemies(state, getters, rootState) {
             if (getters.room === undefined) return undefined
-            return getters.room.players.find(p => p.socketId !== rootState.player.socketId)
+            return getters.room.players.filter(p => p.socketId !== rootState.player.socketId)
         },
     },
 
@@ -43,6 +43,7 @@ export default {
                 host: store.rootState.player.host,
                 game: store.rootState.game.game,
                 scoreToReach: store.rootState.game.scoreToReach,
+                numberOfPlayer: store.rootState.game.numberOfPlayer,
             }
 
             socketioService.socket.emit("toServer_createOrJoinRoom", data);

@@ -46,9 +46,7 @@ io.on('connection', (socket) => {
 
         socket.join(room.id)
 
-        if (room.players.length === 2) {
-            io.emit('toClient_getRooms', rooms)
-        }
+        io.emit('toClient_getRooms', rooms)
     })
 
     socket.on('toServer_leaveRoom', () => {
@@ -70,7 +68,7 @@ io.on('connection', (socket) => {
     socket.on('toServer_replay', (roomId) => {
         const room = rooms.find(r => r.id === roomId)
 
-        if (room && room.players.length === 2) {
+        if (room && room.players.length === room.numberOfPlayer) {
             socket.to(room.id).emit('toClient_replay')
         }
     })
@@ -87,6 +85,7 @@ function createRoom(data) {
     const room = {
         id: createRoomId(),
         scoreToReach: data.scoreToReach,
+        numberOfPlayer: data.numberOfPlayer,
         players: []
     }
 
