@@ -17,6 +17,8 @@
                 :class="{
                   'enemy-item': gridContent[i][j] === enemySymbol,
                   'my-item': gridContent[i][j] === symbol,
+                  'victory-end-game': gridContent[i][j] === victorySymbol,
+                  'end-game': isEnd,
                 }"
               />
             </div>
@@ -42,11 +44,14 @@ export default {
       ],
       symbol: "X",
       enemySymbol: "O",
+      victorySymbol: "V",
 
       winPoints: 0,
       otherTurn: false,
 
       hoverColumn: -1,
+
+      isEnd: false,
     };
   },
 
@@ -67,24 +72,22 @@ export default {
       for (let i = 5; i >= 0; i--) {
         if (this.gridContent[i][y] !== "") continue;
 
-        this.putItemOnTheGrid(i, y);
+        this.gridContent[i][y] = this.otherTurn
+          ? this.enemySymbol
+          : this.symbol;
+        this.otherTurn = !this.otherTurn;
         return i;
       }
     },
 
-    putItemOnTheGrid(x, y) {
-      this.gridContent[x][y] = this.otherTurn ? this.enemySymbol : this.symbol;
-      this.otherTurn = !this.otherTurn;
-    },
-
     checkBottom(x, y) {
-      let point = 0;
+      let points = [];
 
       while (x < 6) {
         if (this.gridContent[x][y] !== this.symbol) break;
-        point++;
-        if (point === 4) {
-          console.log("VICTORY");
+        points.push([x, y]);
+        if (points.length === 4) {
+          this.gameOver(points);
           break;
         }
 
@@ -93,12 +96,13 @@ export default {
     },
 
     checkHorizontal(x) {
-      let point = 0;
+      let points = [];
 
       for (let i = 0; i < 7; i++) {
-        if (this.gridContent[x][i] === this.symbol) point++;
-        if (point > 0 && this.gridContent[x][i] !== this.symbol) point = 0;
-        if (point === 4) console.log("VICTORY");
+        if (this.gridContent[x][i] === this.symbol) points.push([x, i]);
+        if (points.length > 0 && this.gridContent[x][i] !== this.symbol)
+          points = [];
+        if (points.length === 4) this.gameOver(points);
       }
     },
 
@@ -107,15 +111,18 @@ export default {
       // . O .
       // O . .
 
-      let point = 0;
+      let points = [];
       let [newX, newY] = this.findStartCoordonateForCheckForward(x, y);
 
       while (newX > 0 && newY < 6) {
-        if (this.gridContent[newX][newY] === this.symbol) point++;
-        else point = 0;
+        if (this.gridContent[newX][newY] === this.symbol) {
+          points.push([newX, newY]);
+        } else {
+          points = [];
+        }
 
-        if (point === 4) {
-          console.log("VICTORY");
+        if (points.length === 4) {
+          this.gameOver(points);
           break;
         }
         newX--;
@@ -128,15 +135,18 @@ export default {
       // . O .
       // . . O
 
-      let point = 0;
+      let points = [];
       let [newX, newY] = this.findStartCoordonateForCheckBack(x, y);
 
       while (newX > 0 && newY > 0) {
-        if (this.gridContent[newX][newY] === this.symbol) point++;
-        else point = 0;
+        if (this.gridContent[newX][newY] === this.symbol) {
+          points.push([newX, newY]);
+        } else {
+          points = [];
+        }
 
-        if (point === 4) {
-          console.log("VICTORY");
+        if (points.length === 4) {
+          this.gameOver(points);
           break;
         }
         newX--;
@@ -160,6 +170,16 @@ export default {
       }
 
       return [x, y];
+    },
+
+    gameOver(points) {
+      for (let i = 0; i < 4; i++) {
+        this.gridContent[points[i][0]][points[i][1]] = this.victorySymbol;
+      }
+
+      this.isEnd = true;
+
+      console.log("VICTORY");
     },
   },
 };
@@ -221,8 +241,18 @@ span {
   background-color: rgba(240, 138, 0, 0.5);
 }
 .my-item {
-  border: 3px solid rgba(56, 137, 197);
+  border: 3px solid #3889c5;
   background-color: rgba(56, 137, 197, 0.5);
+}
+
+.victory-end-game {
+  border: 3px solid #3889c5;
+  background-color: #3889c5 !important;
+  transition: all 0.3s ease-out 0.3s;
+}
+.end-game {
+  background-color: #18181c;
+  transition: all 0.3s ease-out 0.3s;
 }
 
 @media screen and (max-width: 600px) {

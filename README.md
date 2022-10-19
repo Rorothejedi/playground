@@ -42,7 +42,6 @@ npm run serve
 ## TODO
 
 - Ajouter la partie multi du puissance 4
-- Ajouter l'animation (barre) de fin du puissance 4
 
 ## Issues
 
