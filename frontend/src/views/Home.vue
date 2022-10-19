@@ -127,6 +127,9 @@
                                   'Pierre-papier-ciseaux-lézard-spock'
                                 "
                               />
+                              <grid-dots-24-filled
+                                v-if="room.players[0].game === 'Puissance 4'"
+                              />
                             </n-icon>
                           </n-icon-wrapper>
                         </template>
@@ -195,6 +198,7 @@ import title from "@/mixins/title.js";
 import utils from "@/mixins/utils.js";
 import { HandScissorsRegular, HandSpockRegular } from "@vicons/fa";
 import { Grid3X3Sharp } from "@vicons/material";
+import { GridDots24Filled } from "@vicons/fluent";
 
 export default {
   name: "Home",
@@ -204,6 +208,7 @@ export default {
     HandScissorsRegular,
     HandSpockRegular,
     Grid3X3Sharp,
+    GridDots24Filled,
   },
 
   data() {
@@ -214,6 +219,10 @@ export default {
       gamesAvailable: [
         { label: "Morpion", value: "Morpion" },
         {
+          label: "Puissance 4",
+          value: "Puissance 4",
+        },
+        {
           label: "Pierre-papier-ciseaux",
           value: "Pierre-papier-ciseaux",
         },
@@ -221,7 +230,6 @@ export default {
       loadingRoom: true,
       windowWidth: window.innerWidth,
 
-      // game options (rock-paper-scissors)
       localNumberOfPlayer: 2,
       localScoreToReach: 3,
     };

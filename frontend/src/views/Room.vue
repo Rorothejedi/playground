@@ -19,6 +19,7 @@
         <n-collapse-transition :show="outcome === ''" appear>
           <morpion v-if="game === 'Morpion'" />
           <rock-paper-scissors v-else-if="game === 'Pierre-papier-ciseaux'" />
+          <connect-4 v-else-if="game === 'Puissance 4'" />
         </n-collapse-transition>
 
         <n-collapse-transition :show="outcome !== ''" appear>
@@ -49,6 +50,7 @@
 <script>
 import { mapActions, mapGetters, mapState } from "vuex";
 import title from "@/mixins/title.js";
+import Connect4 from "@/components/Connect4.vue";
 import Morpion from "@/components/Morpion.vue";
 import RockPaperScissors from "@/components/RockPaperScissors.vue";
 
@@ -56,7 +58,7 @@ export default {
   name: "Room",
   title: "Room | Playground",
   mixins: [title],
-  components: { Morpion, RockPaperScissors },
+  components: { Connect4, Morpion, RockPaperScissors },
 
   data() {
     return {
