@@ -2,117 +2,27 @@
   <div class="morpion">
     <table cellspacing="0" cellpadding="0">
       <tbody>
-        <tr>
+        <tr v-for="(x, i) in gridContent" :key="i">
           <td
-            class="h-1 w-1"
-            :class="{
-              'h-0-0': lineHorizontalTop,
-              'v-0-0': lineVerticalLeft,
-              'db-0-0': lineDiagonalBack,
-            }"
-            @click="placeItem(0, 0)"
+            v-for="(y, j) in x"
+            :key="j"
+            :class="[
+              `h-${i} w-${j}`,
+              {
+                [`ht-${i}-${j}`]: lineHorizontalTop,
+                [`hc-${i}-${j}`]: lineHorizontalCenter,
+                [`hb-${i}-${j}`]: lineHorizontalBottom,
+                [`vl-${i}-${j}`]: lineVerticalLeft,
+                [`vc-${i}-${j}`]: lineVerticalCenter,
+                [`vr-${i}-${j}`]: lineVerticalRight,
+                [`db-${i}-${j}`]: lineDiagonalBack,
+                [`df-${i}-${j}`]: lineDiagonalForward,
+              },
+            ]"
+            @click="placeItem(i, j)"
           >
-            <span class="circle" v-if="grid_content[0][0] === 'O'"></span>
-            <span class="cross" v-if="grid_content[0][0] === 'X'"></span>
-          </td>
-          <td
-            class="h-1 w-2"
-            :class="{
-              'h-0-1': lineHorizontalTop,
-              'v-0-1': lineVerticalCenter,
-            }"
-            @click="placeItem(0, 1)"
-          >
-            <span class="circle" v-if="grid_content[0][1] === 'O'"></span>
-            <span class="cross" v-if="grid_content[0][1] === 'X'"></span>
-          </td>
-          <td
-            class="h-1 w-3"
-            :class="{
-              'h-0-2': lineHorizontalTop,
-              'v-0-2': lineVerticalRight,
-              'df-0-2': lineDiagonalForward,
-            }"
-            @click="placeItem(0, 2)"
-          >
-            <span class="circle" v-if="grid_content[0][2] === 'O'"></span>
-            <span class="cross" v-if="grid_content[0][2] === 'X'"></span>
-          </td>
-        </tr>
-
-        <tr>
-          <td
-            class="h-2 w-1"
-            :class="{
-              'h-1-0': lineHorizontalCenter,
-              'v-1-0': lineVerticalLeft,
-            }"
-            @click="placeItem(1, 0)"
-          >
-            <span class="circle" v-if="grid_content[1][0] === 'O'"></span>
-            <span class="cross" v-if="grid_content[1][0] === 'X'"></span>
-          </td>
-          <td
-            class="h-2 w-2"
-            :class="{
-              'h-1-1': lineHorizontalCenter,
-              'v-1-1': lineVerticalCenter,
-              'db-1-1': lineDiagonalBack,
-              'df-1-1': lineDiagonalForward,
-            }"
-            @click="placeItem(1, 1)"
-          >
-            <span class="circle" v-if="grid_content[1][1] === 'O'"></span>
-            <span class="cross" v-if="grid_content[1][1] === 'X'"></span>
-          </td>
-          <td
-            class="h-2 w-3"
-            :class="{
-              'h-1-2': lineHorizontalCenter,
-              'v-1-2': lineVerticalRight,
-            }"
-            @click="placeItem(1, 2)"
-          >
-            <span class="circle" v-if="grid_content[1][2] === 'O'"></span>
-            <span class="cross" v-if="grid_content[1][2] === 'X'"></span>
-          </td>
-        </tr>
-
-        <tr>
-          <td
-            class="h-3 w-1"
-            :class="{
-              'h-2-0': lineHorizontalBottom,
-              'v-2-0': lineVerticalLeft,
-              'df-2-0': lineDiagonalForward,
-            }"
-            @click="placeItem(2, 0)"
-          >
-            <span class="circle" v-if="grid_content[2][0] === 'O'"></span>
-            <span class="cross" v-if="grid_content[2][0] === 'X'"></span>
-          </td>
-          <td
-            class="h-3 w-2"
-            :class="{
-              'h-2-1': lineHorizontalBottom,
-              'v-2-1': lineVerticalCenter,
-            }"
-            @click="placeItem(2, 1)"
-          >
-            <span class="circle" v-if="grid_content[2][1] === 'O'"></span>
-            <span class="cross" v-if="grid_content[2][1] === 'X'"></span>
-          </td>
-          <td
-            class="h-3 w-3"
-            :class="{
-              'h-2-2': lineHorizontalBottom,
-              'v-2-2': lineVerticalRight,
-              'db-2-2': lineDiagonalBack,
-            }"
-            @click="placeItem(2, 2)"
-          >
-            <span class="circle" v-if="grid_content[2][2] === 'O'"></span>
-            <span class="cross" v-if="grid_content[2][2] === 'X'"></span>
+            <span class="circle" v-if="gridContent[i][j] === 'O'"></span>
+            <span class="cross" v-if="gridContent[i][j] === 'X'"></span>
           </td>
         </tr>
       </tbody>
@@ -131,7 +41,7 @@ export default {
 
   data() {
     return {
-      grid_content: [
+      gridContent: [
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
@@ -183,11 +93,11 @@ export default {
 
     placeItem(x, y) {
       if (!this.turn) return;
-      if (this.grid_content[x][y] !== "") return;
+      if (this.gridContent[x][y] !== "") return;
 
       this.removeMessage();
 
-      this.grid_content[x][y] = this.symbol;
+      this.gridContent[x][y] = this.symbol;
       this.changePlayedCell([x, y]);
 
       this.checkVictory();
@@ -209,7 +119,7 @@ export default {
       this.removeMessage();
 
       let cell = this.enemyData.playedCell;
-      this.grid_content[cell[0]][cell[1]] = this.enemySymbol;
+      this.gridContent[cell[0]][cell[1]] = this.enemySymbol;
 
       if (this.checkDefeat()) return;
       if (this.checkEquality()) return;
@@ -219,7 +129,7 @@ export default {
     },
 
     checkEquality() {
-      for (const x of this.grid_content) {
+      for (const x of this.gridContent) {
         for (const y of x) {
           if (y === "") return false;
         }
@@ -258,7 +168,7 @@ export default {
       let row = this.playedCell[0];
 
       for (let y = 0; y < 3; y++) {
-        if (this.grid_content[row][y] !== this.symbol) return false;
+        if (this.gridContent[row][y] !== this.symbol) return false;
       }
 
       if (row === 0) this.addLine("h-t");
@@ -272,7 +182,7 @@ export default {
       let column = this.playedCell[1];
 
       for (let x = 0; x < 3; x++) {
-        if (this.grid_content[x][column] !== this.symbol) return false;
+        if (this.gridContent[x][column] !== this.symbol) return false;
       }
 
       if (column === 0) this.addLine("v-l");
@@ -288,7 +198,7 @@ export default {
       // - - *
 
       for (let i = 0; i < 3; i++) {
-        if (this.grid_content[i][i] !== this.symbol) return false;
+        if (this.gridContent[i][i] !== this.symbol) return false;
       }
 
       this.addLine("d-b");
@@ -304,7 +214,7 @@ export default {
       for (let x = 0; x < 3; x++) {
         let y = 2 - x;
 
-        if (this.grid_content[x][y] !== this.symbol) return false;
+        if (this.gridContent[x][y] !== this.symbol) return false;
       }
 
       this.addLine("d-f");
@@ -353,24 +263,24 @@ td {
   position: relative;
 }
 
+.h-0 {
+  border-bottom: #ffffffd1 4px solid;
+}
 .h-1 {
+  border-top: #ffffffd1 4px solid;
   border-bottom: #ffffffd1 4px solid;
 }
 .h-2 {
   border-top: #ffffffd1 4px solid;
-  border-bottom: #ffffffd1 4px solid;
 }
-.h-3 {
-  border-top: #ffffffd1 4px solid;
-}
-.w-1 {
+.w-0 {
   border-right: #ffffffd1 4px solid;
 }
-.w-2 {
+.w-1 {
   border-left: #ffffffd1 4px solid;
   border-right: #ffffffd1 4px solid;
 }
-.w-3 {
+.w-2 {
   border-left: #ffffffd1 4px solid;
 }
 
@@ -434,15 +344,15 @@ td {
 
 // HORIZONTAL AND VERTICAL CASES
 
-.h-0-0:before,
-.h-0-1:before,
-.h-0-2:before,
-.h-1-0:before,
-.h-1-1:before,
-.h-1-2:before,
-.h-2-0:before,
-.h-2-1:before,
-.h-2-2:before {
+.ht-0-0:before,
+.ht-0-1:before,
+.ht-0-2:before,
+.hc-1-0:before,
+.hc-1-1:before,
+.hc-1-2:before,
+.hb-2-0:before,
+.hb-2-1:before,
+.hb-2-2:before {
   z-index: 2;
   content: " ";
   position: absolute;
@@ -453,15 +363,15 @@ td {
   border-bottom-color: v-bind(endLineColor);
 }
 
-.v-0-0:before,
-.v-1-0:before,
-.v-2-0:before,
-.v-0-1:before,
-.v-1-1:before,
-.v-2-1:before,
-.v-0-2:before,
-.v-1-2:before,
-.v-2-2:before {
+.vl-0-0:before,
+.vl-1-0:before,
+.vl-2-0:before,
+.vc-0-1:before,
+.vc-1-1:before,
+.vc-2-1:before,
+.vr-0-2:before,
+.vr-1-2:before,
+.vr-2-2:before {
   z-index: 2;
   content: " ";
   position: absolute;
@@ -474,28 +384,28 @@ td {
   transform-origin: top left;
 }
 
-.h-0-0:before,
-.h-1-0:before,
-.h-2-0:before,
-.v-0-0:before,
-.v-0-1:before,
-.v-0-2:before {
+.ht-0-0:before,
+.hc-1-0:before,
+.hb-2-0:before,
+.vl-0-0:before,
+.vc-0-1:before,
+.vr-0-2:before {
   animation: line 0.1s linear;
 }
-.h-0-1:before,
-.h-1-1:before,
-.h-2-1:before,
-.v-1-0:before,
-.v-1-1:before,
-.v-1-2:before {
+.ht-0-1:before,
+.hc-1-1:before,
+.hb-2-1:before,
+.vl-1-0:before,
+.vc-1-1:before,
+.vr-1-2:before {
   animation: line 0.1s linear 0.1s both;
 }
-.h-0-2:before,
-.h-1-2:before,
-.h-2-2:before,
-.v-2-0:before,
-.v-2-1:before,
-.v-2-2:before {
+.ht-0-2:before,
+.hc-1-2:before,
+.hb-2-2:before,
+.vl-2-0:before,
+.vc-2-1:before,
+.vr-2-2:before {
   animation: line 0.1s linear 0.2s both;
 }
 

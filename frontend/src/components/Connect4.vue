@@ -2,7 +2,7 @@
   <div>
     <table cellspacing="0" cellpadding="0">
       <tbody>
-        <tr v-for="(x, i) in grid_content" :key="i">
+        <tr v-for="(x, i) in gridContent" :key="i">
           <td
             v-for="(y, j) in x"
             :key="j"
@@ -13,10 +13,10 @@
           >
             <div class="inner-circle">
               <span
-                v-if="grid_content[i][j] !== ''"
+                v-if="gridContent[i][j] !== ''"
                 :class="{
-                  'enemy-item': grid_content[i][j] === enemySymbol,
-                  'my-item': grid_content[i][j] === symbol,
+                  'enemy-item': gridContent[i][j] === enemySymbol,
+                  'my-item': gridContent[i][j] === symbol,
                 }"
               />
             </div>
@@ -32,7 +32,7 @@ export default {
   name: "Connect4",
   data() {
     return {
-      grid_content: [
+      gridContent: [
         ["", "", "", "", "", "", ""],
         ["", "", "", "", "", "", ""],
         ["", "", "", "", "", "", ""],
@@ -52,7 +52,7 @@ export default {
 
   methods: {
     placeItem(x, y) {
-      if (this.grid_content[0][y] !== "" || this.grid_content[x][y] !== "")
+      if (this.gridContent[0][y] !== "" || this.gridContent[x][y] !== "")
         return;
 
       const columnX = this.placeItemInColumn(y);
@@ -65,7 +65,7 @@ export default {
 
     placeItemInColumn(y) {
       for (let i = 5; i >= 0; i--) {
-        if (this.grid_content[i][y] !== "") continue;
+        if (this.gridContent[i][y] !== "") continue;
 
         this.putItemOnTheGrid(i, y);
         return i;
@@ -73,7 +73,7 @@ export default {
     },
 
     putItemOnTheGrid(x, y) {
-      this.grid_content[x][y] = this.otherTurn ? this.enemySymbol : this.symbol;
+      this.gridContent[x][y] = this.otherTurn ? this.enemySymbol : this.symbol;
       this.otherTurn = !this.otherTurn;
     },
 
@@ -81,7 +81,7 @@ export default {
       let point = 0;
 
       while (x < 6) {
-        if (this.grid_content[x][y] !== this.symbol) break;
+        if (this.gridContent[x][y] !== this.symbol) break;
         point++;
         if (point === 4) {
           console.log("VICTORY");
@@ -96,8 +96,8 @@ export default {
       let point = 0;
 
       for (let i = 0; i < 7; i++) {
-        if (this.grid_content[x][i] === this.symbol) point++;
-        if (point > 0 && this.grid_content[x][i] !== this.symbol) point = 0;
+        if (this.gridContent[x][i] === this.symbol) point++;
+        if (point > 0 && this.gridContent[x][i] !== this.symbol) point = 0;
         if (point === 4) console.log("VICTORY");
       }
     },
@@ -111,7 +111,7 @@ export default {
       let [newX, newY] = this.findStartCoordonateForCheckForward(x, y);
 
       while (newX > 0 && newY < 6) {
-        if (this.grid_content[newX][newY] === this.symbol) point++;
+        if (this.gridContent[newX][newY] === this.symbol) point++;
         else point = 0;
 
         if (point === 4) {
@@ -132,7 +132,7 @@ export default {
       let [newX, newY] = this.findStartCoordonateForCheckBack(x, y);
 
       while (newX > 0 && newY > 0) {
-        if (this.grid_content[newX][newY] === this.symbol) point++;
+        if (this.gridContent[newX][newY] === this.symbol) point++;
         else point = 0;
 
         if (point === 4) {

@@ -41,7 +41,8 @@ npm run serve
 
 ## TODO
 
-- Ajouter le puissance 4
+- Ajouter la partie multi du puissance 4
+- Ajouter l'animation (barre) de fin du puissance 4
 
 ## Issues
 
@@ -49,10 +50,22 @@ npm run serve
 
 ## IMPROVEMENT
 
-- Pouvoir choisir les couleurs
+- Redesign UI 
+  - Barre en haut pour nom du site
+  - Nom du jeu en cours
+  - Options 
+    - Changer pseudo (?)
+    - Changer les couleurs
+    - Choisir les croix ou les ronds sur le morpion,
+    - Choisir la langue du site (anglais)
+  - Voir les paramètres de la partie en cours
+  - Lien de la partie (click to copy)
+  - Scores et autres joueurs
+  - Quitter la partie (Croix avec popover)
+  
 - Ajouter l'option 4 joueurs pour le pierre-papier-ciseaux
 - Mettre les varibales d'environnements pour simplifier les deploiements sur le serveur node
-- Ajouter le pierre-papier-ciseaux-lesard-spock
+- Ajouter le pierre-papier-ciseaux-lézard-Spock
 - Afficher toures les options (résumé) du salon sur la liste des salons
 - En cas de refresh, redirection vers la home pour eviter un loader infini sur la room
 - Pouvoir choisir les croix ou les ronds (morpion) (option)
