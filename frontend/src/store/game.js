@@ -10,9 +10,14 @@ export default {
         scoreToReach: 3,
         numberOfPlayer: 2,
 
-        // morpion
+        // morpion & connect 4
         playedCell: '',
+
+        // morpion
         victoryWay: '',
+
+        // connect 4
+        victoryCells: [],
 
         // rock-paper-scissors
         chosenItem: '',
@@ -33,15 +38,22 @@ export default {
             state.numberOfPlayer = payload
         },
 
-        // morpion
+        // morpion & connect 4
         SET_PLAYED_CELL(state, payload) {
             state.playedCell = payload
         },
+
+        // morpion
         SET_VICTORY_WAY(state, payload) {
             state.victoryWay = payload
         },
 
-        //rock-paper-scissors
+        // connect 4
+        SET_VICTORY_CELLS(state, payload) {
+            state.victoryCells = payload
+        },
+
+        // rock-paper-scissors
         SET_CHOSEN_ITEM(state, payload) {
             state.chosenItem = payload
         },
@@ -49,35 +61,14 @@ export default {
 
     actions: {
 
-        // PLAY_TO_ROCK_PAPER_SCISSORS EVENTS
-        emitPlayToRockPaperScissors(store) {
-            const data = {
-                socketId: store.rootState.player.socketId,
-                roomId: store.rootState.player.roomId,
-                username: store.rootState.player.username,
-                chosenItem: store.state.chosenItem,
-                score: store.rootState.player.score,
-            }
-
-            socketioService.socket.emit('toServer_playRockPaperScissors', data)
-        },
-
-        listenPlayToRockPaperScissors(store) {
-            socketioService.socket.on('toClient_playRockPaperScissors', (data) => {
-                let enemyData = store.state.enemyData.filter(d => d.socketId !== data.socketId)
-                enemyData.push(data)
-                store.commit('SET_ENEMY_DATA', enemyData)
-            })
-        },
-
         // PLAY_TO_MORPION EVENTS
         emitPlayToMorpion(store) {
             const data = {
                 socketId: store.rootState.player.socketId,
                 roomId: store.rootState.player.roomId,
                 username: store.rootState.player.username,
-                playedCell: store.state.playedCell,
                 turn: store.rootState.player.turn,
+                playedCell: store.state.playedCell,
                 isWinner: store.rootState.player.isWinner,
                 victoryWay: store.state.victoryWay,
             }
@@ -90,6 +81,49 @@ export default {
                 store.commit('SET_ENEMY_DATA', data)
             })
         },
+
+        // PLAY_TO_CONNECT_4 EVENTS
+        emitPlayToConnect4(store) {
+            const data = {
+                socketId: store.rootState.player.socketId,
+                roomId: store.rootState.player.roomId,
+                username: store.rootState.player.username,
+                turn: store.rootState.player.turn,
+                playedCell: store.state.playedCell,
+                isWinner: store.rootState.player.isWinner,
+                victoryCells: store.state.victoryCells,
+            }
+
+            socketioService.socket.emit('toServer_playToConnect4', data)
+        },
+
+        listenPlayToConnect4(store) {
+            socketioService.socket.on('toClient_playToConnect4', (data) => {
+                store.commit('SET_ENEMY_DATA', data)
+            })
+        },
+
+        // PLAY_TO_ROCK_PAPER_SCISSORS EVENTS
+        emitPlayToRockPaperScissors(store) {
+            const data = {
+                socketId: store.rootState.player.socketId,
+                roomId: store.rootState.player.roomId,
+                username: store.rootState.player.username,
+                chosenItem: store.state.chosenItem,
+                score: store.rootState.player.score,
+            }
+
+            socketioService.socket.emit('toServer_playToRockPaperScissors', data)
+        },
+
+        listenPlayToRockPaperScissors(store) {
+            socketioService.socket.on('toClient_playToRockPaperScissors', (data) => {
+                let enemyData = store.state.enemyData.filter(d => d.socketId !== data.socketId)
+                enemyData.push(data)
+                store.commit('SET_ENEMY_DATA', enemyData)
+            })
+        },
+
 
         // ---------
 
@@ -110,17 +144,22 @@ export default {
             store.commit('SET_NUMBER_OF_PLAYER', value)
         },
 
-        // morpion
-
+        // morpion & connect 4
         changePlayedCell(store, value) {
             store.commit('SET_PLAYED_CELL', value)
         },
+
+        // morpion
         changeVictoryWay(store, value) {
             store.commit('SET_VICTORY_WAY', value)
         },
 
-        // rock-paper-scissors
+        // connect 4
+        changeVictoryCells(store, value) {
+            store.commit('SET_VICTORY_CELLS', value)
+        },
 
+        // rock-paper-scissors
         changeChosenItem(store, value) {
             store.commit('SET_CHOSEN_ITEM', value)
         },

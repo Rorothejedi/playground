@@ -3,13 +3,13 @@ const http = require('http').createServer(app);
 
 // localhost
 
-const frontendHost = 'http://localhost:8080'
-const host = 'http://localhost'
+// const frontendHost = 'http://localhost:8080'
+// const host = 'http://localhost'
 
 // production
 
-// const frontendHost = 'https://playground.rodolphe-cabotiau.com'
-// const host = 'https://node.playground.rodolphe-cabotiau.com'
+const frontendHost = 'https://playground.rodolphe-cabotiau.com'
+const host = 'https://node.playground.rodolphe-cabotiau.com'
 
 const port = 3000
 
@@ -61,8 +61,12 @@ io.on('connection', (socket) => {
         socket.to(data.roomId).emit('toClient_playToMorpion', data)
     })
 
-    socket.on('toServer_playRockPaperScissors', (data) => {
-        socket.to(data.roomId).emit('toClient_playRockPaperScissors', data)
+    socket.on('toServer_playToRockPaperScissors', (data) => {
+        socket.to(data.roomId).emit('toClient_playToRockPaperScissors', data)
+    })
+
+    socket.on('toServer_playToConnect4', (data) => {
+        socket.to(data.roomId).emit('toClient_playToConnect4', data)
     })
 
     socket.on('toServer_replay', (roomId) => {

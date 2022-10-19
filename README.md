@@ -7,6 +7,7 @@ Site online: https://playground.rodolphe-cabotiau.com/
 
 - Morpion (2 joueurs) (v1.0)
 - Pierre-papier-ciseaux (2/3 joueurs) (v2.1)
+- Puissance 4 (2 joueurs) (v2.2)
 
 ## backend 
 
@@ -41,9 +42,7 @@ npm run serve
 
 ## TODO
 
-- Ajouter la partie multi du puissance 4
-
-## Issues
+### Issues
 
 - A plusieurs joueur, quand eux on rejoint et que un annule, la partie n'est plus visible pour les autres.
 

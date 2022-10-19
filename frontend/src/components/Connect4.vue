@@ -18,6 +18,7 @@
                   'enemy-item': gridContent[i][j] === enemySymbol,
                   'my-item': gridContent[i][j] === symbol,
                   'victory-end-game': gridContent[i][j] === victorySymbol,
+                  'defeat-end-game': gridContent[i][j] === defeatSymbol,
                   'end-game': isEnd,
                 }"
               />
@@ -30,8 +31,14 @@
 </template>
 
 <script>
+import { mapActions, mapGetters, mapState } from "vuex";
+import gameMessages from "@/mixins/gameMessages";
+import utils from "@/mixins/utils";
+
 export default {
   name: "Connect4",
+  mixins: [gameMessages, utils],
+
   data() {
     return {
       gridContent: [
@@ -45,9 +52,7 @@ export default {
       symbol: "X",
       enemySymbol: "O",
       victorySymbol: "V",
-
-      winPoints: 0,
-      otherTurn: false,
+      defeatSymbol: "D",
 
       hoverColumn: -1,
 
@@ -55,106 +60,212 @@ export default {
     };
   },
 
+  computed: {
+    ...mapState("player", ["socketId", "turn"]),
+    ...mapState("game", ["enemyData", "playedCell", "victoryCells"]),
+    ...mapGetters("room", ["enemies"]),
+  },
+
+  watch: {
+    enemyData() {
+      this.placeEnemyItem();
+    },
+  },
+
+  mounted() {
+    this.listenPlayToConnect4();
+
+    if (this.turn) {
+      this.createInfoMessage("A toi de jouer");
+    } else {
+      this.createLoadingMessage(`${this.enemies[0].username} prépare son coup`);
+    }
+  },
+
+  beforeUnmount() {
+    this.changeVictoryCells([]);
+    this.changePlayedCell("");
+  },
+
   methods: {
+    ...mapActions("player", ["changeTurn", "changeOutcome", "changeIsWinner"]),
+    ...mapActions("game", [
+      "emitPlayToConnect4",
+      "listenPlayToConnect4",
+      "changePlayedCell",
+      "changeVictoryCells",
+    ]),
+
     placeItem(x, y) {
+      if (!this.turn) return;
       if (this.gridContent[0][y] !== "" || this.gridContent[x][y] !== "")
         return;
 
-      const columnX = this.placeItemInColumn(y);
+      this.removeMessage();
 
-      this.checkBottom(columnX, y);
-      this.checkHorizontal(columnX);
-      this.checkForward(columnX, y);
-      this.checkBack(columnX, y);
+      const newX = this.placeItemInBottomOfColumn(y);
+      this.changePlayedCell([newX, y]);
+
+      this.checkVictory();
+
+      this.changeTurn(false);
+      this.emitPlayToConnect4();
+
+      if (this.isEnd) return;
+      if (this.checkEquality()) return;
+
+      this.createLoadingMessage(`${this.enemies[0].username} prépare son coup`);
     },
 
-    placeItemInColumn(y) {
+    placeEnemyItem() {
+      if (this.enemyData.length === 0) return;
+      if (this.socketId === this.enemyData.socketId) return;
+      if (this.enemyData.turn) return;
+
+      this.removeMessage();
+
+      let cell = this.enemyData.playedCell;
+      this.gridContent[cell[0]][cell[1]] = this.enemySymbol;
+
+      if (this.checkDefeat()) return;
+      if (this.checkEquality()) return;
+
+      this.changeTurn(true);
+      this.createInfoMessage("A toi de jouer");
+    },
+
+    placeItemInBottomOfColumn(y) {
       for (let i = 5; i >= 0; i--) {
         if (this.gridContent[i][y] !== "") continue;
 
-        this.gridContent[i][y] = this.otherTurn
-          ? this.enemySymbol
-          : this.symbol;
-        this.otherTurn = !this.otherTurn;
+        this.gridContent[i][y] = this.symbol;
         return i;
       }
     },
 
-    checkBottom(x, y) {
-      let points = [];
+    checkVictory() {
+      if (this.enemyData.length === 0) return;
+      if (
+        !this.checkVictoryBottom() &&
+        !this.checkVictoryHorizontal() &&
+        !this.checkVictoryForward() &&
+        !this.checkVictoryBack()
+      )
+        return;
+
+      this.changeIsWinner(true);
+      this.gameOver("victory");
+    },
+
+    checkDefeat() {
+      if (!this.enemyData.isWinner) return false;
+
+      this.gameOver("defeat");
+
+      return true;
+    },
+
+    checkEquality() {
+      const isGridFull = this.gridContent.every((row) => !row.includes(""));
+
+      if (!isGridFull) return false;
+
+      this.gameOver("equality");
+
+      return true;
+    },
+
+    checkVictoryBottom() {
+      let cells = [];
+      let x = this.playedCell[0];
+      let y = this.playedCell[1];
 
       while (x < 6) {
         if (this.gridContent[x][y] !== this.symbol) break;
-        points.push([x, y]);
-        if (points.length === 4) {
-          this.gameOver(points);
-          break;
+        cells.push([x, y]);
+        if (cells.length === 4) {
+          this.changeVictoryCells(cells);
+          return true;
         }
 
         x++;
       }
+      return false;
     },
 
-    checkHorizontal(x) {
-      let points = [];
+    checkVictoryHorizontal() {
+      let cells = [];
+      let x = this.playedCell[0];
 
       for (let i = 0; i < 7; i++) {
-        if (this.gridContent[x][i] === this.symbol) points.push([x, i]);
-        if (points.length > 0 && this.gridContent[x][i] !== this.symbol)
-          points = [];
-        if (points.length === 4) this.gameOver(points);
+        if (this.gridContent[x][i] === this.symbol) cells.push([x, i]);
+        if (cells.length > 0 && this.gridContent[x][i] !== this.symbol)
+          cells = [];
+        if (cells.length === 4) {
+          this.changeVictoryCells(cells);
+          return true;
+        }
       }
+
+      return false;
     },
 
-    checkForward(x, y) {
+    checkVictoryForward() {
       // . . O
       // . O .
       // O . .
 
-      let points = [];
-      let [newX, newY] = this.findStartCoordonateForCheckForward(x, y);
+      let cells = [];
+      let [x, y] = this.findStartCoordonateForward();
 
-      while (newX > 0 && newY < 6) {
-        if (this.gridContent[newX][newY] === this.symbol) {
-          points.push([newX, newY]);
+      while (x >= 0 && y <= 6) {
+        if (this.gridContent[x][y] === this.symbol) {
+          cells.push([x, y]);
         } else {
-          points = [];
+          cells = [];
         }
 
-        if (points.length === 4) {
-          this.gameOver(points);
-          break;
+        if (cells.length === 4) {
+          this.changeVictoryCells(cells);
+          return true;
         }
-        newX--;
-        newY++;
+        x--;
+        y++;
       }
+
+      return false;
     },
 
-    checkBack(x, y) {
+    checkVictoryBack() {
       // O . .
       // . O .
       // . . O
 
-      let points = [];
-      let [newX, newY] = this.findStartCoordonateForCheckBack(x, y);
+      let cells = [];
+      let [x, y] = this.findStartCoordonateBack();
 
-      while (newX > 0 && newY > 0) {
-        if (this.gridContent[newX][newY] === this.symbol) {
-          points.push([newX, newY]);
+      while (x >= 0 && y >= 0) {
+        if (this.gridContent[x][y] === this.symbol) {
+          cells.push([x, y]);
         } else {
-          points = [];
+          cells = [];
         }
 
-        if (points.length === 4) {
-          this.gameOver(points);
-          break;
+        if (cells.length === 4) {
+          this.changeVictoryCells(cells);
+          return true;
         }
-        newX--;
-        newY--;
+        x--;
+        y--;
       }
+
+      return false;
     },
 
-    findStartCoordonateForCheckForward(x, y) {
+    findStartCoordonateForward() {
+      let x = this.playedCell[0];
+      let y = this.playedCell[1];
+
       while (x < 5 && y > 0) {
         x++;
         y--;
@@ -163,7 +274,10 @@ export default {
       return [x, y];
     },
 
-    findStartCoordonateForCheckBack(x, y) {
+    findStartCoordonateBack() {
+      let x = this.playedCell[0];
+      let y = this.playedCell[1];
+
       while (x < 5 && y < 6) {
         x++;
         y++;
@@ -172,14 +286,24 @@ export default {
       return [x, y];
     },
 
-    gameOver(points) {
-      for (let i = 0; i < 4; i++) {
-        this.gridContent[points[i][0]][points[i][1]] = this.victorySymbol;
+    async gameOver(way) {
+      if (way !== "equality") {
+        const cells =
+          this.victoryCells.length === 0
+            ? this.enemyData.victoryCells
+            : this.victoryCells;
+
+        for (let i = 0; i < 4; i++) {
+          this.gridContent[cells[i][0]][cells[i][1]] =
+            way === "victory" ? this.victorySymbol : this.defeatSymbol;
+        }
       }
 
       this.isEnd = true;
 
-      console.log("VICTORY");
+      await this.sleep(3000);
+
+      this.changeOutcome(way);
     },
   },
 };
@@ -237,7 +361,7 @@ span {
 }
 
 .enemy-item {
-  border: 3px solid rgba(240, 138, 0);
+  border: 3px solid #f08a00;
   background-color: rgba(240, 138, 0, 0.5);
 }
 .my-item {
@@ -248,6 +372,11 @@ span {
 .victory-end-game {
   border: 3px solid #3889c5;
   background-color: #3889c5 !important;
+  transition: all 0.3s ease-out 0.3s;
+}
+.defeat-end-game {
+  border: 3px solid #f08a00;
+  background-color: #f08a00 !important;
   transition: all 0.3s ease-out 0.3s;
 }
 .end-game {
