@@ -1,8 +1,7 @@
 <template>
   <n-collapse-transition class="rooms" :show="!loadingRoom">
-    <n-h1>Playground</n-h1>
-
     <n-collapse-transition :show="displayUsernameInput">
+      <n-h1 class="username-title" v-if="username === ''"> Playground </n-h1>
       <div class="username-card">
         <n-card title="Ton pseudo">
           <n-input-group>
@@ -14,7 +13,9 @@
               maxlength="30"
               show-count
             />
-            <n-button @click="addUsername()"> Choisir </n-button>
+            <n-button @click="addUsername()" :disabled="localUsername === ''">
+              Choisir
+            </n-button>
           </n-input-group>
         </n-card>
       </div>
@@ -29,8 +30,10 @@
               type="success"
               size="small"
               quaternary
+              round
               @click="displayUsernameInput = true"
               title="Editer le nom d'utilisateur"
+              class="username-edit-button"
             >
               {{ localUsername }}
             </n-button>
@@ -38,7 +41,7 @@
         </div>
 
         <div class="create-room-card">
-          <n-card title="Créer un salon">
+          <n-card title="Nouvelle partie">
             <n-form>
               <n-form-item :show-label="false">
                 <n-select
@@ -93,7 +96,7 @@
         </div>
 
         <div class="room-card">
-          <n-card title="Liste des salons disponibles">
+          <n-card title="Liste des parties disponibles">
             <n-space vertical :size="12">
               <div v-if="availableRooms.length !== 0">
                 <n-list>
@@ -178,7 +181,7 @@
                 <n-list bordered>
                   <n-list-item>
                     <n-space justify="center" class="no-room">
-                      Aucun salon disponible
+                      Aucune partie disponible
                     </n-space>
                   </n-list-item>
                 </n-list>
@@ -213,7 +216,6 @@ export default {
 
   data() {
     return {
-      localUsername: "",
       displayUsernameInput: true,
       selectedGame: null,
       gamesAvailable: [
@@ -230,6 +232,7 @@ export default {
       loadingRoom: true,
       windowWidth: window.innerWidth,
 
+      localUsername: "",
       localNumberOfPlayer: 2,
       localScoreToReach: 3,
     };
@@ -271,7 +274,6 @@ export default {
 
     if (this.game !== "") this.emitLeaveRoom();
 
-    // all of this can be in before unmount of games (and it needs number-of-player)
     this.resetEnemyData();
     this.changeOutcome("");
     this.changeGame("");
@@ -372,11 +374,16 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.n-h1 {
-  font-size: 2.5em;
-  padding-bottom: 20px;
-  padding-top: 50px;
+.rooms {
+  margin: 50px auto;
 }
+
+.username-title {
+  font-family: "Major Mono Display", monospace;
+  margin-bottom: 50px;
+  font-size: 3em;
+}
+.username-title,
 .username-card,
 .room-card,
 .create-room-card,
@@ -384,12 +391,16 @@ export default {
   display: flex;
   justify-content: center;
 }
+.username-edit-button {
+  padding: 0 5px;
+}
 .username-card {
   padding-bottom: 25px;
 }
 
 .username-edit-card {
   text-align: right;
+  background-color: #101014;
 }
 
 .n-card {
@@ -419,6 +430,9 @@ export default {
 }
 
 @media screen and (max-width: 600px) {
+  .rooms {
+    margin: 20px auto;
+  }
   .n-tag.n-tag--icon.n-tag--round {
     padding-left: 8px;
   }

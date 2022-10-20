@@ -57,10 +57,12 @@ npm run serve
     - Choisir les croix ou les ronds sur le morpion,
     - Choisir la langue du site (anglais)
   - Voir les paramètres de la partie en cours
-  - Lien de la partie (click to copy)
+    - Lien de la partie (click to copy)
   - Scores et autres joueurs
   - Quitter la partie (Croix avec popover)
   
+
+- Améliorer le bouton "rejouer", tous les joueurs doivent pouvoir cliquer, (la partie redemare quand tous les joueurs on cliqué)
 - Ajouter l'option 4 joueurs pour le pierre-papier-ciseaux
 - Mettre les varibales d'environnements pour simplifier les deploiements sur le serveur node
 - Ajouter le pierre-papier-ciseaux-lézard-Spock

@@ -1,20 +1,15 @@
 <template>
   <div class="room">
     <div v-if="!isReady" class="waiting-card">
-      <n-h1>{{ game }}</n-h1>
-
       <n-alert type="success">
         <template #icon>
           <n-spin size="small" />
         </template>
         En attente d'un autre joueur...
       </n-alert>
-      <n-button @click="quitRoom()"> Annuler </n-button>
     </div>
 
     <div v-else class="game-wrapper">
-      <n-h1>{{ game }}</n-h1>
-
       <div class="game">
         <n-collapse-transition :show="outcome === ''" appear>
           <morpion v-if="game === 'Morpion'" />
@@ -39,10 +34,6 @@
           </div>
         </n-collapse-transition>
       </div>
-
-      <n-button @click="quitRoomConfirm(quitRoom)" class="quit-button">
-        Quitter la partie
-      </n-button>
     </div>
   </div>
 </template>
@@ -63,7 +54,6 @@ export default {
   data() {
     return {
       isReady: false,
-      toBack: false,
       enemyUsername: "",
     };
   },
@@ -108,7 +98,7 @@ export default {
         this.isReady
       ) {
         window.$message.error(`${this.enemyUsername} a quitté la partie`);
-        this.quitRoom();
+        this.$router.push({ name: "Home" });
       }
 
       this.watchRoomForReady();
@@ -139,18 +129,20 @@ export default {
   mounted() {
     this.listenReplay();
     this.watchRoomForReady();
-
-    window.onpopstate = () => {
-      this.toBack = true;
-    };
   },
 
-  beforeRouteLeave(to, from, next) {
-    setTimeout(() => {
-      if (!this.toBack) return next();
+  async beforeRouteLeave(to, from, next) {
+    if (this.enemies === undefined || this.enemies.length === 0) return next();
 
-      this.quitRoomConfirm(next);
-    }, 100);
+    const answer = await this.quitRoomConfirm();
+
+    if (!answer) return next(false);
+
+    next();
+  },
+
+  beforeUnmount() {
+    this.changeReplay(false);
   },
 
   methods: {
@@ -188,41 +180,36 @@ export default {
       this.changeReplay(false);
     },
 
-    quitRoomConfirm(onPositive) {
-      window.$dialog.warning({
-        title: "Quitter la partie ?",
-        content:
-          "Vous êtes certain de vouloir quitter ? Dans ce cas, votre adversaire sera expulsé de la partie...",
-        positiveText: "Oui, je suis sûr",
-        negativeText: "Finalement non",
-        onPositiveClick: () => {
-          onPositive();
-        },
+    quitRoomConfirm() {
+      return new Promise((resolve) => {
+        window.$dialog.warning({
+          title: "Quitter la partie ?",
+          content:
+            "Vous êtes certain de vouloir quitter ? Dans ce cas, votre adversaire sera expulsé de la partie...",
+          positiveText: "Oui, je suis sûr",
+          negativeText: "Finalement non",
+          onPositiveClick: () => {
+            resolve(true);
+          },
+          onNegativeClick: () => {
+            resolve(false);
+          },
+          onMaskClick: () => {
+            resolve(false);
+          },
+          onClose: () => {
+            resolve(false);
+          },
+        });
       });
-    },
-
-    quitRoom() {
-      this.toBack = false;
-      this.changeReplay(false);
-      this.$router.push({ name: "Home" });
     },
   },
 };
 </script>
 
 <style lang="less" scoped>
-.room {
-  min-height: 100vh;
-}
-.n-h1 {
-  margin-bottom: 0;
-}
-.n-h3 {
-  margin-top: 5px;
-  margin-bottom: 15px;
-}
 .waiting-card {
-  height: 100vh;
+  height: calc(100vh - 128px);
   display: flex;
   justify-content: space-around;
   flex-direction: column;
@@ -237,7 +224,7 @@ export default {
 }
 
 .game-wrapper {
-  height: 100vh;
+  height: calc(100vh - 128px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -249,5 +236,13 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+@media screen and (max-width: 600px) {
+  .waiting-card,
+  .end-game,
+  .game-wrapper {
+    height: calc(100vh - 154px);
+  }
 }
 </style>

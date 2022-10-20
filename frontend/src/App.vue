@@ -4,7 +4,12 @@
       <n-dialog-provider>
         <n-message-provider :placement="placement">
           <utils-for-naive />
-          <router-view />
+          <n-layout>
+            <navbar />
+            <n-layout>
+              <router-view />
+            </n-layout>
+          </n-layout>
         </n-message-provider>
       </n-dialog-provider>
     </n-loading-bar-provider>
@@ -14,20 +19,22 @@
 <script>
 import { darkTheme } from "naive-ui";
 import { ref } from "vue";
+import { mapActions } from "vuex";
 import SocketioService from "./services/socketio.service.js";
 import UtilsForNaive from "@/components/utils/UtilsForNaive.vue";
-import { mapActions } from "vuex";
+import Navbar from "@/components/Navbar.vue";
 
 export default {
   name: "App",
   components: {
     UtilsForNaive,
+    Navbar,
   },
 
   data() {
     return {
       darkTheme,
-      placement: ref("top"),
+      placement: ref("bottom"),
     };
   },
 
@@ -57,16 +64,11 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  background-color: #18181c;
+  background-color: #101014;
   min-height: 100vh;
 
   .n-config-provider {
     min-height: 100vh;
   }
-}
-
-.n-h1 {
-  text-align: center;
-  font-family: "Major Mono Display", monospace;
 }
 </style>
