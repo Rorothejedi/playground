@@ -2,7 +2,7 @@
   <n-collapse-transition :show="username !== ''">
     <n-layout-header
       style="height: 64px"
-      :bordered="!isMobile || $route.name === 'Home'"
+      :bordered="!isMobile || isOnHome"
       class="nav"
     >
       <div class="title-wrapper">
@@ -15,23 +15,25 @@
         </n-collapse-transition>
       </div>
 
-      <n-space inline>
-        <!-- <n-button tertiary>Infos de la partie</n-button> -->
-        <!-- <n-button>Paramètres globaux</n-button> -->
+      <n-space inline :size="isMobile ? 'small' : 'medium'">
+        <drawer-room-settings
+          v-if="!isOnHome"
+          :isMobile="isMobile"
+          :windowWidth="windowWidth"
+        />
 
-        <n-button title="Paramétres"> Params </n-button>
+        <drawer-global-settings
+          :isMobile="isMobile"
+          :windowWidth="windowWidth"
+        />
 
-        <n-button
-          circle
-          @click="toHome()"
-          v-if="game !== ''"
-          title="Quitter la partie"
-        >
-          <template #icon>
-            <n-icon>
+        <n-button round @click="toHome()" v-if="game !== ''">
+          <template #icon v-if="isMobile">
+            <n-icon size="22">
               <close-filled />
             </n-icon>
           </template>
+          <n-text v-if="!isMobile">Quitter la partie</n-text>
         </n-button>
       </n-space>
     </n-layout-header>
@@ -48,14 +50,24 @@
 <script>
 import { mapState } from "vuex";
 import { CloseFilled } from "@vicons/material";
+import DrawerGlobalSettings from "@/components/settings/DrawerGlobalSettings.vue";
+import DrawerRoomSettings from "@/components/settings/DrawerRoomSettings.vue";
 
 export default {
   name: "Navbar",
-  components: { CloseFilled },
+  components: {
+    CloseFilled,
+    DrawerGlobalSettings,
+    DrawerRoomSettings,
+  },
 
   data() {
     return {
       windowWidth: window.innerWidth,
+
+      drawerRoomSettings: false,
+      drawerGlobalSettings: false,
+      selectedLanguage: "french",
     };
   },
 
@@ -64,7 +76,10 @@ export default {
     ...mapState("player", ["username"]),
 
     isMobile() {
-      return this.windowWidth <= 600;
+      return this.windowWidth <= 700;
+    },
+    isOnHome() {
+      return this.$route.name === "Home";
     },
   },
 
@@ -116,7 +131,7 @@ export default {
   }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 700px) {
   .nav {
     padding: 0 15px;
     grid-template-rows: 64px;

@@ -48,30 +48,37 @@ npm run serve
 
 ## IMPROVEMENT
 
-- Redesign UI 
-  - Barre en haut pour nom du site
-  - Nom du jeu en cours
-  - Options 
-    - Changer pseudo (?)
-    - Changer les couleurs
-    - Choisir les croix ou les ronds sur le morpion,
+- Redesign UI (v2.3)
+  - OK Barre en haut pour nom du site
+  - OK Nom du jeu en cours
+  - Options globales
+    - OK Changer pseudo
     - Choisir la langue du site (anglais)
-  - Voir les paramètres de la partie en cours
+  - Options de la partie en cours
     - Lien de la partie (click to copy)
-  - Scores et autres joueurs
-  - Quitter la partie (Croix avec popover)
-  
+    - Choisir les croix ou les ronds sur le morpion,
+    - Changer les couleurs
+  - OK Quitter la partie (Close cross)
 
+- Gérer les changement de couleur sur chaque jeu (morpion et puissance 4)
+- Gérer les changement de shape (morpion)
+- Gérer le fait de rejoindre une partie avec le lien (demande du username si pas renseigné puis redirection)
+- Si on arrive sur le lien et qu'il n'y a que le joueur, redirection vers la home pour eviter un loader infini sur la room
+
+## After
+
+- Gérer la traduction du site
+- Scores et autres joueurs
 - Améliorer le bouton "rejouer", tous les joueurs doivent pouvoir cliquer, (la partie redemare quand tous les joueurs on cliqué)
 - Ajouter l'option 4 joueurs pour le pierre-papier-ciseaux
-- Mettre les varibales d'environnements pour simplifier les deploiements sur le serveur node
+- Mettre les variables d'environnements pour simplifier les deploiements sur le serveur node
 - Ajouter le pierre-papier-ciseaux-lézard-Spock
 - Afficher toures les options (résumé) du salon sur la liste des salons
-- En cas de refresh, redirection vers la home pour eviter un loader infini sur la room
+
 - Pouvoir choisir les croix ou les ronds (morpion) (option)
 - Améliorer les cas d'égalité (morpion)
 - Compter les scores et en gérer l'affichage (morpion)
-- Gérer le fait de rejoindre une partie avec le lien (demande du username si pas renseigné puis redirection)
+
 - Ajouter d'autres jeux (memory, bataille, skyjo, mini-golf)
 
 ## IMPROVEMENT (hyper facultatif)

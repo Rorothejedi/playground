@@ -23,23 +23,6 @@
 
     <n-collapse-transition :show="!displayUsernameInput">
       <n-space vertical>
-        <div class="username-edit">
-          <n-card size="small" :bordered="false" class="username-edit-card">
-            <n-text>Hello,</n-text>
-            <n-button
-              type="success"
-              size="small"
-              quaternary
-              round
-              @click="displayUsernameInput = true"
-              title="Editer le nom d'utilisateur"
-              class="username-edit-button"
-            >
-              {{ localUsername }}
-            </n-button>
-          </n-card>
-        </div>
-
         <div class="create-room-card">
           <n-card title="Nouvelle partie">
             <n-form>
@@ -386,21 +369,12 @@ export default {
 .username-title,
 .username-card,
 .room-card,
-.create-room-card,
-.username-edit {
+.create-room-card {
   display: flex;
   justify-content: center;
 }
-.username-edit-button {
-  padding: 0 5px;
-}
 .username-card {
   padding-bottom: 25px;
-}
-
-.username-edit-card {
-  text-align: right;
-  background-color: #101014;
 }
 
 .n-card {

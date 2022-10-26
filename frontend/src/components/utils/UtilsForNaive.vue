@@ -5,9 +5,9 @@
 </template>
 
 <script>
-import DialogNaive from "./DialogNaive.vue";
-import LoadingBarNaive from "./LoadingBarNaive.vue";
-import MessageNaive from "./MessageNaive.vue";
+import DialogNaive from "./naive/DialogNaive.vue";
+import LoadingBarNaive from "./naive/LoadingBarNaive.vue";
+import MessageNaive from "./naive/MessageNaive.vue";
 
 export default {
   name: "UtilsForNaive",

@@ -41,9 +41,9 @@
 <script>
 import { mapActions, mapGetters, mapState } from "vuex";
 import title from "@/mixins/title.js";
-import Connect4 from "@/components/Connect4.vue";
-import Morpion from "@/components/Morpion.vue";
-import RockPaperScissors from "@/components/RockPaperScissors.vue";
+import Connect4 from "@/components/games/Connect4.vue";
+import Morpion from "@/components/games/Morpion.vue";
+import RockPaperScissors from "@/components/games/RockPaperScissors.vue";
 
 export default {
   name: "Room",

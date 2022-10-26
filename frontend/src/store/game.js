@@ -13,9 +13,6 @@ export default {
         // morpion & connect 4
         playedCell: '',
 
-        // morpion
-        victoryWay: '',
-
         // connect 4
         victoryCells: [],
 
@@ -43,11 +40,6 @@ export default {
             state.playedCell = payload
         },
 
-        // morpion
-        SET_VICTORY_WAY(state, payload) {
-            state.victoryWay = payload
-        },
-
         // connect 4
         SET_VICTORY_CELLS(state, payload) {
             state.victoryCells = payload
@@ -60,28 +52,6 @@ export default {
     },
 
     actions: {
-
-        // PLAY_TO_MORPION EVENTS
-        emitPlayToMorpion(store) {
-            const data = {
-                socketId: store.rootState.player.socketId,
-                roomId: store.rootState.player.roomId,
-                username: store.rootState.player.username,
-                turn: store.rootState.player.turn,
-                playedCell: store.state.playedCell,
-                isWinner: store.rootState.player.isWinner,
-                victoryWay: store.state.victoryWay,
-            }
-
-            socketioService.socket.emit('toServer_playToMorpion', data)
-        },
-
-        listenPlayToMorpion(store) {
-            socketioService.socket.on('toClient_playToMorpion', (data) => {
-                store.commit('SET_ENEMY_DATA', data)
-            })
-        },
-
         // PLAY_TO_CONNECT_4 EVENTS
         emitPlayToConnect4(store) {
             const data = {
@@ -147,11 +117,6 @@ export default {
         // morpion & connect 4
         changePlayedCell(store, value) {
             store.commit('SET_PLAYED_CELL', value)
-        },
-
-        // morpion
-        changeVictoryWay(store, value) {
-            store.commit('SET_VICTORY_WAY', value)
         },
 
         // connect 4

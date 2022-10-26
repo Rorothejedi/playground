@@ -84,10 +84,10 @@ export default {
 
   methods: {
     ...mapActions("player", ["changeTurn", "changeIsWinner", "changeOutcome"]),
-    ...mapActions("game", [
+    ...mapActions("game", ["changePlayedCell"]),
+    ...mapActions("morpion", [
       "emitPlayToMorpion",
       "listenPlayToMorpion",
-      "changePlayedCell",
       "changeVictoryWay",
     ]),
 
