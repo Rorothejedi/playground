@@ -62,8 +62,16 @@ export default {
 
   computed: {
     ...mapState("player", ["socketId", "turn"]),
-    ...mapState("game", ["enemyData", "playedCell", "victoryCells"]),
+    ...mapState("game", ["enemyData", "playedCell"]),
+    ...mapState("connect4", ["victoryCells", "colorPlayer", "colorEnemy"]),
     ...mapGetters("room", ["enemies"]),
+
+    darkenColorPlayer() {
+      return this.hexTorgba(this.colorPlayer, 0.5);
+    },
+    darkenColorEnemy() {
+      return this.hexTorgba(this.colorEnemy, 0.5);
+    },
   },
 
   watch: {
@@ -89,10 +97,10 @@ export default {
 
   methods: {
     ...mapActions("player", ["changeTurn", "changeOutcome", "changeIsWinner"]),
-    ...mapActions("game", [
+    ...mapActions("game", ["changePlayedCell"]),
+    ...mapActions("connect4", [
       "emitPlayToConnect4",
       "listenPlayToConnect4",
-      "changePlayedCell",
       "changeVictoryCells",
     ]),
 
@@ -360,23 +368,29 @@ span {
   }
 }
 
+:root {
+  --test: v-bind(colorEnemy);
+}
+
+// @color: v-bind(colorEnemy);
+
 .enemy-item {
-  border: 3px solid #f08a00;
-  background-color: rgba(240, 138, 0, 0.5);
+  border: 3px solid v-bind(colorEnemy);
+  background-color: v-bind(darkenColorEnemy);
 }
 .my-item {
-  border: 3px solid #3889c5;
-  background-color: rgba(56, 137, 197, 0.5);
+  border: 3px solid v-bind(colorPlayer);
+  background-color: v-bind(darkenColorPlayer);
 }
 
 .victory-end-game {
-  border: 3px solid #3889c5;
-  background-color: #3889c5 !important;
+  border: 3px solid v-bind(colorPlayer);
+  background-color: v-bind(colorPlayer) !important;
   transition: all 0.3s ease-out 0.3s;
 }
 .defeat-end-game {
-  border: 3px solid #f08a00;
-  background-color: #f08a00 !important;
+  border: 3px solid v-bind(colorEnemy);
+  background-color: v-bind(colorEnemy) !important;
   transition: all 0.3s ease-out 0.3s;
 }
 .end-game {

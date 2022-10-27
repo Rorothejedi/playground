@@ -42,26 +42,14 @@ npm run serve
 
 ## TODO
 
-### Issues
+### Bugs
 
 - A plusieurs joueur, quand eux on rejoint et que un annule, la partie n'est plus visible pour les autres.
+- Parfois, le nom d'utilisateur ne s'affiche pas dans le message '[username] a quitté la partie' (après rejouer ?)
 
 ## IMPROVEMENT
 
-- Redesign UI (v2.3)
-  - OK Barre en haut pour nom du site
-  - OK Nom du jeu en cours
-  - Options globales
-    - OK Changer pseudo
-    - Choisir la langue du site (anglais)
-  - Options de la partie en cours
-    - Lien de la partie (click to copy)
-    - Choisir les croix ou les ronds sur le morpion,
-    - Changer les couleurs
-  - OK Quitter la partie (Close cross)
-
-- Gérer les changement de couleur sur chaque jeu (morpion et puissance 4)
-- Gérer les changement de shape (morpion)
+- Gérer le localstorage pour les couleurs et les shapes (persistent ?)
 - Gérer le fait de rejoindre une partie avec le lien (demande du username si pas renseigné puis redirection)
 - Si on arrive sur le lien et qu'il n'y a que le joueur, redirection vers la home pour eviter un loader infini sur la room
 

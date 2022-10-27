@@ -46,9 +46,7 @@ export default {
         ["", "", ""],
         ["", "", ""],
       ],
-      symbol: "X",
-      enemySymbol: "O",
-      endLineColor: "#63e2b7",
+      endLineColor: "",
       lineHorizontalTop: false,
       lineHorizontalCenter: false,
       lineHorizontalBottom: false,
@@ -63,12 +61,28 @@ export default {
   computed: {
     ...mapState("player", ["socketId", "host", "turn", "isWinner"]),
     ...mapState("game", ["playedCell", "enemyData"]),
+    ...mapState("morpion", [
+      "colorPlayer",
+      "colorEnemy",
+      "shapePlayer",
+      "shapeEnemy",
+    ]),
     ...mapGetters("room", ["enemies"]),
+
+    colorCross() {
+      return this.shapePlayer === "X" ? this.colorPlayer : this.colorEnemy;
+    },
+    colorCircle() {
+      return this.shapePlayer === "O" ? this.colorPlayer : this.colorEnemy;
+    },
   },
 
   watch: {
     enemyData() {
       this.placeEnemyItem();
+    },
+    shapePlayer() {
+      this.switchShapesInGridContent();
     },
   },
 
@@ -97,7 +111,7 @@ export default {
 
       this.removeMessage();
 
-      this.gridContent[x][y] = this.symbol;
+      this.gridContent[x][y] = this.shapePlayer;
       this.changePlayedCell([x, y]);
 
       this.checkVictory();
@@ -119,7 +133,7 @@ export default {
       this.removeMessage();
 
       let cell = this.enemyData.playedCell;
-      this.gridContent[cell[0]][cell[1]] = this.enemySymbol;
+      this.gridContent[cell[0]][cell[1]] = this.shapeEnemy;
 
       if (this.checkDefeat()) return;
       if (this.checkEquality()) return;
@@ -143,7 +157,7 @@ export default {
     checkDefeat() {
       if (!this.enemyData.isWinner) return false;
 
-      this.endLineColor = "#e88080";
+      this.endLineColor = this.colorEnemy;
       this.addLine(this.enemyData.victoryWay);
       this.gameOver("defeat");
 
@@ -152,6 +166,9 @@ export default {
 
     checkVictory() {
       if (this.enemyData.length === 0) return;
+
+      this.endLineColor = this.colorPlayer;
+
       if (
         !this.checkVictoryHorizontal() &&
         !this.checkVictoryVertical() &&
@@ -168,7 +185,7 @@ export default {
       let row = this.playedCell[0];
 
       for (let y = 0; y < 3; y++) {
-        if (this.gridContent[row][y] !== this.symbol) return false;
+        if (this.gridContent[row][y] !== this.shapePlayer) return false;
       }
 
       if (row === 0) this.addLine("h-t");
@@ -182,7 +199,7 @@ export default {
       let column = this.playedCell[1];
 
       for (let x = 0; x < 3; x++) {
-        if (this.gridContent[x][column] !== this.symbol) return false;
+        if (this.gridContent[x][column] !== this.shapePlayer) return false;
       }
 
       if (column === 0) this.addLine("v-l");
@@ -198,7 +215,7 @@ export default {
       // - - *
 
       for (let i = 0; i < 3; i++) {
-        if (this.gridContent[i][i] !== this.symbol) return false;
+        if (this.gridContent[i][i] !== this.shapePlayer) return false;
       }
 
       this.addLine("d-b");
@@ -214,7 +231,7 @@ export default {
       for (let x = 0; x < 3; x++) {
         let y = 2 - x;
 
-        if (this.gridContent[x][y] !== this.symbol) return false;
+        if (this.gridContent[x][y] !== this.shapePlayer) return false;
       }
 
       this.addLine("d-f");
@@ -225,7 +242,7 @@ export default {
     async gameOver(way) {
       if (way !== "equality") await this.sleep(2000);
       else await this.sleep(1000);
-      this.endLineColor = "#63e2b7";
+      this.endLineColor = this.colorPlayer;
 
       this.changeOutcome(way);
     },
@@ -243,6 +260,18 @@ export default {
       if (type === "d-f") this.lineDiagonalForward = !this.lineDiagonalForward;
 
       this.changeVictoryWay(type);
+    },
+
+    switchShapesInGridContent() {
+      for (let x = 0; x < this.gridContent.length; x++) {
+        for (let y = 0; y < this.gridContent[x].length; y++) {
+          if (this.gridContent[x][y] === this.shapePlayer) {
+            this.gridContent[x][y] = this.shapeEnemy;
+          } else if (this.gridContent[x][y] === this.shapeEnemy) {
+            this.gridContent[x][y] = this.shapePlayer;
+          }
+        }
+      }
     },
   },
 };
@@ -294,7 +323,7 @@ td {
   top: calc(25% - 3px);
   width: 60px;
   height: 60px;
-  border: 10px solid #e88080;
+  border: 10px solid v-bind(colorCircle);
   border-radius: 100%;
   opacity: 1;
   animation: circle-appear 0.3s ease;
@@ -320,7 +349,7 @@ td {
   left: 70px;
   height: 95px;
   width: 10px;
-  background-color: #63e2b7;
+  background-color: v-bind(colorCross);
 }
 .cross:before {
   transform: rotate(45deg);

@@ -2,8 +2,10 @@ import {
   createStore
 } from 'vuex'
 // import createPersistedState from "vuex-persistedstate"
+import connect4 from './games/connect4'
+import morpion from './games/morpion'
+
 import game from './game'
-import morpion from './morpion'
 import player from './player'
 import room from './room'
 
@@ -15,8 +17,10 @@ export default createStore({
   // ],
 
   modules: {
-    game,
     morpion,
+    connect4,
+
+    game,
     player,
     room,
   }

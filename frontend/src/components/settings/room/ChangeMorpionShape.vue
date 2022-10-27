@@ -16,16 +16,16 @@
     <n-space justify="space-around">
       <div
         class="wrapper"
-        :class="{ active: isCrossActive }"
-        @click="isCircleActive ? switchShape() : ''"
+        :class="{ active: shapePlayer === 'X' }"
+        @click="shapePlayer === 'O' ? handleShapes() : ''"
       >
         <div class="cross"></div>
       </div>
 
       <div
         class="wrapper"
-        :class="{ active: isCircleActive }"
-        @click="isCrossActive ? switchShape() : ''"
+        :class="{ active: shapePlayer === 'O' }"
+        @click="shapePlayer === 'X' ? handleShapes() : ''"
       >
         <div class="circle"></div>
       </div>
@@ -35,22 +35,41 @@
 
 <script>
 import { Shapes24Regular } from "@vicons/fluent";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "ChangeMorpionShape",
   components: { Shapes24Regular },
 
   data() {
-    return {
-      isCrossActive: true,
-      isCircleActive: false,
-    };
+    return {};
+  },
+
+  computed: {
+    ...mapState("morpion", [
+      "colorPlayer",
+      "colorEnemy",
+      "shapePlayer",
+      "shapeEnemy",
+    ]),
+
+    colorCross() {
+      return this.shapePlayer === "X" ? this.colorPlayer : this.colorEnemy;
+    },
+    colorCircle() {
+      return this.shapePlayer === "O" ? this.colorPlayer : this.colorEnemy;
+    },
   },
 
   methods: {
-    switchShape() {
-      this.isCrossActive = !this.isCrossActive;
-      this.isCircleActive = !this.isCircleActive;
+    ...mapActions("morpion", ["changeShapePlayer", "changeShapeEnemy"]),
+
+    handleShapes() {
+      const newShapePlayer = this.shapePlayer === "X" ? "O" : "X";
+      const newShapeEnemy = newShapePlayer === "X" ? "O" : "X";
+
+      this.changeShapePlayer(newShapePlayer);
+      this.changeShapeEnemy(newShapeEnemy);
     },
   },
 };
@@ -63,12 +82,17 @@ export default {
   text-align: center;
   vertical-align: middle;
   position: relative;
-  transition: all 0.3s;
+  background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid #18181c;
+  border-radius: 3px;
+  transition: all 0.3s;
+}
+.wrapper:hover {
+  border: 1px solid #7fe7c4;
+  transition: all 0.3s;
 }
 .active {
   border: 1px solid #7fe7c4;
-  border-radius: 3px;
   background-color: rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 8px 0 rgba(99, 226, 183, 0.3);
   transition: all 0.3s;
@@ -88,7 +112,8 @@ export default {
   left: 70px;
   height: 95px;
   width: 10px;
-  background-color: #63e2b7;
+  background-color: v-bind(colorCross);
+  transition: all 0.3s;
 }
 .cross:before {
   transform: rotate(45deg);
@@ -100,16 +125,35 @@ export default {
 // circle design
 
 .circle:before {
-  z-index: 1;
   content: " ";
   position: absolute;
   left: calc(25% - 3px);
   top: calc(25% - 3px);
   width: 60px;
   height: 60px;
-  border: 10px solid #e88080;
+  border: 10px solid v-bind(colorCircle);
   border-radius: 100%;
-  opacity: 1;
-  animation: circle-appear 0.3s ease;
+  transition: all 0.3s;
+}
+
+@media screen and (max-width: 400px) {
+  .wrapper {
+    width: 120px;
+    height: 120px;
+  }
+
+  .cross:before,
+  .cross:after {
+    top: 9px;
+    left: 55px;
+    height: 100px;
+  }
+
+  .circle:before {
+    top: calc(20% - 3px);
+    left: calc(20% - 3px);
+    width: 60px;
+    height: 60px;
+  }
 }
 </style>

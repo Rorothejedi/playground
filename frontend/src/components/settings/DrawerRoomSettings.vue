@@ -15,7 +15,12 @@
     >
       <n-drawer-content title="Paramètres de la partie" closable>
         <invite-friend />
-        <change-colors v-if="game === 'Morpion' || game === 'Puissance 4'" />
+        <change-colors
+          v-if="
+            formattedGameName === 'morpion' || formattedGameName === 'connect4'
+          "
+          :namespace="formattedGameName"
+        />
         <change-morpion-shape v-if="game === 'Morpion'" />
 
         <template #footer>
@@ -51,6 +56,13 @@ export default {
 
   computed: {
     ...mapState("game", ["game"]),
+
+    formattedGameName() {
+      if (this.game === "Morpion") return "morpion";
+      if (this.game === "Puissance 4") return "connect4";
+
+      return null;
+    },
   },
 };
 </script>

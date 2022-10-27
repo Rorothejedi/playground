@@ -13,9 +13,6 @@ export default {
         // morpion & connect 4
         playedCell: '',
 
-        // connect 4
-        victoryCells: [],
-
         // rock-paper-scissors
         chosenItem: '',
     },
@@ -40,11 +37,6 @@ export default {
             state.playedCell = payload
         },
 
-        // connect 4
-        SET_VICTORY_CELLS(state, payload) {
-            state.victoryCells = payload
-        },
-
         // rock-paper-scissors
         SET_CHOSEN_ITEM(state, payload) {
             state.chosenItem = payload
@@ -52,26 +44,6 @@ export default {
     },
 
     actions: {
-        // PLAY_TO_CONNECT_4 EVENTS
-        emitPlayToConnect4(store) {
-            const data = {
-                socketId: store.rootState.player.socketId,
-                roomId: store.rootState.player.roomId,
-                username: store.rootState.player.username,
-                turn: store.rootState.player.turn,
-                playedCell: store.state.playedCell,
-                isWinner: store.rootState.player.isWinner,
-                victoryCells: store.state.victoryCells,
-            }
-
-            socketioService.socket.emit('toServer_playToConnect4', data)
-        },
-
-        listenPlayToConnect4(store) {
-            socketioService.socket.on('toClient_playToConnect4', (data) => {
-                store.commit('SET_ENEMY_DATA', data)
-            })
-        },
 
         // PLAY_TO_ROCK_PAPER_SCISSORS EVENTS
         emitPlayToRockPaperScissors(store) {
@@ -117,11 +89,6 @@ export default {
         // morpion & connect 4
         changePlayedCell(store, value) {
             store.commit('SET_PLAYED_CELL', value)
-        },
-
-        // connect 4
-        changeVictoryCells(store, value) {
-            store.commit('SET_VICTORY_CELLS', value)
         },
 
         // rock-paper-scissors

@@ -16,28 +16,25 @@
     Moi
     <n-color-picker
       :show-alpha="false"
-      :show-preview="true"
-      :actions="['confirm']"
       :modes="['hex']"
-      :swatches="['#FFFFFF', '#63e2b7', '#e88080']"
+      :swatches="swatchesColor"
       v-model:value="localColorPlayer"
-      @confirm="editColorPlayer"
+      @update:value="editColorPlayer"
     />
 
     Adversaire
     <n-color-picker
       :show-alpha="false"
-      :actions="['confirm', 'reset']"
       :modes="['hex']"
-      :swatches="['#FFFFFF', '#63e2b7', '#e88080']"
-      default-value="#e88080"
-      :value="localColorEnemy"
+      :swatches="swatchesColor"
+      v-model:value="localColorEnemy"
+      @update:value="editColorEnemy"
     />
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions } from "vuex";
 import { Color24Regular } from "@vicons/fluent";
 
 export default {
@@ -45,16 +42,29 @@ export default {
   components: {
     Color24Regular,
   },
+  props: {
+    namespace: {
+      type: String,
+      required: true,
+    },
+  },
 
   data() {
     return {
       localColorPlayer: "",
       localColorEnemy: "",
+
+      swatchesColor: ["#FFFFFF", "#63e2b7", "#e88080", "#f08a00", "#3889c5"],
     };
   },
 
   computed: {
-    ...mapState("morpion", ["colorPlayer", "colorEnemy"]),
+    colorPlayer() {
+      return this.$store.state[this.namespace].colorPlayer;
+    },
+    colorEnemy() {
+      return this.$store.state[this.namespace].colorEnemy;
+    },
   },
 
   created() {
@@ -63,11 +73,22 @@ export default {
   },
 
   methods: {
-    ...mapActions("morpion", ["changeColorPlayer", "changeColorEnemy"]),
+    ...mapActions({
+      changeColorPlayer(dispatch, payload) {
+        return dispatch(this.namespace + "/changeColorPlayer", payload);
+      },
+
+      changeColorEnemy(dispatch, payload) {
+        return dispatch(this.namespace + "/changeColorEnemy", payload);
+      },
+    }),
 
     editColorPlayer(value) {
-      console.log(value);
       this.changeColorPlayer(value);
+    },
+
+    editColorEnemy(value) {
+      this.changeColorEnemy(value);
     },
   },
 };

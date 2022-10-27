@@ -1,18 +1,20 @@
-import socketioService from "../services/socketio.service"
+import socketioService from "../../services/socketio.service"
 
 export default {
     namespaced: true,
 
     state: {
-        victoryWay: '',
-        colorPlayer: '#63E2B7',
-        colorEnemy: '#E88080',
+        victoryCells: [],
+
+        colorPlayer: '#3889c5',
+        colorEnemy: '#f08a00',
     },
 
     mutations: {
-        SET_VICTORY_WAY(state, payload) {
-            state.victoryWay = payload
+        SET_VICTORY_CELLS(state, payload) {
+            state.victoryCells = payload
         },
+
         SET_COLOR_PLAYER(state, payload) {
             state.colorPlayer = payload
         },
@@ -23,8 +25,8 @@ export default {
 
     actions: {
 
-        // PLAY_TO_MORPION EVENTS
-        emitPlayToMorpion(store) {
+        // PLAY_TO_CONNECT_4 EVENTS
+        emitPlayToConnect4(store) {
             const data = {
                 socketId: store.rootState.player.socketId,
                 roomId: store.rootState.player.roomId,
@@ -32,25 +34,27 @@ export default {
                 turn: store.rootState.player.turn,
                 playedCell: store.rootState.game.playedCell,
                 isWinner: store.rootState.player.isWinner,
-                victoryWay: store.state.victoryWay,
+                victoryCells: store.state.victoryCells,
             }
 
-            socketioService.socket.emit('toServer_playToMorpion', data)
+            socketioService.socket.emit('toServer_playToConnect4', data)
         },
 
-        listenPlayToMorpion(store) {
-            socketioService.socket.on('toClient_playToMorpion', (data) => {
+        listenPlayToConnect4(store) {
+            socketioService.socket.on('toClient_playToConnect4', (data) => {
                 store.commit('game/SET_ENEMY_DATA', data, {
                     root: true
                 })
             })
         },
 
+
         // ---------
 
-        changeVictoryWay(store, value) {
-            store.commit('SET_VICTORY_WAY', value)
+        changeVictoryCells(store, value) {
+            store.commit('SET_VICTORY_CELLS', value)
         },
+
         changeColorPlayer(store, value) {
             store.commit('SET_COLOR_PLAYER', value)
         },
