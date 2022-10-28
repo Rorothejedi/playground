@@ -21,6 +21,13 @@ export default {
         SET_COLOR_ENEMY(state, payload) {
             state.colorEnemy = payload
         },
+
+        INIT_LOCALSTORAGE(state) {
+            if (localStorage.getItem('connect4ColorPlayer'))
+                state.colorPlayer = localStorage.getItem('connect4ColorPlayer')
+            if (localStorage.getItem('connect4ColorEnemy'))
+                state.colorEnemy = localStorage.getItem('connect4ColorEnemy')
+        },
     },
 
     actions: {
@@ -56,9 +63,11 @@ export default {
         },
 
         changeColorPlayer(store, value) {
+            localStorage.setItem('connect4ColorPlayer', value);
             store.commit('SET_COLOR_PLAYER', value)
         },
         changeColorEnemy(store, value) {
+            localStorage.setItem('connect4ColorEnemy', value);
             store.commit('SET_COLOR_ENEMY', value)
         },
     }

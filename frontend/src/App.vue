@@ -38,6 +38,13 @@ export default {
     };
   },
 
+  // in app or in room view ?
+  beforeCreate() {
+    this.$store.commit("player/INIT_LOCALSTORAGE", null, { root: true });
+    this.$store.commit("morpion/INIT_LOCALSTORAGE", null, { root: true });
+    this.$store.commit("connect4/INIT_LOCALSTORAGE", null, { root: true });
+  },
+
   created() {
     SocketioService.setupSocketConnection();
   },

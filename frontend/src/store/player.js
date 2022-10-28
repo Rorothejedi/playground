@@ -1,12 +1,6 @@
 export default {
     namespaced: true,
 
-    // getters: {
-    //     state(state) {
-    //         return state;
-    //     },
-    // },
-
     state: {
         socketId: '',
         username: '',
@@ -43,6 +37,16 @@ export default {
         SET_SCORE(state, payload) {
             state.score = payload
         },
+
+        INIT_LOCALSTORAGE(state) {
+            // remove after test in prod
+            console.log(process.env.NODE_ENV)
+
+            if (process.env.NODE_ENV !== 'production') return
+            if (!localStorage.getItem('username')) return
+
+            state.username = localStorage.getItem('username')
+        },
     },
 
     actions: {
@@ -50,6 +54,7 @@ export default {
             store.commit('SET_SOCKET_ID', value)
         },
         changeUsername(store, value) {
+            localStorage.setItem('username', value);
             store.commit('SET_USERNAME', value)
         },
         changeRoomId(store, value) {

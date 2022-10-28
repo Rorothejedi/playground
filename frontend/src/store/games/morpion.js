@@ -5,6 +5,7 @@ export default {
 
     state: {
         victoryWay: '',
+
         colorPlayer: '#63E2B7',
         colorEnemy: '#E88080',
         shapePlayer: 'X',
@@ -15,6 +16,7 @@ export default {
         SET_VICTORY_WAY(state, payload) {
             state.victoryWay = payload
         },
+
         SET_COLOR_PLAYER(state, payload) {
             state.colorPlayer = payload
         },
@@ -26,6 +28,17 @@ export default {
         },
         SET_SHAPE_ENEMY(state, payload) {
             state.shapeEnemy = payload
+        },
+
+        INIT_LOCALSTORAGE(state) {
+            if (localStorage.getItem('morpionColorPlayer'))
+                state.colorPlayer = localStorage.getItem('morpionColorPlayer')
+            if (localStorage.getItem('morpionColorEnemy'))
+                state.colorEnemy = localStorage.getItem('morpionColorEnemy')
+            if (localStorage.getItem('morpionShapePlayer'))
+                state.shapePlayer = localStorage.getItem('morpionShapePlayer')
+            if (localStorage.getItem('morpionShapeEnemy'))
+                state.shapeEnemy = localStorage.getItem('morpionShapeEnemy')
         },
     },
 
@@ -61,16 +74,19 @@ export default {
         },
 
         changeColorPlayer(store, value) {
+            localStorage.setItem('morpionColorPlayer', value);
             store.commit('SET_COLOR_PLAYER', value)
         },
         changeColorEnemy(store, value) {
+            localStorage.setItem('morpionColorEnemy', value);
             store.commit('SET_COLOR_ENEMY', value)
         },
-
         changeShapePlayer(store, value) {
+            localStorage.setItem('morpionShapePlayer', value);
             store.commit('SET_SHAPE_PLAYER', value)
         },
         changeShapeEnemy(store, value) {
+            localStorage.setItem('morpionShapeEnemy', value);
             store.commit('SET_SHAPE_ENEMY', value)
         },
     }
