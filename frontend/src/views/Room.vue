@@ -135,7 +135,7 @@ export default {
   created() {
     if (this.host) {
       this.changeRoomId(this.$route.query.id);
-    } else if (this.username !== "") {
+    } else if (this.username !== "" && this.socketId === "") {
       this.joinRoom();
     }
   },

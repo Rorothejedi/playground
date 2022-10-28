@@ -292,7 +292,7 @@ export default {
 
     joinRoom(room) {
       this.changeSocketId(socketioService.socket.id);
-      this.changeGame(room.players[0].game);
+      this.changeGame(room.game);
       this.changeRoomId(room.id);
       this.changeHost(false);
       this.changeTurn(false);
@@ -302,7 +302,7 @@ export default {
 
       this.$router.push({
         name: "Room",
-        query: { id: room.id, game: this.selectedGame },
+        query: { id: room.id, game: room.game },
       });
     },
   },

@@ -39,6 +39,7 @@ export default {
         },
 
         INIT_LOCALSTORAGE(state) {
+            if (process.env.NODE_ENV === 'development') return
             if (!localStorage.getItem('username')) return
 
             state.username = localStorage.getItem('username')

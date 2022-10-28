@@ -46,11 +46,14 @@ npm run serve
 
 ## <ins>TODO IMPROVEMENT</ins> <i>before v2.3</i>
 
+- Test en prod des variables d'env (node et vue)
+- Test des liens en prod
+
 - Améliorer la création de partie (loading and redirect...) (promise ?)
 
 ### Bugs
 
-- A plusieurs joueur, quand eux on rejoint et que un annule, la partie n'est plus visible pour les autres.
+- Le comptage des points à 3 sur le pierre-papier-ciseaux est foireux...
 - Parfois, le nom d'utilisateur ne s'affiche pas dans le message '[username] a quitté la partie' (après rejouer ou fin de partie ?)
 - Gérer l'affichage sans bug des images du pierre-papier-ciseaux (@load ?)
 
@@ -71,10 +74,12 @@ npm run serve
 
 ## <ins>UI/UX improvements</ins>
 - Gérer la traduction du site (Internationalization)
-- Scores et autres joueurs
+- Design des scores et des autres joueurs
+- Améliorer l'attente dans la room (mettre le nombre de joueur) et revoir le design
 - Améliorer le bouton "rejouer", tous les joueurs doivent pouvoir cliquer, (la partie redemare quand tous les joueurs ont cliqués)
 
 ## <ins>Next step</ins>
 - Ajouter un mode solo (avec une IA)
 - Gérer un deploiement automatisé (npm run build sur le serveur)
 - Faire du projet une PWA et ajouter au play store (mode solo necessaire pour ça)
+- Matchmaking

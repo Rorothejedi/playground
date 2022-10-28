@@ -1,8 +1,8 @@
-const app = require('express')();
-const http = require('http').createServer(app);
+const app = require('express')()
+const http = require('http').createServer(app)
 
 if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
+    require('dotenv').config()
 }
 
 let frontendHost
@@ -34,7 +34,7 @@ http.listen(port, () => {
 let rooms = []
 
 io.on('connection', (socket) => {
-    console.log(`[connection] ${socket.id}`)
+    console.log('\x1b[32m%s\x1b[0m', `[connection] - socket: ${socket.id}`)
 
     socket.on('toServer_createOrJoinRoom', (data) => {
         let room = null
@@ -51,7 +51,7 @@ io.on('connection', (socket) => {
             data.roomId = room.id
             room.players.push(data)
 
-            console.log(`[start game] ${room.id}`)
+            console.log('\x1b[36m%s\x1b[0m', `[join room] - room: ${room.id}`)
         }
 
         socket.join(room.id)
@@ -60,8 +60,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('toServer_leaveRoom', () => {
-        console.log('[leave room]')
-        destroyRoom(socket, rooms)
+        leaveRoom(socket, rooms)
     })
 
     socket.on('toServer_getRooms', () => {
@@ -89,9 +88,9 @@ io.on('connection', (socket) => {
     })
 
     socket.on('disconnect', () => {
-        destroyRoom(socket)
+        leaveRoom(socket)
 
-        console.log(`[disconnect] ${socket.id}`)
+        console.log('\x1b[31m%s\x1b[0m', `[disconnect] - socket: ${socket.id}`)
     })
 })
 
@@ -101,34 +100,47 @@ function createRoom(data) {
         game: data.game,
         scoreToReach: data.scoreToReach,
         numberOfPlayer: data.numberOfPlayer,
-        players: []
+        players: [],
     }
 
     data.roomId = room.id
     room.players.push(data)
     rooms.push(room)
 
-    console.log(`[create room] - ${room.id} - ${data.username}`)
+    console.log('\x1b[36m%s\x1b[0m', `[create room] - room: ${room.id} - username: ${data.username}`)
 
     io.emit('toClient_getRooms', rooms)
 
     return room
 }
 
-function destroyRoom(socket) {
-    let room = null
+function leaveRoom(socket) {
+    rooms.forEach((room, i) => {
 
-    rooms.forEach(r => {
-        r.players.forEach(p => {
-            if (p.socketId !== socket.id) return
-            room = r;
-            rooms = rooms.filter(r => r !== room);
+        if (room.players.length === 1) {
+            destroyRoom(socket, room)
+            return
+        }
 
-            console.log(`[destroy room] - ${room.id}`);
+        room.players.forEach(player => {
+            if (player.socketId !== socket.id) return
 
-            socket.leave(room.id);
+            rooms[i].players = room.players.filter(p => p.socketId !== player.socketId)
+            socket.leave(room.id)
+
+            console.log('\x1b[33m%s\x1b[0m', `[leave room] - room: ${room.id} - socket: ${socket.id}`)
         });
     })
+
+    socket.broadcast.emit('toClient_getRooms', rooms)
+}
+
+function destroyRoom(socket, room) {
+    rooms = rooms.filter(r => r.id !== room.id)
+
+    socket.leave(room.id)
+
+    console.log('\x1b[33m%s\x1b[0m', `[destroy room] - room: ${room.id} - socket: ${socket.id}`)
 
     socket.broadcast.emit('toClient_getRooms', rooms)
 }
