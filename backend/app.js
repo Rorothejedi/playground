@@ -116,14 +116,10 @@ function createRoom(data) {
 
 function leaveRoom(socket) {
     rooms.forEach((room, i) => {
-
-        if (room.players.length === 1) {
-            destroyRoom(socket, room)
-            return
-        }
-
         room.players.forEach(player => {
             if (player.socketId !== socket.id) return
+            if (room.players.length === room.numberOfPlayer) return destroyRoom(socket, room)
+            if (room.players.length === 1) return destroyRoom(socket, room)
 
             rooms[i].players = room.players.filter(p => p.socketId !== player.socketId)
             socket.leave(room.id)
