@@ -39,10 +39,6 @@ export default {
         },
 
         INIT_LOCALSTORAGE(state) {
-            // remove after test in prod
-            console.log(process.env.NODE_ENV)
-
-            if (process.env.NODE_ENV !== 'production') return
             if (!localStorage.getItem('username')) return
 
             state.username = localStorage.getItem('username')

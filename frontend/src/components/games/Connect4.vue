@@ -341,7 +341,7 @@ td {
   justify-content: center;
   align-items: center;
   margin: auto;
-  background-color: #18181c;
+  background-color: #101014;
   width: 75px;
   height: 75px;
   border-radius: 50%;

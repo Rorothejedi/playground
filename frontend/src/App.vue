@@ -38,7 +38,6 @@ export default {
     };
   },
 
-  // in app or in room view ?
   beforeCreate() {
     this.$store.commit("player/INIT_LOCALSTORAGE", null, { root: true });
     this.$store.commit("morpion/INIT_LOCALSTORAGE", null, { root: true });
@@ -51,6 +50,7 @@ export default {
 
   mounted() {
     this.listenGetRooms();
+    this.listenError();
   },
 
   beforeUnmount() {
@@ -58,7 +58,7 @@ export default {
   },
 
   methods: {
-    ...mapActions("room", ["listenGetRooms"]),
+    ...mapActions("room", ["listenGetRooms", "listenError"]),
   },
 };
 </script>

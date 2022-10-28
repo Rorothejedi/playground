@@ -44,34 +44,37 @@ npm run serve
 -----------------------
 
 
-## TODO IMPROVEMENT before v2.3
+## <ins>TODO IMPROVEMENT</ins> <i>before v2.3</i>
 
-- Gérer le fait de rejoindre une partie avec le lien (demande du username si pas renseigné puis redirection)
-- Si on arrive sur le lien et qu'il n'y a que le joueur, redirection vers la home pour eviter un loader infini sur la room
+- Améliorer la création de partie (loading and redirect...) (promise ?)
 
 ### Bugs
 
 - A plusieurs joueur, quand eux on rejoint et que un annule, la partie n'est plus visible pour les autres.
-- Parfois, le nom d'utilisateur ne s'affiche pas dans le message '[username] a quitté la partie' (après rejouer ?)
+- Parfois, le nom d'utilisateur ne s'affiche pas dans le message '[username] a quitté la partie' (après rejouer ou fin de partie ?)
+- Gérer l'affichage sans bug des images du pierre-papier-ciseaux (@load ?)
 
-## After
+## <ins>Game improvements</ins>
+### Morpion
+- Améliorer les cas d'égalité (pour savoir qui commence après)
+- Compter les scores et en gérer l'affichage
 
-- Améliorer la création de partie (loading and redirect...) (promise ?)
+### Rock-Paper-Scissors
+- Ajouter l'option 4 joueurs 
 
+### Other game ideas
+- pierre-papier-ciseaux-lézard-Spock
+- memory (solo and 2 players) (for card games implementation)
+- bataille
+- skyjo
+- mini-golf (with Kinesis https://www.aminerman.com/kinesis/)
+
+## <ins>UI/UX improvements</ins>
 - Gérer la traduction du site (Internationalization)
 - Scores et autres joueurs
+- Améliorer le bouton "rejouer", tous les joueurs doivent pouvoir cliquer, (la partie redemare quand tous les joueurs ont cliqués)
 
-- Améliorer le bouton "rejouer", tous les joueurs doivent pouvoir cliquer, (la partie redemare quand tous les joueurs on cliqué)
-- Mettre les variables d'environnements pour simplifier les deploiements sur le serveur node
-
-- Améliorer les cas d'égalité (morpion)
-- Compter les scores et en gérer l'affichage (morpion)
-
-- Ajouter l'option 4 joueurs pour le pierre-papier-ciseaux
-- Ajouter le pierre-papier-ciseaux-lézard-Spock
-- Ajouter d'autres jeux (memory, bataille, skyjo, mini-golf)
-
-## IMPROVEMENT (hyper facultatif)
-
+## <ins>Next step</ins>
 - Ajouter un mode solo (avec une IA)
 - Gérer un deploiement automatisé (npm run build sur le serveur)
+- Faire du projet une PWA et ajouter au play store (mode solo necessaire pour ça)

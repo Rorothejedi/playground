@@ -1,38 +1,44 @@
 <template>
-  <div class="room">
-    <div v-if="!isReady" class="waiting-card">
-      <n-alert type="success">
-        <template #icon>
-          <n-spin size="small" />
-        </template>
-        En attente d'un autre joueur...
-      </n-alert>
-    </div>
+  <div>
+    <n-collapse-transition :show="username === ''">
+      <home-username-input />
+    </n-collapse-transition>
 
-    <div v-else class="game-wrapper">
-      <div class="game">
-        <n-collapse-transition :show="outcome === ''" appear>
-          <morpion v-if="game === 'Morpion'" />
-          <rock-paper-scissors v-else-if="game === 'Pierre-papier-ciseaux'" />
-          <connect-4 v-else-if="game === 'Puissance 4'" />
-        </n-collapse-transition>
+    <div v-if="username !== ''">
+      <div v-if="!isReady" class="waiting-card">
+        <n-alert type="success">
+          <template #icon>
+            <n-spin size="small" />
+          </template>
+          En attente d'un autre joueur...
+        </n-alert>
+      </div>
 
-        <n-collapse-transition :show="outcome !== ''" appear>
-          <div class="end-game">
-            <n-result
-              :status="statusEndGame"
-              :title="titleEndGame"
-              :description="descriptionEndGame"
-            >
-              <template #footer>
-                <n-button @click="restartGame()" v-if="host && outcome">
-                  Rejouer
-                </n-button>
-                <n-spin v-else size="medium" />
-              </template>
-            </n-result>
-          </div>
-        </n-collapse-transition>
+      <div v-else class="game-wrapper">
+        <div class="game">
+          <n-collapse-transition :show="outcome === ''" appear>
+            <morpion v-if="game === 'Morpion'" />
+            <rock-paper-scissors v-else-if="game === 'Pierre-papier-ciseaux'" />
+            <connect-4 v-else-if="game === 'Puissance 4'" />
+          </n-collapse-transition>
+
+          <n-collapse-transition :show="outcome !== ''" appear>
+            <div class="end-game">
+              <n-result
+                :status="statusEndGame"
+                :title="titleEndGame"
+                :description="descriptionEndGame"
+              >
+                <template #footer>
+                  <n-button @click="restartGame()" v-if="host && outcome">
+                    Rejouer
+                  </n-button>
+                  <n-spin v-else size="medium" />
+                </template>
+              </n-result>
+            </div>
+          </n-collapse-transition>
+        </div>
       </div>
     </div>
   </div>
@@ -41,15 +47,17 @@
 <script>
 import { mapActions, mapGetters, mapState } from "vuex";
 import title from "@/mixins/title.js";
+import HomeUsernameInput from "@/components/HomeUsernameInput.vue";
 import Connect4 from "@/components/games/Connect4.vue";
 import Morpion from "@/components/games/Morpion.vue";
 import RockPaperScissors from "@/components/games/RockPaperScissors.vue";
+import socketioService from "../services/socketio.service";
 
 export default {
   name: "Room",
   title: "Room | Playground",
   mixins: [title],
-  components: { Connect4, Morpion, RockPaperScissors },
+  components: { HomeUsernameInput, Connect4, Morpion, RockPaperScissors },
 
   data() {
     return {
@@ -59,7 +67,7 @@ export default {
   },
 
   computed: {
-    ...mapState("player", ["host", "outcome"]),
+    ...mapState("player", ["username", "host", "outcome", "socketId"]),
     ...mapState("room", ["rooms", "replay"]),
     ...mapState("game", ["game"]),
     ...mapGetters("room", ["room", "enemies"]),
@@ -118,11 +126,17 @@ export default {
 
       this.enemyUsername = newValue[0].username;
     },
+
+    username(newValue, oldValue) {
+      if (newValue !== "" && oldValue === "") this.joinRoom();
+    },
   },
 
   created() {
     if (this.host) {
       this.changeRoomId(this.$route.query.id);
+    } else if (this.username !== "") {
+      this.joinRoom();
     }
   },
 
@@ -146,13 +160,23 @@ export default {
   },
 
   methods: {
-    ...mapActions("room", ["emitReplay", "listenReplay", "changeReplay"]),
     ...mapActions("player", [
+      "changeHost",
       "changeRoomId",
+      "changeSocketId",
       "changeTurn",
       "changeIsWinner",
       "changeOutcome",
     ]),
+    ...mapActions("room", [
+      "emitCreateOrJoinRoom",
+      "emitGetRooms",
+      "listenGetRooms",
+      "emitReplay",
+      "listenReplay",
+      "changeReplay",
+    ]),
+    ...mapActions("game", ["changeGame"]),
 
     watchRoomForReady() {
       if (
@@ -202,6 +226,17 @@ export default {
           },
         });
       });
+    },
+
+    joinRoom() {
+      this.changeSocketId(socketioService.socket.id);
+      this.changeGame(this.$route.query.game);
+      this.changeRoomId(this.$route.query.id);
+      this.changeHost(false);
+      this.changeTurn(false);
+      this.changeIsWinner(false);
+
+      this.emitCreateOrJoinRoom();
     },
   },
 };

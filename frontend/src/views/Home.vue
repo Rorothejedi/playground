@@ -1,27 +1,10 @@
 <template>
-  <n-collapse-transition class="rooms" :show="!loadingRoom">
-    <n-collapse-transition :show="displayUsernameInput">
-      <n-h1 class="username-title" v-if="username === ''"> Playground </n-h1>
-      <div class="username-card">
-        <n-card title="Ton pseudo">
-          <n-input-group>
-            <n-input
-              v-model:value="localUsername"
-              ref="usernameInput"
-              type="text"
-              placeholder="ex: Toto"
-              maxlength="30"
-              show-count
-            />
-            <n-button @click="addUsername()" :disabled="localUsername === ''">
-              Choisir
-            </n-button>
-          </n-input-group>
-        </n-card>
-      </div>
+  <n-collapse-transition :show="!loadingRoom">
+    <n-collapse-transition :show="username === ''">
+      <home-username-input />
     </n-collapse-transition>
 
-    <n-collapse-transition :show="!displayUsernameInput">
+    <n-collapse-transition class="rooms" :show="username !== ''">
       <n-space vertical>
         <div class="create-room-card">
           <n-card title="Nouvelle partie">
@@ -180,8 +163,10 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import socketioService from "../services/socketio.service";
+import responsive from "@/mixins/responsive.js";
 import title from "@/mixins/title.js";
 import utils from "@/mixins/utils.js";
+import HomeUsernameInput from "@/components/HomeUsernameInput.vue";
 import { HandScissorsRegular, HandSpockRegular } from "@vicons/fa";
 import { Grid3X3Sharp } from "@vicons/material";
 import { GridDots24Filled } from "@vicons/fluent";
@@ -189,8 +174,9 @@ import { GridDots24Filled } from "@vicons/fluent";
 export default {
   name: "Home",
   title: "Playground",
-  mixins: [title, utils],
+  mixins: [responsive, title, utils],
   components: {
+    HomeUsernameInput,
     HandScissorsRegular,
     HandSpockRegular,
     Grid3X3Sharp,
@@ -199,7 +185,6 @@ export default {
 
   data() {
     return {
-      displayUsernameInput: true,
       selectedGame: null,
       gamesAvailable: [
         { label: "Morpion", value: "Morpion" },
@@ -213,9 +198,7 @@ export default {
         },
       ],
       loadingRoom: true,
-      windowWidth: window.innerWidth,
 
-      localUsername: "",
       localNumberOfPlayer: 2,
       localScoreToReach: 3,
     };
@@ -231,9 +214,6 @@ export default {
         (room) => room.players.length < room.numberOfPlayer
       );
     },
-    isMobile() {
-      return this.windowWidth <= 600;
-    },
   },
 
   watch: {
@@ -243,13 +223,6 @@ export default {
     localNumberOfPlayer(newValue) {
       this.changeNumberOfPlayer(newValue);
     },
-  },
-
-  created() {
-    if (this.username !== "") {
-      this.localUsername = this.username;
-      this.addUsername();
-    }
   },
 
   async mounted() {
@@ -264,17 +237,6 @@ export default {
     this.changeNumberOfPlayer(2);
 
     this.emitGetRooms();
-
-    window.addEventListener("resize", this.onResize);
-
-    if (this.username === "") {
-      await this.sleep(100);
-      this.$refs.usernameInput.focus();
-    }
-  },
-
-  beforeUnmount() {
-    window.removeEventListener("resize", this.onResize);
   },
 
   methods: {
@@ -299,12 +261,6 @@ export default {
       "changeNumberOfPlayer",
     ]),
 
-    addUsername() {
-      this.displayUsernameInput = !this.displayUsernameInput;
-
-      this.changeUsername(this.localUsername);
-    },
-
     createRoom() {
       if (this.loadingRoom) return;
 
@@ -318,15 +274,16 @@ export default {
 
       this.emitCreateOrJoinRoom();
 
+      // to rework ...
       window.$loading.start();
-      window.$message.loading("Salon en cours de création...", {
+      window.$message.loading("Partie en cours de création...", {
         duration: 2000,
       });
 
       setTimeout(() => {
         this.$router.push({
           name: "Room",
-          query: { id: this.rooms.at(-1).id },
+          query: { id: this.rooms.at(-1).id, game: this.selectedGame },
         });
 
         window.$loading.finish();
@@ -345,12 +302,8 @@ export default {
 
       this.$router.push({
         name: "Room",
-        query: { id: room.id },
+        query: { id: room.id, game: this.selectedGame },
       });
-    },
-
-    onResize() {
-      this.windowWidth = window.innerWidth;
     },
   },
 };
@@ -361,20 +314,11 @@ export default {
   margin: 50px auto;
 }
 
-.username-title {
-  font-family: "Major Mono Display", monospace;
-  margin-bottom: 50px;
-  font-size: 3em;
-}
 .username-title,
-.username-card,
 .room-card,
 .create-room-card {
   display: flex;
   justify-content: center;
-}
-.username-card {
-  padding-bottom: 25px;
 }
 
 .n-card {

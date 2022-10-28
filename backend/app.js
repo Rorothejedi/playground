@@ -1,15 +1,21 @@
 const app = require('express')();
 const http = require('http').createServer(app);
 
-// localhost
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 
-const frontendHost = 'http://localhost:8080'
-const host = 'http://localhost'
+let frontendHost
+let host
 
-// production
-
-// const frontendHost = 'https://playground.rodolphe-cabotiau.com'
-// const host = 'https://node.playground.rodolphe-cabotiau.com'
+if (process.env.NODE_ENV === 'development') {
+    frontendHost = 'http://localhost:8080'
+    host = 'http://localhost'
+}
+if (process.env.NODE_ENV === 'production') {
+    frontendHost = 'https://playground.rodolphe-cabotiau.com'
+    host = 'https://node.playground.rodolphe-cabotiau.com'
+}
 
 const port = 3000
 
@@ -38,10 +44,14 @@ io.on('connection', (socket) => {
         } else {
             room = rooms.find(r => r.id === data.roomId)
 
-            if (room === undefined) return
+            if (room === undefined) return emitErrorTo(socket.id)
+            if (room.game !== data.game) return emitErrorTo(socket.id)
+            if (data.host) return emitErrorTo(socket.id)
 
             data.roomId = room.id
             room.players.push(data)
+
+            console.log(`[start game] ${room.id}`)
         }
 
         socket.join(room.id)
@@ -50,6 +60,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('toServer_leaveRoom', () => {
+        console.log('[leave room]')
         destroyRoom(socket, rooms)
     })
 
@@ -80,7 +91,6 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         destroyRoom(socket)
 
-        console.log('ROOMS AVAILABLE : ', rooms)
         console.log(`[disconnect] ${socket.id}`)
     })
 })
@@ -88,6 +98,7 @@ io.on('connection', (socket) => {
 function createRoom(data) {
     const room = {
         id: createRoomId(),
+        game: data.game,
         scoreToReach: data.scoreToReach,
         numberOfPlayer: data.numberOfPlayer,
         players: []
@@ -124,4 +135,8 @@ function destroyRoom(socket) {
 
 function createRoomId() {
     return Math.random().toString(36).substr(2, 9)
+}
+
+function emitErrorTo(socketId) {
+    io.to(socketId).emit('toClient_error')
 }

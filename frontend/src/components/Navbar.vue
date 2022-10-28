@@ -27,7 +27,7 @@
           :windowWidth="windowWidth"
         />
 
-        <n-button round @click="toHome()" v-if="game !== ''">
+        <n-button round @click="toHome()" v-if="!isOnHome">
           <template #icon v-if="isMobile">
             <n-icon size="22">
               <close-filled />
@@ -50,11 +50,13 @@
 <script>
 import { mapState } from "vuex";
 import { CloseFilled } from "@vicons/material";
+import responsive from "@/mixins/responsive";
 import DrawerGlobalSettings from "@/components/settings/DrawerGlobalSettings.vue";
 import DrawerRoomSettings from "@/components/settings/DrawerRoomSettings.vue";
 
 export default {
   name: "Navbar",
+  mixins: [responsive],
   components: {
     CloseFilled,
     DrawerGlobalSettings,
@@ -63,8 +65,6 @@ export default {
 
   data() {
     return {
-      windowWidth: window.innerWidth,
-
       drawerRoomSettings: false,
       drawerGlobalSettings: false,
       selectedLanguage: "french",
@@ -75,20 +75,9 @@ export default {
     ...mapState("game", ["game"]),
     ...mapState("player", ["username"]),
 
-    isMobile() {
-      return this.windowWidth <= 700;
-    },
     isOnHome() {
       return this.$route.name === "Home";
     },
-  },
-
-  mounted() {
-    window.addEventListener("resize", this.onResize);
-  },
-
-  beforeUnmount() {
-    window.removeEventListener("resize", this.onResize);
   },
 
   methods: {
@@ -96,10 +85,6 @@ export default {
       this.$router.push({
         name: "Home",
       });
-    },
-
-    onResize() {
-      this.windowWidth = window.innerWidth;
     },
   },
 };
