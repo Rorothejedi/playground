@@ -36,7 +36,10 @@
             maxlength="30"
             show-count
           />
-          <n-button @click="editUsername()" :disabled="localUsername === ''">
+          <n-button
+            @click="editUsername()"
+            :disabled="localUsername === '' || localUsername === username"
+          >
             Choisir
           </n-button>
         </n-input-group>

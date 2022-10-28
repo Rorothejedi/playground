@@ -49,12 +49,12 @@ npm run serve
 - Test en prod des variables d'env (node et vue)
 - Test des liens en prod
 
-- Améliorer la création de partie (loading and redirect...) (promise ?)
+- WIP - Améliorer la création de partie (loading and redirect...) (promise ?)
 
 ### Bugs
 
 - Le comptage des points à 3 sur le pierre-papier-ciseaux est foireux...
-- Parfois, le nom d'utilisateur ne s'affiche pas dans le message '[username] a quitté la partie' (après rejouer ou fin de partie ?)
+- Parfois, le nom d'utilisateur ne s'affiche pas dans le message '[username] a quitté la partie' (après rejouer ou fin de partie ? si j'arrive à reproduire)
 - Gérer l'affichage sans bug des images du pierre-papier-ciseaux (@load ?)
 
 ## <ins>Game improvements</ins>
@@ -74,6 +74,7 @@ npm run serve
 
 ## <ins>UI/UX improvements</ins>
 - Gérer la traduction du site (Internationalization)
+- Ajouter les icons dans le select des jeux
 - Design des scores et des autres joueurs
 - Améliorer l'attente dans la room (mettre le nombre de joueur) et revoir le design
 - Améliorer le bouton "rejouer", tous les joueurs doivent pouvoir cliquer, (la partie redemare quand tous les joueurs ont cliqués)

@@ -1,33 +1,31 @@
 <template>
-  <div>
-    <table cellspacing="0" cellpadding="0">
-      <tbody>
-        <tr v-for="(x, i) in gridContent" :key="i">
-          <td
-            v-for="(y, j) in x"
-            :key="j"
-            @click="placeItem(i, j)"
-            :class="{ col: hoverColumn === j }"
-            @mouseover="hoverColumn = j"
-            @mouseout="hoverColumn = -1"
-          >
-            <div class="inner-circle">
-              <span
-                v-if="gridContent[i][j] !== ''"
-                :class="{
-                  'enemy-item': gridContent[i][j] === enemySymbol,
-                  'my-item': gridContent[i][j] === symbol,
-                  'victory-end-game': gridContent[i][j] === victorySymbol,
-                  'defeat-end-game': gridContent[i][j] === defeatSymbol,
-                  'end-game': isEnd,
-                }"
-              />
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <table cellspacing="0" cellpadding="0">
+    <tbody>
+      <tr v-for="(x, i) in gridContent" :key="i">
+        <td
+          v-for="(y, j) in x"
+          :key="j"
+          @click="placeItem(i, j)"
+          :class="{ col: hoverColumn === j }"
+          @mouseover="hoverColumn = j"
+          @mouseout="hoverColumn = -1"
+        >
+          <div class="inner-circle">
+            <span
+              v-if="gridContent[i][j] !== ''"
+              :class="{
+                'enemy-item': gridContent[i][j] === enemySymbol,
+                'my-item': gridContent[i][j] === symbol,
+                'victory-end-game': gridContent[i][j] === victorySymbol,
+                'defeat-end-game': gridContent[i][j] === defeatSymbol,
+                'end-game': isEnd,
+              }"
+            />
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 
 <script>

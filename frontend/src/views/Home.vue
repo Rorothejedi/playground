@@ -291,6 +291,9 @@ export default {
     },
 
     joinRoom(room) {
+      // mettre dans la view Room pour ne pas avoi de différence de traitement
+      // entre les joueurs qui arrivent par le lien et ceux qui arrivent pas la liste des parties
+
       this.changeSocketId(socketioService.socket.id);
       this.changeGame(room.game);
       this.changeRoomId(room.id);

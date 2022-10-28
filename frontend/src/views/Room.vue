@@ -23,20 +23,7 @@
           </n-collapse-transition>
 
           <n-collapse-transition :show="outcome !== ''" appear>
-            <div class="end-game">
-              <n-result
-                :status="statusEndGame"
-                :title="titleEndGame"
-                :description="descriptionEndGame"
-              >
-                <template #footer>
-                  <n-button @click="restartGame()" v-if="host && outcome">
-                    Rejouer
-                  </n-button>
-                  <n-spin v-else size="medium" />
-                </template>
-              </n-result>
-            </div>
+            <endgame />
           </n-collapse-transition>
         </div>
       </div>
@@ -48,6 +35,7 @@
 import { mapActions, mapGetters, mapState } from "vuex";
 import title from "@/mixins/title.js";
 import HomeUsernameInput from "@/components/HomeUsernameInput.vue";
+import Endgame from "@/components/room/Endgame.vue";
 import Connect4 from "@/components/games/Connect4.vue";
 import Morpion from "@/components/games/Morpion.vue";
 import RockPaperScissors from "@/components/games/RockPaperScissors.vue";
@@ -57,7 +45,13 @@ export default {
   name: "Room",
   title: "Room | Playground",
   mixins: [title],
-  components: { HomeUsernameInput, Connect4, Morpion, RockPaperScissors },
+  components: {
+    HomeUsernameInput,
+    Connect4,
+    Morpion,
+    RockPaperScissors,
+    Endgame,
+  },
 
   data() {
     return {
@@ -68,30 +62,9 @@ export default {
 
   computed: {
     ...mapState("player", ["username", "host", "outcome", "socketId"]),
-    ...mapState("room", ["rooms", "replay"]),
+    ...mapState("room", ["rooms"]),
     ...mapState("game", ["game"]),
     ...mapGetters("room", ["room", "enemies"]),
-
-    statusEndGame() {
-      if (this.outcome === "defeat") return "500";
-      if (this.outcome === "victory") return "418";
-
-      return "404";
-    },
-    titleEndGame() {
-      if (this.outcome === "defeat") return "Défaite";
-      if (this.outcome === "victory") return "Victoire";
-
-      return "Egalité";
-    },
-    descriptionEndGame() {
-      if (this.outcome === "defeat")
-        return "Aïe ! Pourquoi ne pas retenter votre chance ?";
-      if (this.outcome === "victory")
-        return "Trop facile ! Vous prendrez bien un thé ?";
-
-      return "Bizarre... J'était pourtant sûr que vous alliez l'avoir !";
-    },
   },
 
   watch: {
@@ -110,10 +83,6 @@ export default {
       }
 
       this.watchRoomForReady();
-    },
-
-    replay(newValue, oldValue) {
-      if (newValue && !oldValue && !this.host) this.resetGame();
     },
 
     enemies(newValue) {
@@ -155,10 +124,6 @@ export default {
     next();
   },
 
-  beforeUnmount() {
-    this.changeReplay(false);
-  },
-
   methods: {
     ...mapActions("player", [
       "changeHost",
@@ -166,16 +131,8 @@ export default {
       "changeSocketId",
       "changeTurn",
       "changeIsWinner",
-      "changeOutcome",
     ]),
-    ...mapActions("room", [
-      "emitCreateOrJoinRoom",
-      "emitGetRooms",
-      "listenGetRooms",
-      "emitReplay",
-      "listenReplay",
-      "changeReplay",
-    ]),
+    ...mapActions("room", ["emitCreateOrJoinRoom", "listenReplay"]),
     ...mapActions("game", ["changeGame"]),
 
     watchRoomForReady() {
@@ -187,21 +144,6 @@ export default {
         return;
 
       this.isReady = true;
-    },
-
-    restartGame() {
-      this.emitReplay();
-      this.resetGame();
-    },
-
-    resetGame() {
-      let turn =
-        this.outcome === "defeat" || (this.outcome === "equality" && this.host);
-
-      this.changeTurn(turn);
-      this.changeOutcome("");
-      this.changeIsWinner(false);
-      this.changeReplay(false);
     },
 
     quitRoomConfirm() {
@@ -266,16 +208,8 @@ export default {
   justify-content: space-around;
 }
 
-.end-game {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
 @media screen and (max-width: 600px) {
   .waiting-card,
-  .end-game,
   .game-wrapper {
     height: calc(100vh - 154px);
   }

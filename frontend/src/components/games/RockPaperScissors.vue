@@ -2,43 +2,14 @@
   <div>
     <n-collapse-transition :show="displayChoices">
       <div class="choices">
-        <div class="choice">
+        <div class="choice" v-for="(item, i) in items" :key="i">
           <img
-            src="@/assets/rock.svg"
-            alt="La pierre"
-            title="La pierre"
-            @click="chooseItem('rock')"
+            :src="require(`@/assets/${item}.svg`)"
+            @click="chooseItem(item)"
             :class="{
-              chosen: chosenItem === 'rock',
+              chosen: chosenItem === item,
               'disabled-item': chosenItem !== '',
             }"
-            rel="preload"
-          />
-        </div>
-        <div class="choice">
-          <img
-            src="@/assets/paper.svg"
-            alt="Le papier"
-            title="Le Papier"
-            @click="chooseItem('paper')"
-            :class="{
-              chosen: chosenItem === 'paper',
-              'disabled-item': chosenItem !== '',
-            }"
-            rel="preload"
-          />
-        </div>
-        <div class="choice">
-          <img
-            src="@/assets/scissors.svg"
-            alt="Les ciseaux"
-            title="Les ciseaux"
-            @click="chooseItem('scissors')"
-            :class="{
-              chosen: chosenItem === 'scissors',
-              'disabled-item': chosenItem !== '',
-            }"
-            rel="preload"
           />
         </div>
       </div>
@@ -48,25 +19,11 @@
       <div class="endgame">
         <div>
           <img
-            v-show="chosenItem === 'rock'"
-            src="@/assets/rock.svg"
-            alt="Ma pierre"
+            v-for="(item, i) in items"
+            :key="i"
+            v-show="chosenItem === item"
+            :src="require(`@/assets/${item}.svg`)"
             :class="localOutcome"
-            rel="preload"
-          />
-          <img
-            v-show="chosenItem === 'paper'"
-            src="@/assets/paper.svg"
-            alt="Mon papier"
-            :class="localOutcome"
-            rel="preload"
-          />
-          <img
-            v-show="chosenItem === 'scissors'"
-            src="@/assets/scissors.svg"
-            alt="Mes ciseaux"
-            :class="localOutcome"
-            rel="preload"
           />
         </div>
 
@@ -75,22 +32,10 @@
         <div :class="{ 'endgame-enemy-choices': enemyData.length === 2 }">
           <div v-for="enemy in enemyData" :key="enemy.socketId">
             <img
-              v-show="enemy.chosenItem === 'rock'"
-              src="@/assets/rock-reverse.svg"
-              alt="La pierre ennemie"
-              rel="preload"
-            />
-            <img
-              v-show="enemy.chosenItem === 'paper'"
-              src="@/assets/paper-reverse.svg"
-              alt="Le papier ennemie"
-              rel="preload"
-            />
-            <img
-              v-show="enemy.chosenItem === 'scissors'"
-              src="@/assets/scissors-reverse.svg"
-              alt="Les ciseaux ennemies"
-              rel="preload"
+              v-for="(item, i) in items"
+              :key="i"
+              v-show="enemy.chosenItem === item"
+              :src="require(`@/assets/${item}-reverse.svg`)"
             />
           </div>
         </div>
@@ -132,6 +77,7 @@ export default {
 
   data() {
     return {
+      items: ["rock", "paper", "scissors"],
       displayChoices: true,
       displayEndgame: false,
       localOutcome: "",

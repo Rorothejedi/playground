@@ -47,6 +47,7 @@ io.on('connection', (socket) => {
             if (room === undefined) return emitErrorTo(socket.id)
             if (room.game !== data.game) return emitErrorTo(socket.id)
             if (data.host) return emitErrorTo(socket.id)
+            if (room.players.length === room.numberOfPlayer) return emitErrorTo(socket.id)
 
             data.roomId = room.id
             room.players.push(data)
