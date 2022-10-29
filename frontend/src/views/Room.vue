@@ -16,17 +16,17 @@
 
           <div v-else class="game-wrapper">
             <div class="game">
-              <n-collapse-transition :show="outcome === ''" appear>
-                <morpion v-if="game === 'Morpion'" />
-                <rock-paper-scissors
-                  v-else-if="game === 'Pierre-papier-ciseaux'"
+              <transition name="fade" mode="out-in">
+                <morpion v-if="outcome === '' && game === 'Morpion'" />
+                <connect-4
+                  v-else-if="outcome === '' && game === 'Puissance 4'"
                 />
-                <connect-4 v-else-if="game === 'Puissance 4'" />
-              </n-collapse-transition>
+                <rock-paper-scissors
+                  v-else-if="outcome === '' && game === 'Pierre-papier-ciseaux'"
+                />
 
-              <n-collapse-transition :show="outcome !== ''" appear>
-                <endgame />
-              </n-collapse-transition>
+                <endgame v-else-if="outcome !== ''" />
+              </transition>
             </div>
           </div>
         </transition>

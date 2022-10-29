@@ -1,29 +1,33 @@
 <template>
   <div>
-    <n-collapse-transition :show="displayChoices">
-      <div class="choices">
+    <transition name="fade">
+      <div class="choices" v-show="displayChoices && imgChoicesIsLoad">
         <div class="choice" v-for="(item, i) in items" :key="i">
           <img
+            v-if="item !== ''"
             :src="require(`@/assets/${item}.svg`)"
             @click="chooseItem(item)"
             :class="{
               chosen: chosenItem === item,
               'disabled-item': chosenItem !== '',
             }"
+            @load="loadImgChoices(i)"
           />
         </div>
       </div>
-    </n-collapse-transition>
+    </transition>
 
-    <n-collapse-transition :show="displayEndgame">
-      <div class="endgame">
+    <transition name="fade-in-down">
+      <div
+        class="endgame"
+        v-show="displayEndgame && imgPlayerChosenIsLoad && imgEnemyChosenIsLoad"
+      >
         <div>
           <img
-            v-for="(item, i) in items"
-            :key="i"
-            v-show="chosenItem === item"
-            :src="require(`@/assets/${item}.svg`)"
+            v-if="chosenItem !== ''"
+            :src="require(`@/assets/${chosenItem}.svg`)"
             :class="localOutcome"
+            @load="imgPlayerChosenIsLoad = true"
           />
         </div>
 
@@ -36,12 +40,14 @@
               :key="i"
               v-show="enemy.chosenItem === item"
               :src="require(`@/assets/${item}-reverse.svg`)"
+              @load="loadImgEnemyChosen(i)"
             />
           </div>
         </div>
       </div>
-    </n-collapse-transition>
+    </transition>
 
+    <!-- 
     <div class="scores">
       <div>
         <n-text underline>{{ username }} </n-text>
@@ -62,7 +68,7 @@
           }}
         </n-text>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -81,6 +87,14 @@ export default {
       displayChoices: true,
       displayEndgame: false,
       localOutcome: "",
+
+      imgChoices: [],
+      imgChoicesIsLoad: false,
+      imgPlayerChosenIsLoad: false,
+      imgEnemyChosen: [],
+      imgEnemyChosenIsLoad: false,
+
+      transitionTiming: 300,
     };
   },
 
@@ -124,6 +138,7 @@ export default {
 
   beforeUnmount() {
     this.resetEnemyData();
+
     this.changeChosenItem("");
     this.changeScore(0);
   },
@@ -138,6 +153,22 @@ export default {
       "changeChosenItem",
     ]),
 
+    loadImgChoices(index) {
+      this.imgChoices.push(index);
+
+      if (this.imgChoices.length < 3) return;
+
+      this.imgChoicesIsLoad = true;
+    },
+
+    loadImgEnemyChosen(index) {
+      this.imgEnemyChosen.push(index);
+
+      if (this.imgEnemyChosen.length < this.enemyData.length) return;
+
+      this.imgEnemyChosenIsLoad = true;
+    },
+
     chooseItem(item) {
       if (this.chosenItem !== "") return;
 
@@ -146,44 +177,8 @@ export default {
       this.changeChosenItem(item);
       this.emitPlayToRockPaperScissors();
 
-      // if (this.room.numberOfPlayer === 2) this.checkResultFor2Players();
-      // else this.checkResultFor3Players();
       this.checkResult();
     },
-
-    // FOR 2 PLAYERS
-
-    // checkResultFor2Players() {
-    //   if (this.enemyData.length === 0 || this.chosenItem === "") return;
-
-    //   const checkEnemiesItems = this.enemyData.filter(
-    //     (a) => a.chosenItem !== ""
-    //   );
-
-    //   if (checkEnemiesItems.length !== this.enemyData.length) return;
-
-    //   const enemyItem = this.enemyData[0].chosenItem;
-
-    //   this.removeMessage();
-
-    //   if (this.checkEquality(enemyItem)) {
-    //     this.roundOver("equality");
-    //   }
-    //   if (this.checkVictory(enemyItem)) {
-    //     this.changeScore(this.score + 1);
-    //     this.roundOver("victory");
-    //   }
-    //   if (this.checkDefeat(enemyItem)) {
-    //     let data = this.enemyData;
-    //     data[0].score = this.enemyData[0].score + 1;
-
-    //     this.changeEnemyData(data);
-
-    //     this.roundOver("defeat");
-    //   }
-    // },
-
-    // FOR 3 PLAYERS (OR MORE)
 
     checkResult() {
       if (
@@ -273,21 +268,27 @@ export default {
     async roundOver(way) {
       this.localOutcome = way;
       this.displayChoices = false;
+
+      await this.sleep(this.transitionTiming);
+
       this.displayEndgame = true;
 
       await this.sleep(this.room.numberOfPlayer * 1000 + 500);
+
+      this.displayEndgame = false;
+
+      await this.sleep(this.transitionTiming);
 
       this.resetChosenItemForEnemyData();
       this.changeChosenItem("");
 
       if (this.score === this.room.scoreToReach) {
-        this.gameOver("victory");
+        this.changeOutcome("victory");
       } else if (
         this.enemyData.find((enemy) => enemy.score === this.room.scoreToReach)
       ) {
-        this.gameOver("defeat");
+        this.changeOutcome("defeat");
       } else {
-        this.displayEndgame = false;
         this.displayChoices = true;
       }
     },
@@ -300,12 +301,6 @@ export default {
       }
 
       this.changeEnemyData(data);
-    },
-
-    gameOver(way) {
-      this.displayChoices = false;
-
-      this.changeOutcome(way);
     },
   },
 };

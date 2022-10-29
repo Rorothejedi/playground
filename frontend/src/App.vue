@@ -90,7 +90,9 @@ export default {
   }
 }
 
-// transitions
+// TRANSITIONS
+
+// fade
 
 .fade-enter-active,
 .fade-leave-active {
@@ -99,6 +101,23 @@ export default {
 
 .fade-enter-from,
 .fade-leave-to {
+  opacity: 0;
+}
+
+// fade-in-down
+
+.fade-in-down-enter-active {
+  transition: all 0.3s ease-out;
+}
+.fade-in-down-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-in-down-enter-from {
+  transform: translateY(-50px);
+  opacity: 0;
+}
+.fade-in-down-leave-to {
   opacity: 0;
 }
 </style>
