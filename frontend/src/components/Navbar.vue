@@ -1,12 +1,18 @@
 <template>
-  <n-collapse-transition :show="username !== ''">
+  <n-collapse-transition appear :show="username !== ''">
     <n-layout-header
       style="height: 64px"
       :bordered="!isMobile || isOnHome"
       class="nav"
     >
       <div class="title-wrapper">
-        <n-button text class="title" @click="toHome()" title="Accueil">
+        <n-button
+          text
+          class="title"
+          @click="toHome()"
+          title="Accueil"
+          type="success"
+        >
           Playground
         </n-button>
         <n-collapse-transition v-show="game !== '' && !isMobile">
@@ -15,27 +21,34 @@
         </n-collapse-transition>
       </div>
 
-      <n-space inline :size="isMobile ? 'small' : 'medium'">
-        <drawer-room-settings
-          v-if="!isOnHome"
-          :isMobile="isMobile"
-          :windowWidth="windowWidth"
-        />
+      <transition name="fade" mode="out-in">
+        <n-space inline :size="isMobile ? 'small' : 'medium'" v-if="!isOnHome">
+          <drawer-room-settings
+            :isMobile="isMobile"
+            :windowWidth="windowWidth"
+          />
 
-        <drawer-global-settings
-          :isMobile="isMobile"
-          :windowWidth="windowWidth"
-        />
+          <drawer-global-settings
+            :isMobile="isMobile"
+            :windowWidth="windowWidth"
+          />
 
-        <n-button round @click="toHome()" v-if="!isOnHome">
-          <template #icon v-if="isMobile">
-            <n-icon size="22">
-              <close-filled />
-            </n-icon>
-          </template>
-          <n-text v-if="!isMobile">Quitter la partie</n-text>
-        </n-button>
-      </n-space>
+          <n-button round @click="toHome()">
+            <template #icon v-if="isMobile">
+              <n-icon size="22">
+                <close-filled />
+              </n-icon>
+            </template>
+            <n-text v-if="!isMobile">Quitter la partie</n-text>
+          </n-button>
+        </n-space>
+        <div v-else>
+          <drawer-global-settings
+            :isMobile="isMobile"
+            :windowWidth="windowWidth"
+          />
+        </div>
+      </transition>
     </n-layout-header>
     <n-collapse-transition :show="game !== '' && isMobile">
       <n-layout>
@@ -51,12 +64,13 @@
 import { mapState } from "vuex";
 import { CloseFilled } from "@vicons/material";
 import responsive from "@/mixins/responsive";
+import utils from "@/mixins/utils";
 import DrawerGlobalSettings from "@/components/settings/DrawerGlobalSettings.vue";
 import DrawerRoomSettings from "@/components/settings/DrawerRoomSettings.vue";
 
 export default {
   name: "Navbar",
-  mixins: [responsive],
+  mixins: [responsive, utils],
   components: {
     CloseFilled,
     DrawerGlobalSettings,
@@ -76,7 +90,7 @@ export default {
     ...mapState("player", ["username"]),
 
     isOnHome() {
-      return this.$route.name === "Home";
+      return this.$route.name === "Home" || this.$route.name === undefined;
     },
   },
 

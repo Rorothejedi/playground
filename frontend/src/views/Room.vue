@@ -1,33 +1,37 @@
 <template>
-  <div>
-    <n-collapse-transition :show="username === ''">
-      <home-username-input />
-    </n-collapse-transition>
+  <div class="room" :class="{ 'room-without-nav': username === '' }">
+    <transition appear name="fade" mode="out-in">
+      <home-username-input v-if="username === ''" />
 
-    <div v-if="username !== ''">
-      <div v-if="!isReady" class="waiting-card">
-        <n-alert type="success">
-          <template #icon>
-            <n-spin size="small" />
-          </template>
-          En attente d'un autre joueur...
-        </n-alert>
+      <div v-else>
+        <transition name="fade" mode="out-in">
+          <div v-if="!isReady" class="waiting-card">
+            <n-alert type="success" :bordered="false" :show-icon="false">
+              <div class="waiting-card-content">
+                <n-h5> En attente d'un autre joueur... </n-h5>
+                <n-spin size="small" />
+              </div>
+            </n-alert>
+          </div>
+
+          <div v-else class="game-wrapper">
+            <div class="game">
+              <n-collapse-transition :show="outcome === ''" appear>
+                <morpion v-if="game === 'Morpion'" />
+                <rock-paper-scissors
+                  v-else-if="game === 'Pierre-papier-ciseaux'"
+                />
+                <connect-4 v-else-if="game === 'Puissance 4'" />
+              </n-collapse-transition>
+
+              <n-collapse-transition :show="outcome !== ''" appear>
+                <endgame />
+              </n-collapse-transition>
+            </div>
+          </div>
+        </transition>
       </div>
-
-      <div v-else class="game-wrapper">
-        <div class="game">
-          <n-collapse-transition :show="outcome === ''" appear>
-            <morpion v-if="game === 'Morpion'" />
-            <rock-paper-scissors v-else-if="game === 'Pierre-papier-ciseaux'" />
-            <connect-4 v-else-if="game === 'Puissance 4'" />
-          </n-collapse-transition>
-
-          <n-collapse-transition :show="outcome !== ''" appear>
-            <endgame />
-          </n-collapse-transition>
-        </div>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -124,6 +128,22 @@ export default {
     next();
   },
 
+  beforeUnmount() {
+    this.emitLeaveRoom();
+
+    this.resetEnemyData();
+
+    this.changeSocketId("");
+    this.changeGame("");
+    this.changeRoomId("");
+    this.changeHost(false);
+    this.changeIsWinner(false);
+    this.changeTurn(false);
+    this.changeOutcome("");
+    this.changeNumberOfPlayer(2);
+    this.changeScoreToReach(3);
+  },
+
   methods: {
     ...mapActions("player", [
       "changeHost",
@@ -131,9 +151,19 @@ export default {
       "changeSocketId",
       "changeTurn",
       "changeIsWinner",
+      "changeOutcome",
     ]),
-    ...mapActions("room", ["emitCreateOrJoinRoom", "listenReplay"]),
-    ...mapActions("game", ["changeGame"]),
+    ...mapActions("room", [
+      "emitCreateOrJoinRoom",
+      "emitLeaveRoom",
+      "listenReplay",
+    ]),
+    ...mapActions("game", [
+      "changeGame",
+      "resetEnemyData",
+      "changeNumberOfPlayer",
+      "changeScoreToReach",
+    ]),
 
     watchRoomForReady() {
       if (
@@ -185,30 +215,46 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.room-without-nav {
+  height: 100vh;
+}
+.room {
+  height: calc(100vh - 64px);
+}
+
 .waiting-card {
   height: calc(100vh - 128px);
   display: flex;
   justify-content: space-around;
   flex-direction: column;
   align-items: center;
-}
 
-.game {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  .waiting-card-content {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+  }
 }
 
 .game-wrapper {
-  height: calc(100vh - 128px);
+  height: calc(100vh - 64px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
+
+  .game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 @media screen and (max-width: 600px) {
+  .room {
+    height: calc(100vh - 86px);
+  }
   .waiting-card,
   .game-wrapper {
     height: calc(100vh - 154px);

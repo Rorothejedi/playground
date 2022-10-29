@@ -1,23 +1,26 @@
 <template>
   <div class="username">
     <n-h1 class="username-title" v-if="username === ''"> Playground </n-h1>
-    <div class="username-card">
-      <n-card title="Ton pseudo">
-        <n-input-group>
-          <n-input
-            v-model:value="localUsername"
-            ref="usernameInput"
-            type="text"
-            placeholder="ex: Toto"
-            maxlength="30"
-            show-count
-          />
-          <n-button @click="addUsername()" :disabled="localUsername === ''">
-            Choisir
-          </n-button>
-        </n-input-group>
-      </n-card>
-    </div>
+    <n-card title="Ton pseudo" class="username-card" :bordered="false">
+      <n-input-group>
+        <n-input
+          v-model:value="localUsername"
+          ref="usernameInput"
+          type="text"
+          size="large"
+          placeholder="ex: Toto"
+          maxlength="30"
+          show-count
+        />
+        <n-button
+          @click="addUsername()"
+          :disabled="localUsername === ''"
+          size="large"
+        >
+          Choisir
+        </n-button>
+      </n-input-group>
+    </n-card>
   </div>
 </template>
 
@@ -40,8 +43,6 @@ export default {
   },
 
   async mounted() {
-    if (this.username !== "") return;
-
     await this.sleep(100);
 
     this.$refs.usernameInput.focus();
@@ -59,21 +60,18 @@ export default {
 
 <style lang="less" scoped>
 .username {
-  margin: 50px auto;
-}
-.username-title {
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  font-family: "Major Mono Display", monospace;
-  margin-bottom: 50px;
-  font-size: 3em;
-}
+  align-items: center;
 
-.username-card {
-  display: flex;
-  justify-content: center;
-  padding-bottom: 25px;
-
+  .username-title {
+    font-family: "Major Mono Display", monospace;
+    margin-top: 17vh;
+    margin-bottom: 10vh;
+    font-size: 3em;
+    color: #63e2b7;
+  }
   .n-card {
     max-width: 600px;
   }

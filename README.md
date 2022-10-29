@@ -49,12 +49,20 @@ npm run serve
 - Test en prod des variables d'env (node et vue)
 - Test des liens en prod
 
-- WIP - Améliorer la création de partie (loading and redirect...) (promise ?)
+- Refaire les transitions avec un composant maison 
+  - (possibilité de passer un délais en props / un type de transition (fade, slide))
 
 ### Bugs
 
 - Le comptage des points à 3 sur le pierre-papier-ciseaux est foireux...
 - Parfois, le nom d'utilisateur ne s'affiche pas dans le message '[username] a quitté la partie' (après rejouer ou fin de partie ? si j'arrive à reproduire)
+
+Reproduction du bug: 
+- Je crée un partie avec le joueur A
+- Je rejoint avec le joueur B
+- Je quitte avec le joueur A
+
+
 - Gérer l'affichage sans bug des images du pierre-papier-ciseaux (@load ?)
 
 ## <ins>Game improvements</ins>

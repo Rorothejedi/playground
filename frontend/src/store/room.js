@@ -76,10 +76,29 @@ export default {
             })
         },
 
-        // ERROR EVENT
+        // ERRORS EVENTS
 
         listenError() {
             socketioService.socket.on("toClient_error", () => {
+                window.$message.error('Une erreur est survenue')
+                router.push({
+                    name: "Home"
+                });
+            });
+        },
+
+        listenErrorRoomFull() {
+            socketioService.socket.on("toClient_error_room_full", () => {
+                window.$message.warning('La partie est déjà complète !')
+                router.push({
+                    name: "Home"
+                });
+            });
+        },
+
+        listenErrorRoomNoExist() {
+            socketioService.socket.on("toClient_error_room_noExist", () => {
+                window.$message.error('La partie n\'existe pas !')
                 router.push({
                     name: "Home"
                 });

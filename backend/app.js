@@ -44,10 +44,10 @@ io.on('connection', (socket) => {
         } else {
             room = rooms.find(r => r.id === data.roomId)
 
-            if (room === undefined) return emitErrorTo(socket.id)
+            if (room === undefined) return emitErrorTo(socket.id, 'room_noExist')
             if (room.game !== data.game) return emitErrorTo(socket.id)
             if (data.host) return emitErrorTo(socket.id)
-            if (room.players.length === room.numberOfPlayer) return emitErrorTo(socket.id)
+            if (room.players.length === room.numberOfPlayer) return emitErrorTo(socket.id, 'room_full')
 
             data.roomId = room.id
             room.players.push(data)
@@ -105,12 +105,11 @@ function createRoom(data) {
     }
 
     data.roomId = room.id
+
     room.players.push(data)
     rooms.push(room)
 
     console.log('\x1b[36m%s\x1b[0m', `[create room] - room: ${room.id} - username: ${data.username}`)
-
-    io.emit('toClient_getRooms', rooms)
 
     return room
 }
@@ -146,6 +145,8 @@ function createRoomId() {
     return Math.random().toString(36).substr(2, 9)
 }
 
-function emitErrorTo(socketId) {
-    io.to(socketId).emit('toClient_error')
+function emitErrorTo(socketId, type = 'error') {
+    if (type === 'error') io.to(socketId).emit('toClient_error')
+    if (type === 'room_full') io.to(socketId).emit('toClient_error_room_full')
+    if (type === 'room_noExist') io.to(socketId).emit('toClient_error_room_noExist')
 }

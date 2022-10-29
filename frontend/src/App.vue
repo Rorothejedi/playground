@@ -7,7 +7,11 @@
           <n-layout>
             <navbar />
             <n-layout>
-              <router-view />
+              <router-view v-slot="{ Component, route }">
+                <transition name="fade" mode="out-in">
+                  <component :is="Component" :key="route.path" />
+                </transition>
+              </router-view>
             </n-layout>
           </n-layout>
         </n-message-provider>
@@ -51,6 +55,8 @@ export default {
   mounted() {
     this.listenGetRooms();
     this.listenError();
+    this.listenErrorRoomFull();
+    this.listenErrorRoomNoExist();
   },
 
   beforeUnmount() {
@@ -58,7 +64,12 @@ export default {
   },
 
   methods: {
-    ...mapActions("room", ["listenGetRooms", "listenError"]),
+    ...mapActions("room", [
+      "listenGetRooms",
+      "listenError",
+      "listenErrorRoomFull",
+      "listenErrorRoomNoExist",
+    ]),
   },
 };
 </script>
@@ -77,5 +88,17 @@ export default {
   .n-config-provider {
     min-height: 100vh;
   }
+}
+
+// transitions
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -1,19 +1,18 @@
 <template>
-  <n-collapse-transition :show="!loadingRoom">
-    <n-collapse-transition :show="username === ''">
-      <home-username-input />
-    </n-collapse-transition>
+  <div class="home" :class="{ 'home-without-nav': username === '' }">
+    <transition appear name="fade" mode="out-in">
+      <home-username-input v-if="username === ''" />
 
-    <n-collapse-transition class="rooms" :show="username !== ''">
-      <n-space vertical>
+      <n-space vertical class="home-cards" v-else>
         <div class="create-room-card">
-          <n-card title="Nouvelle partie">
+          <n-card title="Nouvelle partie" :bordered="false">
             <n-form>
               <n-form-item :show-label="false">
                 <n-select
                   v-model:value="selectedGame"
                   :options="gamesAvailable"
                   placeholder="Choisir un jeu"
+                  size="large"
                 />
               </n-form-item>
             </n-form>
@@ -62,11 +61,12 @@
         </div>
 
         <div class="room-card">
-          <n-card title="Liste des parties disponibles">
+          <n-card title="Liste des parties disponibles" :bordered="false">
             <n-space vertical :size="12">
               <div v-if="availableRooms.length !== 0">
                 <n-list>
                   <n-list-item v-for="(room, key) in availableRooms" :key="key">
+                    <!-- Use transition-group -->
                     <template #prefix>
                       <n-tag
                         :bordered="false"
@@ -88,12 +88,6 @@
                                 v-if="
                                   room.players[0].game ===
                                   'Pierre-papier-ciseaux'
-                                "
-                              />
-                              <hand-spock-regular
-                                v-if="
-                                  room.players[0].game ===
-                                  'Pierre-papier-ciseaux-lézard-spock'
                                 "
                               />
                               <grid-dots-24-filled
@@ -156,8 +150,8 @@
           </n-card>
         </div>
       </n-space>
-    </n-collapse-transition>
-  </n-collapse-transition>
+    </transition>
+  </div>
 </template>
 
 <script>
@@ -167,18 +161,17 @@ import responsive from "@/mixins/responsive.js";
 import title from "@/mixins/title.js";
 import utils from "@/mixins/utils.js";
 import HomeUsernameInput from "@/components/HomeUsernameInput.vue";
-import { HandScissorsRegular, HandSpockRegular } from "@vicons/fa";
+import { HandScissorsRegular } from "@vicons/fa";
 import { Grid3X3Sharp } from "@vicons/material";
 import { GridDots24Filled } from "@vicons/fluent";
 
 export default {
   name: "Home",
-  title: "Playground",
+  title: "Home | Playground",
   mixins: [responsive, title, utils],
   components: {
     HomeUsernameInput,
     HandScissorsRegular,
-    HandSpockRegular,
     Grid3X3Sharp,
     GridDots24Filled,
   },
@@ -197,19 +190,23 @@ export default {
           value: "Pierre-papier-ciseaux",
         },
       ],
-      loadingRoom: true,
 
       localNumberOfPlayer: 2,
       localScoreToReach: 3,
+
+      saveRoomsBeforeRedirect: null,
     };
   },
 
   computed: {
-    ...mapState("player", ["username"]),
+    ...mapState("player", ["socketId", "username"]),
     ...mapState("room", ["rooms"]),
     ...mapState("game", ["game"]),
 
     availableRooms() {
+      if (this.saveRoomsBeforeRedirect !== null)
+        return this.saveRoomsBeforeRedirect;
+
       return this.rooms.filter(
         (room) => room.players.length < room.numberOfPlayer
       );
@@ -223,19 +220,19 @@ export default {
     localNumberOfPlayer(newValue) {
       this.changeNumberOfPlayer(newValue);
     },
+
+    rooms(newValue) {
+      const arrayOfNewRoom = newValue.filter(
+        (room) => room.players[0].socketId === this.socketId
+      );
+
+      if (arrayOfNewRoom.length !== 1) return;
+
+      this.redirectAfterCreateRoom();
+    },
   },
 
-  async mounted() {
-    this.loadingRoom = false;
-
-    if (this.game !== "") this.emitLeaveRoom();
-
-    this.resetEnemyData();
-    this.changeOutcome("");
-    this.changeGame("");
-    this.changeRoomId("");
-    this.changeNumberOfPlayer(2);
-
+  mounted() {
     this.emitGetRooms();
   },
 
@@ -262,47 +259,25 @@ export default {
     ]),
 
     createRoom() {
-      if (this.loadingRoom) return;
-
-      this.loadingRoom = true;
-
       this.changeSocketId(socketioService.socket.id);
       this.changeGame(this.selectedGame);
       this.changeHost(true);
       this.changeTurn(true);
       this.changeIsWinner(false);
 
+      this.saveRoomsBeforeRedirect = this.availableRooms;
+
       this.emitCreateOrJoinRoom();
+    },
 
-      // to rework ...
-      window.$loading.start();
-      window.$message.loading("Partie en cours de création...", {
-        duration: 2000,
+    redirectAfterCreateRoom() {
+      this.$router.push({
+        name: "Room",
+        query: { id: this.rooms.at(-1).id, game: this.selectedGame },
       });
-
-      setTimeout(() => {
-        this.$router.push({
-          name: "Room",
-          query: { id: this.rooms.at(-1).id, game: this.selectedGame },
-        });
-
-        window.$loading.finish();
-      }, 2000);
     },
 
     joinRoom(room) {
-      // mettre dans la view Room pour ne pas avoi de différence de traitement
-      // entre les joueurs qui arrivent par le lien et ceux qui arrivent pas la liste des parties
-
-      this.changeSocketId(socketioService.socket.id);
-      this.changeGame(room.game);
-      this.changeRoomId(room.id);
-      this.changeHost(false);
-      this.changeTurn(false);
-      this.changeIsWinner(false);
-
-      this.emitCreateOrJoinRoom();
-
       this.$router.push({
         name: "Room",
         query: { id: room.id, game: room.game },
@@ -313,15 +288,21 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.rooms {
-  margin: 50px auto;
+.home-without-nav {
+  height: 100vh;
+}
+.home {
+  margin-top: 64px;
+  height: calc(100vh - 128px);
 }
 
-.username-title,
 .room-card,
 .create-room-card {
   display: flex;
   justify-content: center;
+}
+.room-card {
+  margin-top: 15px;
 }
 
 .n-card {
@@ -351,8 +332,12 @@ export default {
 }
 
 @media screen and (max-width: 600px) {
-  .rooms {
-    margin: 20px auto;
+  .home {
+    margin-top: 20px;
+    height: calc(100vh - 84px);
+  }
+  .room-card {
+    margin-top: 10px;
   }
   .n-tag.n-tag--icon.n-tag--round {
     padding-left: 8px;
