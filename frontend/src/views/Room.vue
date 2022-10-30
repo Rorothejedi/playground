@@ -1,5 +1,17 @@
 <template>
   <div class="room" :class="{ 'room-without-nav': username === '' }">
+    <n-collapse-transition
+      class="scorebar-wrapper"
+      :show="
+        isDisplayScorebar &&
+        outcome === '' &&
+        isReady &&
+        game === 'Pierre-papier-ciseaux'
+      "
+    >
+      <scorebar />
+    </n-collapse-transition>
+
     <transition appear name="fade" mode="out-in">
       <home-username-input v-if="username === ''" />
 
@@ -38,6 +50,7 @@
 <script>
 import { mapActions, mapGetters, mapState } from "vuex";
 import title from "@/mixins/title.js";
+import Scorebar from "@/components/Scorebar.vue";
 import HomeUsernameInput from "@/components/HomeUsernameInput.vue";
 import Endgame from "@/components/room/Endgame.vue";
 import Connect4 from "@/components/games/Connect4.vue";
@@ -50,6 +63,7 @@ export default {
   title: "Room | Playground",
   mixins: [title],
   components: {
+    Scorebar,
     HomeUsernameInput,
     Connect4,
     Morpion,
@@ -67,35 +81,32 @@ export default {
   computed: {
     ...mapState("player", ["username", "host", "outcome", "socketId"]),
     ...mapState("room", ["rooms"]),
-    ...mapState("game", ["game"]),
+    ...mapState("game", ["game", "numberOfPlayer"]),
     ...mapGetters("room", ["room", "enemies"]),
+
+    isDisplayScorebar() {
+      if (this.enemies === undefined) return false;
+      if (this.enemies.length < this.numberOfPlayer - 1) return false;
+
+      return true;
+    },
   },
 
   watch: {
-    rooms(newValue, oldValue) {
-      const findRoom = newValue.find(
-        (room) => room.id === this.$route.query.id
-      );
-
-      if (
-        newValue.length !== oldValue.length &&
-        findRoom === undefined &&
-        this.isReady
-      ) {
+    room(newValue) {
+      if (newValue === undefined && this.isReady) {
         window.$message.error(`${this.enemyUsername} a quitté la partie`);
         this.$router.push({ name: "Home" });
+        return;
       }
 
       this.watchRoomForReady();
     },
 
     enemies(newValue) {
-      if (
-        newValue === undefined ||
-        newValue.length === 0 ||
-        this.enemyUsername !== ""
-      )
-        return;
+      if (newValue === undefined) return;
+      if (newValue.length === 0) return;
+      if (this.enemyUsername !== "") return;
 
       this.enemyUsername = newValue[0].username;
     },
@@ -106,11 +117,9 @@ export default {
   },
 
   created() {
-    if (this.host) {
-      this.changeRoomId(this.$route.query.id);
-    } else if (this.username !== "" && this.socketId === "") {
-      this.joinRoom();
-    }
+    if (this.username === "" || this.socketId !== "") return;
+
+    this.joinRoom();
   },
 
   mounted() {
@@ -166,12 +175,14 @@ export default {
     ]),
 
     watchRoomForReady() {
-      if (
-        this.room === undefined ||
-        this.room.players.length !== this.room.numberOfPlayer ||
-        this.isReady
-      )
-        return;
+      if (this.room === undefined) return;
+      if (this.room.players.length !== this.room.numberOfPlayer) return;
+      if (this.isReady) return;
+
+      if (!this.host) {
+        this.changeScoreToReach(this.room.scoreToReach);
+        this.changeNumberOfPlayer(this.room.numberOfPlayer);
+      }
 
       this.isReady = true;
     },
@@ -209,6 +220,8 @@ export default {
       this.changeIsWinner(false);
 
       this.emitCreateOrJoinRoom();
+
+      // get numberOfPlayer & scoreToReach
     },
   },
 };
@@ -220,6 +233,10 @@ export default {
 }
 .room {
   height: calc(100vh - 64px);
+}
+
+.scorebar-wrapper {
+  position: absolute;
 }
 
 .waiting-card {
@@ -257,7 +274,7 @@ export default {
   }
   .waiting-card,
   .game-wrapper {
-    height: calc(100vh - 154px);
+    height: calc(100vh - 86px);
   }
 }
 </style>

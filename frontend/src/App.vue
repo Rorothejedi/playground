@@ -110,7 +110,7 @@ export default {
   transition: all 0.3s ease-out;
 }
 .fade-in-down-leave-active {
-  transition: opacity 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .fade-in-down-enter-from {
@@ -118,6 +118,7 @@ export default {
   opacity: 0;
 }
 .fade-in-down-leave-to {
+  transform: translateY(-50px);
   opacity: 0;
 }
 </style>

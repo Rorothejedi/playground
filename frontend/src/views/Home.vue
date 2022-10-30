@@ -271,9 +271,13 @@ export default {
     },
 
     redirectAfterCreateRoom() {
+      const roomId = this.rooms.at(-1).id;
+
+      this.changeRoomId(roomId);
+
       this.$router.push({
         name: "Room",
-        query: { id: this.rooms.at(-1).id, game: this.selectedGame },
+        query: { id: roomId, game: this.selectedGame },
       });
     },
 

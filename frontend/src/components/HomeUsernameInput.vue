@@ -8,7 +8,7 @@
           ref="usernameInput"
           type="text"
           size="large"
-          placeholder="ex: Toto"
+          :placeholder="`ex: ${usernamePlaceholder}`"
           maxlength="30"
           show-count
         />
@@ -35,6 +35,7 @@ export default {
   data() {
     return {
       localUsername: "",
+      usernamePlaceholder: "",
     };
   },
 
@@ -45,6 +46,8 @@ export default {
   async mounted() {
     await this.sleep(100);
 
+    this.randomUsernamePlaceholder();
+
     this.$refs.usernameInput.focus();
   },
 
@@ -53,6 +56,79 @@ export default {
 
     addUsername() {
       this.changeUsername(this.localUsername);
+    },
+
+    randomUsernamePlaceholder() {
+      const famousCharacters = [
+        "Katniss Everdeen",
+        "Beatrix Kiddo",
+        "Sarah Connor",
+        "Ellen Ripley",
+        "Mercredi Addams",
+        "Imperator Furiosa",
+        "Leia Organa",
+        "Lara Croft",
+        "Barbara Gordon",
+        "O-Ren Ishii",
+        "Hermione Granger",
+        "Claire Bennet",
+        "Lisa Simpson",
+        "Sansa Stark",
+        "Elena Fisher",
+        "Tifa Lockhart",
+        "John McClane",
+        "Korben Dallas",
+        "Commandant Shepard",
+        "Sheldon Cooper",
+        "Vincent Vega",
+        "John Rambo",
+        "Ramsay Bolton",
+        "James Crochet",
+        "Ronon Dex",
+        "Charles Xavier",
+        "Mia Wallace",
+        "Mr Blonde",
+        "Aldo Raine",
+        "Kyle Broflovski",
+        "Barney Stinson",
+        "Johnny Rico",
+        "Thomas Anderson",
+        "Dr. Emmett Brown",
+        "James Bond",
+        "Luke Skywalker",
+        "Inigo Montoya",
+        "Tony Montana",
+        "Vito Corleone",
+        "Rick Deckard",
+        "Maximus Decimus Meridius",
+        "Trinity",
+        "Neo",
+        "Harley Quinn",
+        "Dr. Samantha Carter",
+        "Jack O'Neill",
+        "Dr. Daniel Jackson",
+        "Rodney McKay",
+        "Vala Mal Doran",
+        "Garrus Vakarian",
+        "Miranda Lawson",
+        "Tali'Zorah vas Normandy",
+        "Sauron",
+        "Samsagace Gamegie",
+        "Peregrin Touque",
+        "Tom Bombadil",
+        "Meriadoc Brandebouc",
+        "Finrod Felagund",
+        "Wilhuff Tarkin",
+        "Mon Mothma",
+        "Mara Jade",
+        "Kyle Katarn",
+        "Daenerys Targaryen",
+        "Samus Aran",
+      ];
+
+      const randomIndex = Math.floor(Math.random() * famousCharacters.length);
+
+      this.usernamePlaceholder = famousCharacters[randomIndex];
     },
   },
 };

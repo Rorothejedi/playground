@@ -273,20 +273,29 @@ export default {
 
       this.displayEndgame = true;
 
-      await this.sleep(this.room.numberOfPlayer * 1000 + 500);
+      await this.sleep(2000);
 
       this.displayEndgame = false;
 
-      await this.sleep(this.transitionTiming);
+      if (
+        this.score !== this.room.scoreToReach &&
+        this.enemyData.find((enemy) => enemy.score !== this.room.scoreToReach)
+      ) {
+        await this.sleep(this.transitionTiming);
+      }
 
       this.resetChosenItemForEnemyData();
       this.changeChosenItem("");
 
       if (this.score === this.room.scoreToReach) {
+        // await this.sleep(300);
+
         this.changeOutcome("victory");
       } else if (
         this.enemyData.find((enemy) => enemy.score === this.room.scoreToReach)
       ) {
+        // await this.sleep(300);s
+
         this.changeOutcome("defeat");
       } else {
         this.displayChoices = true;

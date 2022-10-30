@@ -49,12 +49,12 @@ npm run serve
 - Test en prod des variables d'env (node et vue)
 - Test des liens en prod
 
-### Bugs
+- Ajouter les icons dans le select des jeux
+  
+### Bugs (to reproduced)
 
-- Parfois, le nom d'utilisateur ne s'affiche pas dans le message '[username] a quitté la partie' (si j'arrive à reproduire) (Peut-être est-ce corrigé ?)
+- Parfois, le nom d'utilisateur ne s'affiche pas dans le message '[username] a quitté la partie'
 
-- Le comptage des points à 3 sur le pierre-papier-ciseaux est foireux...
-- Ainsi que les results ... bref à retravailler
 
 ## <ins>Game improvements</ins>
 ### Morpion
@@ -74,9 +74,8 @@ npm run serve
 
 ## <ins>UI/UX improvements</ins>
 - Gérer la traduction du site (Internationalization)
-- Ajouter les icons dans le select des jeux
-- Design des scores et des autres joueurs
-- Améliorer l'attente dans la room (mettre le nombre de joueur) et revoir le design
+
+- Améliorer l'attente dans la room avec le nombre de joueur / le lien direct à partager
 - Améliorer le bouton "rejouer", tous les joueurs doivent pouvoir cliquer, (la partie redemare quand tous les joueurs ont cliqués)
 
 ## <ins>Next step</ins>
