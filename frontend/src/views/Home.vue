@@ -11,6 +11,7 @@
                 <n-select
                   v-model:value="selectedGame"
                   :options="gamesAvailable"
+                  :render-label="gameSelectRender"
                   placeholder="Choisir un jeu"
                   size="large"
                 />
@@ -165,6 +166,9 @@ import { HandScissorsRegular } from "@vicons/fa";
 import { Grid3X3Sharp } from "@vicons/material";
 import { GridDots24Filled } from "@vicons/fluent";
 
+import { NIcon } from "naive-ui";
+import { h } from "vue";
+
 export default {
   name: "Home",
   title: "Home | Playground",
@@ -178,6 +182,9 @@ export default {
 
   data() {
     return {
+      localNumberOfPlayer: 2,
+      localScoreToReach: 3,
+      saveRoomsBeforeRedirect: null,
       selectedGame: null,
       gamesAvailable: [
         { label: "Morpion", value: "Morpion" },
@@ -191,10 +198,30 @@ export default {
         },
       ],
 
-      localNumberOfPlayer: 2,
-      localScoreToReach: 3,
+      gameSelectRender: (option) => {
+        let icon = "";
 
-      saveRoomsBeforeRedirect: null,
+        if (option.value === "Morpion") icon = Grid3X3Sharp;
+        if (option.value === "Puissance 4") icon = GridDots24Filled;
+        if (option.value === "Pierre-papier-ciseaux")
+          icon = HandScissorsRegular;
+
+        return [
+          h(
+            NIcon,
+            {
+              style: {
+                verticalAlign: "-0.15em",
+                marginRight: "4px",
+              },
+            },
+            {
+              default: () => h(icon),
+            }
+          ),
+          option.label,
+        ];
+      },
     };
   },
 
@@ -238,21 +265,14 @@ export default {
 
   methods: {
     ...mapActions("player", [
-      "changeUsername",
       "changeHost",
       "changeRoomId",
       "changeSocketId",
       "changeTurn",
       "changeIsWinner",
-      "changeOutcome",
     ]),
-    ...mapActions("room", [
-      "emitCreateOrJoinRoom",
-      "emitGetRooms",
-      "emitLeaveRoom",
-    ]),
+    ...mapActions("room", ["emitCreateOrJoinRoom", "emitGetRooms"]),
     ...mapActions("game", [
-      "resetEnemyData",
       "changeGame",
       "changeScoreToReach",
       "changeNumberOfPlayer",
