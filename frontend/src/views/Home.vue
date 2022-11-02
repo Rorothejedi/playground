@@ -7,21 +7,32 @@
         <div class="create-room-card">
           <n-card :title="$t('home.newGame.title')" :bordered="false">
             <n-form>
-              <n-form-item :show-label="false">
+              <n-form-item :show-label="false" :key="$i18n.locale">
                 <n-select
                   v-model:value="selectedGame"
-                  :options="gamesAvailable"
+                  :options="[
+                    {
+                      label: $t('morpion'),
+                      value: 'morpion',
+                    },
+                    {
+                      label: $t('connect4'),
+                      value: 'connect4',
+                    },
+                    {
+                      label: $t('rockPaperScissors'),
+                      value: 'rockPaperScissors',
+                    },
+                  ]"
                   :render-label="gameSelectRender"
                   :placeholder="$t('home.newGame.placeholder')"
                   size="large"
                 />
               </n-form-item>
             </n-form>
-            <n-collapse-transition
-              :show="selectedGame === 'Pierre-papier-ciseaux'"
-            >
+            <n-collapse-transition :show="selectedGame === 'rockPaperScissors'">
               <n-form>
-                <n-form-item label="Participants">
+                <n-form-item :label="$t('home.newGame.participants')">
                   <n-radio
                     :checked="localNumberOfPlayer === 2"
                     name="radio-number-of-player"
@@ -29,7 +40,7 @@
                       localNumberOfPlayer = parseInt($event.target.value)
                     "
                     value="2"
-                    label="2 joueurs"
+                    :label="$tc('home.newGame.players', 2)"
                   />
                   <n-radio
                     :checked="localNumberOfPlayer === 3"
@@ -38,10 +49,10 @@
                       localNumberOfPlayer = parseInt($event.target.value)
                     "
                     value="3"
-                    label="3 joueurs"
+                    :label="$tc('home.newGame.players', 3)"
                   />
                 </n-form-item>
-                <n-form-item label="Score à atteindre">
+                <n-form-item :label="$t('home.newGame.scoreToReach')">
                   <n-slider
                     v-model:value="localScoreToReach"
                     :min="1"
@@ -75,7 +86,7 @@
                         :size="isMobile ? 'small' : 'medium'"
                         round
                       >
-                        {{ room.players[0].game }}
+                        {{ $t(room.players[0].game) }}
                         <template #icon>
                           <n-icon-wrapper
                             :size="isMobile ? 20 : 24"
@@ -83,16 +94,15 @@
                           >
                             <n-icon :size="isMobile ? 16 : 18">
                               <grid-3-x-3-sharp
-                                v-if="room.players[0].game === 'Morpion'"
+                                v-if="room.players[0].game === 'morpion'"
                               />
                               <hand-scissors-regular
                                 v-if="
-                                  room.players[0].game ===
-                                  'Pierre-papier-ciseaux'
+                                  room.players[0].game === 'rockPaperScissors'
                                 "
                               />
                               <grid-dots-24-filled
-                                v-if="room.players[0].game === 'Puissance 4'"
+                                v-if="room.players[0].game === 'connect4'"
                               />
                             </n-icon>
                           </n-icon-wrapper>
@@ -110,7 +120,7 @@
                     </template>
 
                     <n-tag
-                      title="Nombre de joueur requis"
+                      :title="$t('home.gamesList.numberOfPlayers')"
                       :size="isMobile ? 'small' : 'medium'"
                       class="number-of-player"
                     >
@@ -186,25 +196,13 @@ export default {
       localScoreToReach: 3,
       saveRoomsBeforeRedirect: null,
       selectedGame: null,
-      gamesAvailable: [
-        { label: "Morpion", value: "Morpion" },
-        {
-          label: "Puissance 4",
-          value: "Puissance 4",
-        },
-        {
-          label: "Pierre-papier-ciseaux",
-          value: "Pierre-papier-ciseaux",
-        },
-      ],
 
       gameSelectRender: (option) => {
         let icon = "";
 
-        if (option.value === "Morpion") icon = Grid3X3Sharp;
-        if (option.value === "Puissance 4") icon = GridDots24Filled;
-        if (option.value === "Pierre-papier-ciseaux")
-          icon = HandScissorsRegular;
+        if (option.value === "morpion") icon = Grid3X3Sharp;
+        if (option.value === "connect4") icon = GridDots24Filled;
+        if (option.value === "rockPaperScissors") icon = HandScissorsRegular;
 
         return [
           h(

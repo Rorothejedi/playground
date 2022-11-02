@@ -1,4 +1,6 @@
 export default {
+    '': '',
+
     actions: {
         choose: 'Choose',
         close: 'Close',
@@ -27,11 +29,15 @@ export default {
         newGame: {
             title: 'New game',
             placeholder: 'Choose a game',
+            participants: 'Participants',
+            players: '{n} players',
+            scoreToReach: 'Score to reach',
         },
         gamesList: {
             title: 'List of available games',
             noData: 'No game available',
-        }
+            numberOfPlayers: 'Required number of players',
+        },
     },
 
     settings: {
@@ -80,4 +86,8 @@ export default {
         choseMove: '{user} has chosen his move',
         choseMoves: '{user1} and {user2} have chosen their moves',
     },
+
+    morpion: 'Tic-Tac-Toe',
+    connect4: 'Connect 4',
+    rockPaperScissors: 'Rock-Paper-Scissors',
 }

@@ -6,7 +6,7 @@
         isDisplayScorebar &&
         outcome === '' &&
         isReady &&
-        game === 'Pierre-papier-ciseaux'
+        game === 'rockPaperScissors'
       "
     >
       <scorebar />
@@ -31,12 +31,10 @@
           <div v-else class="game-wrapper">
             <div class="game">
               <transition name="fade" mode="out-in">
-                <morpion v-if="outcome === '' && game === 'Morpion'" />
-                <connect-4
-                  v-else-if="outcome === '' && game === 'Puissance 4'"
-                />
+                <morpion v-if="outcome === '' && game === 'morpion'" />
+                <connect-4 v-else-if="outcome === '' && game === 'connect4'" />
                 <rock-paper-scissors
-                  v-else-if="outcome === '' && game === 'Pierre-papier-ciseaux'"
+                  v-else-if="outcome === '' && game === 'rockPaperScissors'"
                 />
 
                 <endgame v-else-if="outcome !== ''" />

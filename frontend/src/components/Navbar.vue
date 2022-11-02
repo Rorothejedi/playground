@@ -17,7 +17,7 @@
         </n-button>
         <n-collapse-transition v-show="game !== '' && !isMobile">
           <n-text depth="3" class="separator"> / </n-text>
-          <n-text class="game-name">{{ game }}</n-text>
+          <n-text class="game-name">{{ game ? $t(game) : "" }}</n-text>
         </n-collapse-transition>
       </div>
 
@@ -55,7 +55,9 @@
     <n-collapse-transition :show="game !== '' && isMobile">
       <n-layout>
         <n-layout-header class="sub-nav">
-          <n-text>{{ game }}</n-text>
+          <n-text>
+            {{ $t(game) }}
+          </n-text>
         </n-layout-header>
       </n-layout>
     </n-collapse-transition>

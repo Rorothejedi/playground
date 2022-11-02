@@ -16,12 +16,10 @@
       <n-drawer-content :title="$t('settings.room.title')" closable>
         <invite-friend />
         <change-colors
-          v-if="
-            formattedGameName === 'morpion' || formattedGameName === 'connect4'
-          "
-          :namespace="formattedGameName"
+          v-if="game === 'morpion' || game === 'connect4'"
+          :namespace="game"
         />
-        <change-morpion-shape v-if="game === 'Morpion'" />
+        <change-morpion-shape v-if="game === 'morpion'" />
 
         <template #footer>
           <n-button @click="drawer = false">
@@ -58,13 +56,6 @@ export default {
 
   computed: {
     ...mapState("game", ["game"]),
-
-    formattedGameName() {
-      if (this.game === "Morpion") return "morpion";
-      if (this.game === "Puissance 4") return "connect4";
-
-      return null;
-    },
   },
 };
 </script>

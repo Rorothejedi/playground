@@ -27,11 +27,15 @@ export default {
         newGame: {
             title: 'Nouvelle partie',
             placeholder: 'Choisir un jeu',
+            participants: 'Participants',
+            players: '{n} joueurs',
+            scoreToReach: 'Score à atteindre',
         },
         gamesList: {
             title: 'Liste des parties disponibles',
             noData: 'Aucune partie disponible',
-        }
+            numberOfPlayers: 'Nombre de joueur requis',
+        },
     },
 
     settings: {
@@ -80,4 +84,8 @@ export default {
         choseMove: '{user} a choisi son coup',
         choseMoves: '{user1} et {user2} ont choisis leurs coups',
     },
+
+    morpion: 'Morpion',
+    connect4: 'Puissance 4',
+    rockPaperScissors: 'Pierre-Papier-Ciseaux',
 }
