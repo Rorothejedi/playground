@@ -1,6 +1,4 @@
 export default {
-    '': '',
-
     actions: {
         choose: 'Choose',
         close: 'Close',

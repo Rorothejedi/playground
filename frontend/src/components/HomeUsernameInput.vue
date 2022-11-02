@@ -27,11 +27,9 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import utils from "@/mixins/utils.js";
 
 export default {
   name: "HomeUsernameInput",
-  mixins: [utils],
 
   data() {
     return {
@@ -45,9 +43,9 @@ export default {
   },
 
   async mounted() {
-    await this.sleep(100);
-
     this.randomUsernamePlaceholder();
+
+    await this.$nextTick();
 
     this.$refs.usernameInput.focus();
   },
