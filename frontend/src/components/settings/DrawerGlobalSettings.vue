@@ -109,7 +109,8 @@ export default {
     return {
       drawer: false,
       localUsername: "",
-      selectedLocale: localStorage.getItem("language") || "fr",
+      selectedLocale:
+        localStorage.getItem("language") || navigator.language.split("-")[0],
     };
   },
 
