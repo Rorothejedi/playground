@@ -41,19 +41,22 @@ npm run serve
 - less (CSS preprocessor)
 
 
------------------------
+## WIP (v2.3)
+- New UI
+- Select your color and/or your shape in games
+- Invite your friends with game link
+- Internationalization (fr, en)
 
+-----------------------
 
 ## <ins>TODO IMPROVEMENT</ins> <i>before v2.3</i>
 
-- Test en prod des variables d'env (node et vue)
-- Test des liens en prod
-
 - Gérer la traduction du site (Internationalization)
+  - Gérer la traduction du nom des jeux sans rien casser
 
 ## <ins>Game improvements</ins>
 ### Morpion
-- Améliorer les cas d'égalité (pour savoir qui commence après)
+- Améliorer les cas d'égalité (pour savoir qui commence après, que ce ne soit pas toujours l'hôte qui joue ensuite)
 - Compter les scores et en gérer l'affichage
 
 ### Rock-Paper-Scissors

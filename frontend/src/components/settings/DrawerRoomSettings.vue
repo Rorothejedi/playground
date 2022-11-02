@@ -13,7 +13,7 @@
       :width="isMobile ? windowWidth : 400"
       style="background-color: #18181c"
     >
-      <n-drawer-content title="Paramètres de la partie" closable>
+      <n-drawer-content :title="$t('settings.room.title')" closable>
         <invite-friend />
         <change-colors
           v-if="
@@ -24,7 +24,9 @@
         <change-morpion-shape v-if="game === 'Morpion'" />
 
         <template #footer>
-          <n-button @click="drawer = false">Fermer</n-button>
+          <n-button @click="drawer = false">
+            {{ $t("actions.close") }}
+          </n-button>
         </template>
       </n-drawer-content>
     </n-drawer>
@@ -66,6 +68,3 @@ export default {
   },
 };
 </script>
-
-<style lang="less" scoped>
-</style>

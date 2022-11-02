@@ -53,13 +53,6 @@ export default {
     ...mapState("player", ["username", "score", "outcome"]),
     ...mapGetters("room", ["enemies"]),
 
-    // isDisplayScorebar() {
-    //   if (this.enemies === undefined) return false;
-    //   if (this.enemies.length < this.numberOfPlayer - 1) return false;
-
-    //   return true;
-    // },
-
     scorePosition() {
       let enemiesScore = [];
 

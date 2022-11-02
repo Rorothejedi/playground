@@ -7,7 +7,7 @@
     >
       <template #footer>
         <n-button @click="restartGame()" v-if="host && outcome">
-          Rejouer
+          {{ $t("actions.replay") }}
         </n-button>
         <n-spin v-else size="medium" />
       </template>
@@ -38,24 +38,19 @@ export default {
       return "404";
     },
     titleEndGame() {
-      if (this.outcome === "defeat") return "Défaite";
-      if (this.outcome === "victory") return "Victoire";
+      if (this.outcome === "defeat") return this.$t("room.endgame.defeat");
+      if (this.outcome === "victory") return this.$t("room.endgame.victory");
 
-      return "Egalité";
+      return this.$t("room.endgame.equality");
     },
     descriptionEndGame() {
-      if (this.outcome === "defeat")
-        return "Aïe ! Pourquoi ne pas retenter votre chance ?";
+      if (this.outcome === "defeat") return this.$t("room.endgame.defeatText");
       if (this.outcome === "victory")
-        return "Trop facile ! Vous prendrez bien un thé ?";
+        return this.$t("room.endgame.victoryText");
 
-      return "Bizarre... J'était pourtant sûr que vous alliez l'avoir !";
+      return this.$t("room.endgame.equalityText");
     },
   },
-
-  //   beforeUnmount() {
-  //     this.changeReplay(false);
-  //   },
 
   methods: {
     ...mapActions("player", ["changeTurn", "changeIsWinner", "changeOutcome"]),

@@ -5,16 +5,12 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
 
-let frontendHost
-let host
+let frontendHost = 'https://playground.rodolphe-cabotiau.com'
+let host = 'https://node.playground.rodolphe-cabotiau.com'
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV !== 'production') {
     frontendHost = 'http://localhost:8080'
     host = 'http://localhost'
-}
-if (process.env.NODE_ENV === 'production') {
-    frontendHost = 'https://playground.rodolphe-cabotiau.com'
-    host = 'https://node.playground.rodolphe-cabotiau.com'
 }
 
 const port = 3000
@@ -26,7 +22,7 @@ const io = require('socket.io')(http, {
 });
 
 http.listen(port, () => {
-    console.log(`Listening on ${host}:${port}/`)
+    console.log('\x1b[32m%s\x1b[0m', `Listening on ${host}:${port}/`)
 })
 
 // ---------------------------------
@@ -34,7 +30,7 @@ http.listen(port, () => {
 let rooms = []
 
 io.on('connection', (socket) => {
-    console.log('\x1b[32m%s\x1b[0m', `[connection] - socket: ${socket.id}`)
+    console.log(`[connection] - ${socket.id}`)
 
     socket.on('toServer_createOrJoinRoom', (data) => {
         let room = null
@@ -52,7 +48,7 @@ io.on('connection', (socket) => {
             data.roomId = room.id
             room.players.push(data)
 
-            console.log('\x1b[36m%s\x1b[0m', `[join room] - room: ${room.id}`)
+            console.log('\x1b[36m%s\x1b[0m', `[join room] (id: ${room.id})`)
         }
 
         socket.join(room.id)
@@ -91,7 +87,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         leaveRoom(socket)
 
-        console.log('\x1b[31m%s\x1b[0m', `[disconnect] - socket: ${socket.id}`)
+        console.log(`[disconnect] - ${socket.id}`)
     })
 })
 
@@ -109,7 +105,7 @@ function createRoom(data) {
     room.players.push(data)
     rooms.push(room)
 
-    console.log('\x1b[36m%s\x1b[0m', `[create room] - room: ${room.id} - username: ${data.username}`)
+    console.log('\x1b[36m%s\x1b[0m', `[create room] (id: ${room.id}) by ${data.username}`)
 
     return room
 }
@@ -124,7 +120,7 @@ function leaveRoom(socket) {
             rooms[i].players = room.players.filter(p => p.socketId !== player.socketId)
             socket.leave(room.id)
 
-            console.log('\x1b[33m%s\x1b[0m', `[leave room] - room: ${room.id} - socket: ${socket.id}`)
+            console.log('\x1b[33m%s\x1b[0m', `[leave room] (id: ${room.id})`)
         });
     })
 
@@ -136,7 +132,7 @@ function destroyRoom(socket, room) {
 
     socket.leave(room.id)
 
-    console.log('\x1b[33m%s\x1b[0m', `[destroy room] - room: ${room.id} - socket: ${socket.id}`)
+    console.log('\x1b[33m%s\x1b[0m', `[destroy room] (id: ${room.id})`)
 
     socket.broadcast.emit('toClient_getRooms', rooms)
 }
@@ -146,6 +142,7 @@ function createRoomId() {
 }
 
 function emitErrorTo(socketId, type = 'error') {
+    console.log('\x1b[31m%s\x1b[0m', `[error] (type: ${type})`)
     if (type === 'error') io.to(socketId).emit('toClient_error')
     if (type === 'room_full') io.to(socketId).emit('toClient_error_room_full')
     if (type === 'room_noExist') io.to(socketId).emit('toClient_error_room_noExist')

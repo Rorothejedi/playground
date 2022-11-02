@@ -13,10 +13,10 @@
       :width="isMobile ? windowWidth : 400"
       style="background-color: #18181c"
     >
-      <n-drawer-content title="Paramètres généraux" closable>
+      <n-drawer-content :title="$t('settings.global.title')" closable>
         <n-divider title-placement="left">
           <n-tag round size="large">
-            Pseudo
+            {{ $t("settings.global.nickname") }}
             <template #avatar>
               <n-avatar>
                 <n-icon>
@@ -28,6 +28,7 @@
         </n-divider>
 
         <n-input-group>
+          <!-- Add mixin for famous characters placeholder -->
           <n-input
             v-model:value="localUsername"
             ref="usernameInput"
@@ -35,18 +36,23 @@
             placeholder="ex: Toto"
             maxlength="30"
             show-count
+            @keyup.enter="
+              localUsername === '' || localUsername === username
+                ? ''
+                : editUsername()
+            "
           />
           <n-button
             @click="editUsername()"
             :disabled="localUsername === '' || localUsername === username"
           >
-            Choisir
+            {{ $t("actions.choose") }}
           </n-button>
         </n-input-group>
 
         <n-divider title-placement="left">
           <n-tag round size="large">
-            Langue
+            {{ $t("settings.global.language") }}
             <template #avatar>
               <n-avatar>
                 <n-icon>
@@ -58,22 +64,24 @@
         </n-divider>
 
         <n-select
-          disabled
-          v-model:value="selectedLanguage"
+          v-model:value="selectedLocale"
+          @update:value="handleLocale"
           :options="[
             {
               label: 'Français',
-              value: 'french',
+              value: 'fr',
             },
             {
               label: 'English',
-              value: 'english',
+              value: 'en',
             },
           ]"
         />
 
         <template #footer>
-          <n-button @click="drawer = false">Fermer</n-button>
+          <n-button @click="drawer = false">
+            {{ $t("actions.close") }}
+          </n-button>
         </template>
       </n-drawer-content>
     </n-drawer>
@@ -101,7 +109,7 @@ export default {
     return {
       drawer: false,
       localUsername: "",
-      selectedLanguage: "french",
+      selectedLocale: localStorage.getItem("language") || "fr",
     };
   },
 
@@ -132,6 +140,12 @@ export default {
       this.changeUsername(this.localUsername);
 
       window.$message.success(`${this.localUsername}, quel beau pseudo !`);
+    },
+
+    handleLocale(locale) {
+      this.$i18n.locale = locale;
+
+      localStorage.setItem("language", locale);
     },
   },
 };

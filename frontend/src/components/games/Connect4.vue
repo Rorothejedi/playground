@@ -82,9 +82,11 @@ export default {
     this.listenPlayToConnect4();
 
     if (this.turn) {
-      this.createInfoMessage("A toi de jouer");
+      this.createInfoMessage(this.$t("game.yourTurn"));
     } else {
-      this.createLoadingMessage(`${this.enemies[0].username} prépare son coup`);
+      this.createLoadingMessage(
+        this.$t("game.preparesMove", { user: this.enemies[0].username })
+      );
     }
   },
 
@@ -120,7 +122,9 @@ export default {
       if (this.isEnd) return;
       if (this.checkEquality()) return;
 
-      this.createLoadingMessage(`${this.enemies[0].username} prépare son coup`);
+      this.createLoadingMessage(
+        this.$t("game.preparesMove", { user: this.enemies[0].username })
+      );
     },
 
     placeEnemyItem() {
@@ -137,7 +141,7 @@ export default {
       if (this.checkEquality()) return;
 
       this.changeTurn(true);
-      this.createInfoMessage("A toi de jouer");
+      this.createInfoMessage(this.$t("game.yourTurn"));
     },
 
     placeItemInBottomOfColumn(y) {
@@ -365,12 +369,6 @@ span {
     opacity: 1;
   }
 }
-
-:root {
-  --test: v-bind(colorEnemy);
-}
-
-// @color: v-bind(colorEnemy);
 
 .enemy-item {
   border: 3px solid v-bind(colorEnemy);

@@ -46,6 +46,10 @@ export default {
     this.$store.commit("player/INIT_LOCALSTORAGE", null, { root: true });
     this.$store.commit("morpion/INIT_LOCALSTORAGE", null, { root: true });
     this.$store.commit("connect4/INIT_LOCALSTORAGE", null, { root: true });
+
+    if (!localStorage.getItem("language")) return;
+
+    this.$i18n.locale = localStorage.getItem("language");
   },
 
   created() {

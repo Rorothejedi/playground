@@ -121,10 +121,17 @@ export default {
         this.removeMessage();
 
         if (enemies.length === 1)
-          this.createInfoMessage(`${enemies[0].username} a choisi son coup`);
+          this.createInfoMessage(
+            this.$t("game.choseMove", {
+              user: enemies[0].username,
+            })
+          );
         else if (enemies.length === 2)
           this.createInfoMessage(
-            `${enemies[0].username} et ${enemies[1].username} ont choisis leurs coups`
+            this.$t("game.choseMoves", {
+              user1: enemies[0].username,
+              user2: enemies[1].username,
+            })
           );
       }
 
@@ -288,14 +295,10 @@ export default {
       this.changeChosenItem("");
 
       if (this.score === this.room.scoreToReach) {
-        // await this.sleep(300);
-
         this.changeOutcome("victory");
       } else if (
         this.enemyData.find((enemy) => enemy.score === this.room.scoreToReach)
       ) {
-        // await this.sleep(300);s
-
         this.changeOutcome("defeat");
       } else {
         this.displayChoices = true;

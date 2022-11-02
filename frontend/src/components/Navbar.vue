@@ -39,7 +39,9 @@
                 <close-filled />
               </n-icon>
             </template>
-            <n-text v-if="!isMobile">Quitter la partie</n-text>
+            <n-text v-if="!isMobile">
+              {{ $t("navbar.quit") }}
+            </n-text>
           </n-button>
         </n-space>
         <div v-else>

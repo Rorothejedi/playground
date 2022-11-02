@@ -2,7 +2,7 @@
   <div>
     <n-divider title-placement="left">
       <n-tag round size="large">
-        Forme
+        {{ $t("settings.room.shape") }}
         <template #avatar>
           <n-avatar>
             <n-icon>

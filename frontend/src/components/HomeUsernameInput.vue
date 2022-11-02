@@ -1,7 +1,7 @@
 <template>
   <div class="username">
     <n-h1 class="username-title" v-if="username === ''"> Playground </n-h1>
-    <n-card title="Ton pseudo" class="username-card" :bordered="false">
+    <n-card :title="$t('hello.label')" class="username-card" :bordered="false">
       <n-input-group>
         <n-input
           v-model:value="localUsername"
@@ -11,13 +11,14 @@
           :placeholder="`ex: ${usernamePlaceholder}`"
           maxlength="30"
           show-count
+          @keyup.enter="localUsername !== '' ? addUsername() : ''"
         />
         <n-button
           @click="addUsername()"
           :disabled="localUsername === ''"
           size="large"
         >
-          Choisir
+          {{ $t("actions.choose") }}
         </n-button>
       </n-input-group>
     </n-card>
@@ -78,7 +79,7 @@ export default {
         "Tifa Lockhart",
         "John McClane",
         "Korben Dallas",
-        "Commandant Shepard",
+        "John Shepard",
         "Sheldon Cooper",
         "Vincent Vega",
         "John Rambo",
@@ -93,7 +94,7 @@ export default {
         "Barney Stinson",
         "Johnny Rico",
         "Thomas Anderson",
-        "Dr. Emmett Brown",
+        "Emmett Brown",
         "James Bond",
         "Luke Skywalker",
         "Inigo Montoya",
@@ -104,9 +105,9 @@ export default {
         "Trinity",
         "Neo",
         "Harley Quinn",
-        "Dr. Samantha Carter",
+        "Samantha Carter",
         "Jack O'Neill",
-        "Dr. Daniel Jackson",
+        "Daniel Jackson",
         "Rodney McKay",
         "Vala Mal Doran",
         "Garrus Vakarian",

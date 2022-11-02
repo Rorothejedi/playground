@@ -1,5 +1,6 @@
 import socketioService from "../services/socketio.service"
 import router from '@/router'
+import i18n from '@/locales/i18n';
 
 export default {
     namespaced: true,
@@ -80,7 +81,7 @@ export default {
 
         listenError() {
             socketioService.socket.on("toClient_error", () => {
-                window.$message.error('Une erreur est survenue')
+                window.$message.error(i18n.global.t('error.base'))
                 router.push({
                     name: "Home"
                 });
@@ -89,7 +90,7 @@ export default {
 
         listenErrorRoomFull() {
             socketioService.socket.on("toClient_error_room_full", () => {
-                window.$message.warning('La partie est déjà complète !')
+                window.$message.warning(i18n.global.t('error.room.full'))
                 router.push({
                     name: "Home"
                 });
@@ -98,7 +99,7 @@ export default {
 
         listenErrorRoomNoExist() {
             socketioService.socket.on("toClient_error_room_noExist", () => {
-                window.$message.error('La partie n\'existe pas !')
+                window.$message.error(i18n.global.t('error.room.noExist'))
                 router.push({
                     name: "Home"
                 });

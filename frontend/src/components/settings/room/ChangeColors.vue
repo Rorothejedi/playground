@@ -2,7 +2,7 @@
   <div>
     <n-divider title-placement="left">
       <n-tag round size="large">
-        Couleurs
+        {{ $t("settings.room.colors") }}
         <template #avatar>
           <n-avatar>
             <n-icon>
@@ -13,7 +13,7 @@
       </n-tag>
     </n-divider>
 
-    Moi
+    {{ $t("settings.room.me") }}
     <n-color-picker
       :show-alpha="false"
       :modes="['hex']"
@@ -22,7 +22,7 @@
       @update:value="editColorPlayer"
     />
 
-    Adversaire
+    {{ $t("settings.room.opponent") }}
     <n-color-picker
       :show-alpha="false"
       :modes="['hex']"

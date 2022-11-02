@@ -2,7 +2,7 @@
   <div>
     <n-divider title-placement="left">
       <n-tag round size="large">
-        Inviter un ami
+        {{ $t("settings.room.invitation.title") }}
         <template #avatar>
           <n-avatar>
             <n-icon>
@@ -21,7 +21,10 @@
           @click="$refs.linkInput.select()"
           ref="linkInput"
         />
-        <n-button @click="copyLinkToClipboard()" title="Copier le lien">
+        <n-button
+          @click="copyLinkToClipboard()"
+          :title="$t('settings.room.invitation.copy')"
+        >
           <template #icon>
             <n-icon size="22">
               <copy-select-20-regular v-if="!isLinkCopied" />
@@ -32,8 +35,7 @@
       </n-input-group>
 
       <n-text italic depth="3">
-        Partage le lien ci-dessus à la personne de ton choix pour jouer ensemble
-        !
+        {{ $t("settings.room.invitation.subtext") }}
       </n-text>
     </n-space>
   </div>
@@ -79,7 +81,7 @@ export default {
 
       this.isLinkCopied = true;
 
-      window.$message.success("Lien copié !");
+      window.$message.success(this.$t("settings.room.invitation.copied"));
 
       await this.sleep(3000);
 

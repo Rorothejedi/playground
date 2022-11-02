@@ -20,7 +20,9 @@
           <div v-if="!isReady" class="waiting-card">
             <n-alert type="success" :bordered="false" :show-icon="false">
               <div class="waiting-card-content">
-                <n-h5> En attente d'un autre joueur... </n-h5>
+                <n-h5>
+                  {{ $t("room.waitingText") }}
+                </n-h5>
                 <n-spin size="small" />
               </div>
             </n-alert>
@@ -95,7 +97,9 @@ export default {
   watch: {
     room(newValue) {
       if (newValue === undefined && this.isReady) {
-        window.$message.error(`${this.enemyUsername} a quitté la partie`);
+        window.$message.error(
+          this.$t("room.leaveGame", { user: this.enemyUsername })
+        );
         this.$router.push({ name: "Home" });
         return;
       }
@@ -190,11 +194,10 @@ export default {
     quitRoomConfirm() {
       return new Promise((resolve) => {
         window.$dialog.warning({
-          title: "Quitter la partie ?",
-          content:
-            "Vous êtes certain de vouloir quitter ? Dans ce cas, votre adversaire sera expulsé de la partie...",
-          positiveText: "Oui, je suis sûr",
-          negativeText: "Finalement non",
+          title: this.$t("room.quitConfirm.title"),
+          content: this.$t("room.quitConfirm.content"),
+          positiveText: this.$t("room.quitConfirm.yes"),
+          negativeText: this.$t("room.quitConfirm.no"),
           onPositiveClick: () => {
             resolve(true);
           },

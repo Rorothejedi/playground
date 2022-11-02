@@ -5,14 +5,14 @@
 
       <n-space vertical class="home-cards" v-else>
         <div class="create-room-card">
-          <n-card title="Nouvelle partie" :bordered="false">
+          <n-card :title="$t('home.newGame.title')" :bordered="false">
             <n-form>
               <n-form-item :show-label="false">
                 <n-select
                   v-model:value="selectedGame"
                   :options="gamesAvailable"
                   :render-label="gameSelectRender"
-                  placeholder="Choisir un jeu"
+                  :placeholder="$t('home.newGame.placeholder')"
                   size="large"
                 />
               </n-form-item>
@@ -56,18 +56,18 @@
               </n-form>
             </n-collapse-transition>
             <n-button @click="createRoom()" :disabled="!selectedGame">
-              Créer
+              {{ $t("actions.create") }}
             </n-button>
           </n-card>
         </div>
 
         <div class="room-card">
-          <n-card title="Liste des parties disponibles" :bordered="false">
+          <n-card :title="$t('home.gamesList.title')" :bordered="false">
             <n-space vertical :size="12">
               <div v-if="availableRooms.length !== 0">
                 <n-list>
                   <n-list-item v-for="(room, key) in availableRooms" :key="key">
-                    <!-- Use transition-group -->
+                    <!-- Use transition-group for smooth appear -->
                     <template #prefix>
                       <n-tag
                         :bordered="false"
@@ -132,7 +132,7 @@
                         @click="joinRoom(room)"
                         :size="isMobile ? 'small' : 'medium'"
                       >
-                        Rejoindre
+                        {{ $t("actions.join") }}
                       </n-button>
                     </template>
                   </n-list-item>
@@ -142,7 +142,7 @@
                 <n-list bordered>
                   <n-list-item>
                     <n-space justify="center" class="no-room">
-                      Aucune partie disponible
+                      {{ $t("home.gamesList.noData") }}
                     </n-space>
                   </n-list-item>
                 </n-list>
