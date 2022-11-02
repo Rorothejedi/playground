@@ -49,12 +49,7 @@ npm run serve
 - Test en prod des variables d'env (node et vue)
 - Test des liens en prod
 
-- Ajouter les icons dans le select des jeux
-  
-### Bugs (to reproduced)
-
-- Parfois, le nom d'utilisateur ne s'affiche pas dans le message '[username] a quitté la partie'
-
+- Gérer la traduction du site (Internationalization)
 
 ## <ins>Game improvements</ins>
 ### Morpion
@@ -67,13 +62,17 @@ npm run serve
 
 ### Other game ideas
 - pierre-papier-ciseaux-lézard-Spock
+- bataille navale
 - memory (solo and 2 players) (for card games implementation)
-- bataille
+- bataille de carte
 - skyjo
 - mini-golf (with Kinesis https://www.aminerman.com/kinesis/)
 
+### Issues (to reproduced)
+
+- Parfois, le nom d'utilisateur ne s'affiche pas dans le message '[username] a quitté la partie'
+
 ## <ins>UI/UX improvements</ins>
-- Gérer la traduction du site (Internationalization)
 
 - Améliorer l'attente dans la room avec le nombre de joueur / le lien direct à partager
 - Améliorer le bouton "rejouer", tous les joueurs doivent pouvoir cliquer, (la partie redemare quand tous les joueurs ont cliqués)

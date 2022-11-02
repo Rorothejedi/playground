@@ -220,8 +220,6 @@ export default {
       this.changeIsWinner(false);
 
       this.emitCreateOrJoinRoom();
-
-      // get numberOfPlayer & scoreToReach
     },
   },
 };
