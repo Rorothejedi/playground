@@ -4,16 +4,18 @@
       <n-dialog-provider>
         <n-message-provider :placement="placement">
           <utils-for-naive />
-          <n-layout>
-            <navbar />
+          <kinesis-container>
             <n-layout>
-              <router-view v-slot="{ Component, route }">
-                <transition name="fade" mode="out-in">
-                  <component :is="Component" :key="route.path" />
-                </transition>
-              </router-view>
+              <navbar />
+              <n-layout>
+                <router-view v-slot="{ Component, route }">
+                  <transition name="fade" mode="out-in">
+                    <component :is="Component" :key="route.path" />
+                  </transition>
+                </router-view>
+              </n-layout>
             </n-layout>
-          </n-layout>
+          </kinesis-container>
         </n-message-provider>
       </n-dialog-provider>
     </n-loading-bar-provider>

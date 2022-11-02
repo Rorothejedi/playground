@@ -1,27 +1,55 @@
 <template>
   <div class="username">
-    <n-h1 class="username-title" v-if="username === ''"> Playground </n-h1>
-    <n-card :title="$t('hello.label')" class="username-card" :bordered="false">
-      <n-input-group>
-        <n-input
-          v-model:value="localUsername"
-          ref="usernameInput"
-          type="text"
-          size="large"
-          :placeholder="`ex: ${usernamePlaceholder}`"
-          maxlength="30"
-          show-count
-          @keyup.enter="localUsername !== '' ? addUsername() : ''"
-        />
-        <n-button
-          @click="addUsername()"
-          :disabled="localUsername === ''"
-          size="large"
-        >
-          {{ $t("actions.choose") }}
-        </n-button>
-      </n-input-group>
-    </n-card>
+    <kinesis-element :strength="1" type="depth">
+      <n-h1 class="username-title" v-if="username === ''"> Playground </n-h1>
+    </kinesis-element>
+    <kinesis-element :strength="testCard" type="depth" class="username">
+      <n-card class="username-card" :bordered="true">
+        <kinesis-element :strength="testInput + 3" type="depth">
+          <n-h3>{{ $t("hello.label") }}</n-h3>
+        </kinesis-element>
+        <!-- <n-input-group> -->
+        <!-- <n-space vertical align="end"> -->
+        <kinesis-element :strength="testInput" type="depth">
+          <n-input
+            v-model:value="localUsername"
+            ref="usernameInput"
+            type="text"
+            size="large"
+            :placeholder="`ex: ${usernamePlaceholder}`"
+            maxlength="30"
+            show-count
+            @keyup.enter="localUsername !== '' ? addUsername() : ''"
+          />
+        </kinesis-element>
+        <kinesis-element :strength="testInput + 5" type="depth">
+          <n-button
+            circle
+            @click="addUsername()"
+            :disabled="localUsername === ''"
+            size="large"
+          >
+            {{ $t("actions.choose") }}
+          </n-button>
+        </kinesis-element>
+        <!-- </n-space> -->
+
+        <!-- </n-input-group> -->
+      </n-card>
+    </kinesis-element>
+
+    <n-space>
+      <n-button @click="testCard = testCard + 1">depth card +</n-button>
+      <n-button @click="testCard = testCard - 1">depth card -</n-button>
+      <n-button @click="testInput = testInput + 1">depth input +</n-button>
+      <n-button @click="testInput = testInput - 1">depth input -</n-button>
+    </n-space>
+    <n-text> testCard: {{ testCard }} </n-text>
+    <n-text> testInput: {{ testInput }} </n-text>
+
+    <!-- <kinesis-element :strength="30" type="depth">
+      <n-button>Test</n-button>
+    </kinesis-element> -->
   </div>
 </template>
 
@@ -35,6 +63,9 @@ export default {
     return {
       localUsername: "",
       usernamePlaceholder: "",
+
+      testCard: 13,
+      testInput: 15,
     };
   },
 
@@ -139,6 +170,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: -webkit-fill-available;
 
   .username-title {
     font-family: "Major Mono Display", monospace;
